@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Atlas>
+    <Texture filename="hx_icons1.tex"/>
+    <Elements>
+        <Element name="alterguardian_phase1.tex" u1="0" u2="0.124145" v1="0.729228" v2="0.853372"/>
+        <Element name="alterguardian_phase2.tex" u1="0" u2="0.124145" v1="0.604106" v2="0.72825"/>
+        <Element name="alterguardian_phase3.tex" u1="0" u2="0.124145" v1="0.478983" v2="0.603128"/>
+        <Element name="antlion.tex" u1="0" u2="0.124145" v1="0.353861" v2="0.478006"/>
+        <Element name="bearger.tex" u1="0" u2="0.124145" v1="0.228739" v2="0.352884"/>
+        <Element name="beequeen.tex" u1="0" u2="0.124145" v1="0.103617" v2="0.227761"/>
+        <Element name="charlie_npc.tex" u1="0.125122" u2="0.249267" v1="0.729228" v2="0.853372"/>
+        <Element name="claywarg.tex" u1="0.146628" u2="0.270772" v1="0.875855" v2="1"/>
+        <Element name="crabking.tex" u1="0.27175" u2="0.395894" v1="0.875855" v2="1"/>
+        <Element name="daywalker.tex" u1="0.396872" u2="0.521017" v1="0.875855" v2="1"/>
+        <Element name="daywalker2.tex" u1="0.521994" u2="0.646139" v1="0.875855" v2="1"/>
+        <Element name="deciduoustree.tex" u1="0.647116" u2="0.771261" v1="0.875855" v2="1"/>
+        <Element name="deerclops.tex" u1="0.772239" u2="0.896383" v1="0.875855" v2="1"/>
+        <Element name="dragonfly.tex" u1="0.125122" u2="0.249267" v1="0.604106" v2="0.72825"/>
+        <Element name="dummytarget.tex" u1="0.125122" u2="0.249267" v1="0.478983" v2="0.603128"/>
+        <Element name="eyeofterror.tex" u1="0.125122" u2="0.249267" v1="0.353861" v2="0.478006"/>
+        <Element name="gingerbreadwarg.tex" u1="0" u2="0.14565" v1="0.85435" v2="1"/>
+        <Element name="hermitcrab.tex" u1="0.125122" u2="0.249267" v1="0.228739" v2="0.352884"/>
+        <Element name="icon_acid.tex" u1="0.125122" u2="0.249267" v1="0.103617" v2="0.227761"/>
+        <Element name="klaus.tex" u1="0.250244" u2="0.374389" v1="0.750733" v2="0.874878"/>
+        <Element name="leif.tex" u1="0.375367" u2="0.499511" v1="0.750733" v2="0.874878"/>
+        <Element name="leif_sparse.tex" u1="0.500489" u2="0.624633" v1="0.750733" v2="0.874878"/>
+        <Element name="lordfruitfly.tex" u1="0.625611" u2="0.749756" v1="0.750733" v2="0.874878"/>
+        <Element name="malbatross.tex" u1="0.750733" u2="0.874878" v1="0.750733" v2="0.874878"/>
+        <Element name="minotaur.tex" u1="0.875855" u2="1" v1="0.750733" v2="0.874878"/>
+        <Element name="moose.tex" u1="0.250244" u2="0.374389" v1="0.625611" v2="0.749756"/>
+        <Element name="mutatedbearger.tex" u1="0.250244" u2="0.374389" v1="0.500489" v2="0.624633"/>
+        <Element name="mutateddeerclops.tex" u1="0.250244" u2="0.374389" v1="0.375367" v2="0.499511"/>
+        <Element name="mutatedwarg.tex" u1="0.250244" u2="0.374389" v1="0.250244" v2="0.374389"/>
+        <Element name="shadow_bishop.tex" u1="0.250244" u2="0.374389" v1="0.125122" v2="0.249267"/>
+    </Elements>
+    <StraightAlpha>false</StraightAlpha>
+</Atlas>
+

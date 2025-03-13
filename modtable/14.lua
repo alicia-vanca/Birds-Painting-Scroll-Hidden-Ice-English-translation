@@ -1,0 +1,5 @@
+m_util:AddBindConf("sw_toggle", function()
+    local mv = not m_util:GetMovementPrediction()
+    m_util:SetMovementPrediction(mv)
+    u_util:Say(mv and "On" or "Off", mv and "Lag compensation ON" or "Lag compensation OFF", nil, mv and "Spring green" or "Red", true)
+end)

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Atlas>
+    <Texture filename="hx_icons2.tex"/>
+    <Elements>
+        <Element name="mark_x.tex" u1="0.500489" u2="0.562072" v1="0.688172" v2="0.749756"/>
+        <Element name="mark_y.tex" u1="0.56305" u2="0.624633" v1="0.688172" v2="0.749756"/>
+        <Element name="shadow_knight.tex" u1="0" u2="0.124145" v1="0.875855" v2="1"/>
+        <Element name="shadow_rook.tex" u1="0" u2="0.124145" v1="0.750733" v2="0.874878"/>
+        <Element name="shadowthrall_hands.tex" u1="0" u2="0.124145" v1="0.625611" v2="0.749756"/>
+        <Element name="shadowthrall_horns.tex" u1="0" u2="0.124145" v1="0.500489" v2="0.624633"/>
+        <Element name="shadowthrall_wings.tex" u1="0" u2="0.124145" v1="0.375367" v2="0.499511"/>
+        <Element name="sharkboi.tex" u1="0" u2="0.124145" v1="0.250244" v2="0.374389"/>
+        <Element name="spat.tex" u1="0" u2="0.124145" v1="0.125122" v2="0.249267"/>
+        <Element name="spiderqueen.tex" u1="0" u2="0.124145" v1="0" v2="0.124145"/>
+        <Element name="stalker.tex" u1="0.125122" u2="0.249267" v1="0.875855" v2="1"/>
+        <Element name="stalker_atrium.tex" u1="0.250244" u2="0.374389" v1="0.875855" v2="1"/>
+        <Element name="stalker_forest.tex" u1="0.375367" u2="0.499511" v1="0.875855" v2="1"/>
+        <Element name="tentacle_pillar_1.tex" u1="0.500489" u2="0.624633" v1="0.875855" v2="1"/>
+        <Element name="tentacle_pillar_2.tex" u1="0.625611" u2="0.749756" v1="0.875855" v2="1"/>
+        <Element name="tentacle_pillar_3.tex" u1="0.750733" u2="0.874878" v1="0.875855" v2="1"/>
+        <Element name="tentacle_pillar_4.tex" u1="0.875855" u2="1" v1="0.875855" v2="1"/>
+        <Element name="tentacle_pillar_5.tex" u1="0.125122" u2="0.249267" v1="0.750733" v2="0.874878"/>
+        <Element name="tentacle_pillar_6.tex" u1="0.125122" u2="0.249267" v1="0.625611" v2="0.749756"/>
+        <Element name="tentacle_pillar_7.tex" u1="0.125122" u2="0.249267" v1="0.500489" v2="0.624633"/>
+        <Element name="tentacle_pillar_8.tex" u1="0.125122" u2="0.249267" v1="0.375367" v2="0.499511"/>
+        <Element name="tentacle_pillar_9.tex" u1="0.125122" u2="0.249267" v1="0.250244" v2="0.374389"/>
+        <Element name="toadstool_dark.tex" u1="0.125122" u2="0.249267" v1="0.125122" v2="0.249267"/>
+        <Element name="toadtool.tex" u1="0.125122" u2="0.249267" v1="0" v2="0.124145"/>
+        <Element name="twinofterror1.tex" u1="0.250244" u2="0.374389" v1="0.750733" v2="0.874878"/>
+        <Element name="twinofterror2.tex" u1="0.375367" u2="0.499511" v1="0.750733" v2="0.874878"/>
+        <Element name="warg.tex" u1="0.500489" u2="0.624633" v1="0.750733" v2="0.874878"/>
+        <Element name="warglet.tex" u1="0.625611" u2="0.749756" v1="0.750733" v2="0.874878"/>
+        <Element name="wormhole_1.tex" u1="0.750733" u2="0.874878" v1="0.750733" v2="0.874878"/>
+        <Element name="wormhole_2.tex" u1="0.875855" u2="1" v1="0.750733" v2="0.874878"/>
+        <Element name="wormhole_3.tex" u1="0.250244" u2="0.374389" v1="0.625611" v2="0.749756"/>
+        <Element name="wormhole_4.tex" u1="0.250244" u2="0.374389" v1="0.500489" v2="0.624633"/>
+        <Element name="wormhole_5.tex" u1="0.250244" u2="0.374389" v1="0.375367" v2="0.499511"/>
+        <Element name="wormhole_6.tex" u1="0.250244" u2="0.374389" v1="0.250244" v2="0.374389"/>
+        <Element name="wormhole_7.tex" u1="0.250244" u2="0.374389" v1="0.125122" v2="0.249267"/>
+        <Element name="wormhole_8.tex" u1="0.250244" u2="0.374389" v1="0" v2="0.124145"/>
+        <Element name="wormhole_9.tex" u1="0.375367" u2="0.499511" v1="0.625611" v2="0.749756"/>
+    </Elements>
+    <StraightAlpha>false</StraightAlpha>
+</Atlas>
+
