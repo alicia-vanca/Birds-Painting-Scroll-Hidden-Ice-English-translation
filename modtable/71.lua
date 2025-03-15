@@ -17,6 +17,7 @@ local function GetIconInfo()
     return {
         xml = xml,
         tex = tex,
+	-- 251403 VanCa: Change text to "Hunt" for better UI display
         -- text = STRINGS.NAMES.ANIMAL_TRACK,
         text = "Hunt",
         describe = "Click to automatically track footprints"
@@ -110,7 +111,6 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
         return save_data.sw
     end, fn_save("sw"), {fn_left = function()
        u_util:Say("Looking for suspicious footprints ...") 
-       RefreshIcon()
        AutoFn()
     end}, {priority = -100})
 end)

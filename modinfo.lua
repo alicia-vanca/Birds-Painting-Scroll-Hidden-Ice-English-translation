@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Hidden Ice 󰀜"
-version = "4.5_01"
+version = "4.7_00"
 
 
 description =
@@ -48,6 +48,7 @@ local function AddOpt(desc, data, hover)
 	return { description = desc, data = data, hover = hover }
 end
 
+-- VanCa: Add more key to bind
 local theKeys = {
 	AddOpt("Off", false),
 	AddOpt("A", 97),

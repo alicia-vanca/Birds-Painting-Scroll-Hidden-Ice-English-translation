@@ -60,7 +60,7 @@ function h_util:ActivateUIDraggable(UI, func_stop, UI_follow)
             ui.followhandler = TheInput:AddMoveHandler(function(x, y)
                 pos_last = (Vector3(x, y, 0) - cur_pos) * scale + ori_pos
                 UI:SetPosition(pos_last)
-                if TheInput:IsControlPressed(CONTROL_CANCEL) then
+                if TheInput:IsControlPressed(CONTROL_CANCEL) or not TheInput:IsMouseDown(MOUSEBUTTON_LEFT) then
                     ui:StopFollowMouse()
                 end
             end)
@@ -320,6 +320,7 @@ end
 local ImageData = {}
 local function GetPrefabAsset(prefab)
     if not prefab then return end
+    prefab = prefab:gsub("%.tex$", ""):gsub("%.png$", "")
     if not ImageData[prefab] then
         local _prefab = r_data.prefab_image[prefab] or prefab
         local xml, tex, name = GetImageAsset(_prefab)
@@ -550,7 +551,7 @@ function h_util:WorldPosToScreenPos(x, z)
     return TheSim:GetScreenPos(x, 0, z)
 end
 
--- Binding mouse
+-- Binding mouse 2458 10-14
 function h_util:SetMouseSecond()
     return {{
         data = MOUSEBUTTON_RIGHT,

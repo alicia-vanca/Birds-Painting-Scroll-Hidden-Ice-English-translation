@@ -26,7 +26,7 @@ local function SearchAndTakePrefab(prefab, amount_has, amount_need)
     local func_has = Mod_ShroomMilk.Func.HasPrefabWithBox
     local func_refresh = Mod_ShroomMilk.Func.RefreshBoxMemory
     local pusher = m_util:GetPusher()
-    if not (func_has and pusher) then return end
+    if not (func_has and pusher and prefab) then return end
     local name = e_util:GetPrefabName(prefab)
     pusher:RegNowTask(function(player, pc)
         d_util:Wait()
@@ -86,10 +86,9 @@ AddClassPostConstruct("widgets/ingredientui", function(self, ...)
         if save_data.sw and button == save_data.btn_conf and down then
             local str = self.quant and self.quant:GetString() or ""
             local amount_has, amount_need = str:match('(%d+)/(%d+)')
-            local prefab = self.ing and self.ing.texture and self.ing.texture:match('[^/]+$'):gsub('%.tex$', '')
             amount_has, amount_need = tonumber(amount_has), tonumber(amount_need)
-            if prefab and amount_has and amount_need then
-                SearchAndTakePrefab(prefab, amount_has, amount_need)
+            if amount_has and amount_need then
+                SearchAndTakePrefab(self.recipe_type, amount_has, amount_need)
             end
         end
         return _OnMouseButton(self, button, down, ...)

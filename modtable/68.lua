@@ -1,6 +1,6 @@
 local save_id, map_str = "map_gogo", "Auto walking"
 local default_data = {
-    tele = true,
+    tele = m_util:IsHuxi(),
     sw = true,
     double = false,
     double_time = 3,

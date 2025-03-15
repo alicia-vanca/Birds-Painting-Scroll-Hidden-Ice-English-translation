@@ -243,12 +243,9 @@ local function ShowPrefabView(prefab, is_display)
     HighlightPrefab(pointer)
 end
 AddClassPostConstruct("widgets/ingredientui", function (self, ...)
-    local function getPrefab()
-        return self.ing and self.ing.texture and self.ing.texture:match('[^/]+$'):gsub('%.tex$', '')
-    end
     local _OnGainFocus = self.OnGainFocus
     function self.OnGainFocus(self, ...)
-        ShowPrefabView(getPrefab(), true)
+        ShowPrefabView(self.recipe_type, true)
         if _OnGainFocus then
             return _OnGainFocus(self, ...)
         end
@@ -256,7 +253,7 @@ AddClassPostConstruct("widgets/ingredientui", function (self, ...)
 
     local _OnLoseFocus = self.OnLoseFocus
     function self.OnLoseFocus(self, ...)
-        ShowPrefabView(getPrefab(), false)
+        ShowPrefabView(self.recipe_type, false)
         if _OnLoseFocus then
             return _OnLoseFocus(self, ...)
         end

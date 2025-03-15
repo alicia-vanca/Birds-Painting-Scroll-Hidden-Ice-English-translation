@@ -1,58 +1,54 @@
--- Reserve
-local max_hop_dist = 6.5
-local function GetMaxHopPos(player, pos)
-    return c_util:GetIntersectPotRadiusPot(player:GetPosition(), max_hop_dist, pos or TheInput:GetWorldPosition())
-end
+-- Logging system
+local default_data = {
+}
+local save_id, str_show = "sw_update", "Development Plan"
+local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 
-local point, task
-local function func(prefab)
-    return table.contains({"spear_wathgrithr_lightning_charged", "spear_wathgrithr_lightning"}, prefab)
-end
-i_util:AddPlayerActivatedFunc(function(player, world, pusher)
-    if player.prefab ~= "wathgrithr" then return end
-    pusher:RegEquip(function(slot, equip)
-        if func(equip.prefab) then
-            if not task then
-                task = player:DoPeriodicTask(FRAMES, function(player)
-                    if e_util:IsValid(point) then
-                        local pos = GetMaxHopPos(player)
-                        point.Transform:SetPosition(pos.x, 0, pos.z)
-                        local aoe = t_util:GetRecur(equip, "components.aoetargeting")
-                        if e_util:InValidPos(point) and aoe and aoe:IsEnabled() then
-                            point.AnimState:SetMultColour(0, 1, 0, 1)
-                            point.aoe = true
-                        else
-                            point.AnimState:SetMultColour(1, 0, 0, 1)
-                            point.aoe = false
-                        end
-                    else
-                        -- point = player:SpawnChild("reticule")
-                        point = SpawnPrefab("reticule")
-                        e_util:SetHighlight(point, true)
-                    end
-                end)
+local function GetLog()
+    local logtxt = require "data/theplan"
+    local log = {}
+    local time
+    local content = ""
+    
+    for line in string.gmatch(logtxt, "[^\n]+") do
+        if string.find(line, "Åy.-Åz") then
+            if content ~= "" then
+                table.insert(log, {time = time, content = content})
+                content = ""
             end
-        end
-    end)
-    pusher:RegUnequip(function(slot, equip)
-        if func(equip.prefab) then
-            if task then
-                point:Remove()
-                point = nil
-                task:Cancel()
-                task = nil
+            time = line
+        elseif time then
+            if string.find(line, "^%-%-") then
+                -- content = content.."------------".."\n"
+            elseif (string.len (line) == 0 or string.match (line, "^%s+$")) then
+            else
+                content = content..line.."\n"
             end
-        end
-    end)
-end)
-
-
-i_util:AddMiddleClickFunc(function(self)
-    if e_util:InValidPos(point) then
-        local pos = point:GetPosition()
-        local hand = p_util:GetEquip("hands") or {}
-        if func(hand.prefab) and point.aoe then
-            p_util:DoAction(BufferedAction(ThePlayer, nil, ACTIONS.CASTAOE, hand, pos, nil, max_hop_dist), RPC.LeftClick, ACTIONS.CASTAOE.code, pos.x, pos.z)
         end
     end
-end)
+    if time and content~="" then
+        table.insert(log, {time = time, content = content})
+    end
+    return log
+end
+
+
+local function ShowLog()
+    local screen_data = {
+        id = save_id,
+        title = str_show,
+        data = GetLog(),
+        type = "log",
+    }
+    TheFrontEnd:PushScreen(require("screens/huxi/showscreen")(screen_data))
+end
+
+
+local fn_right = m_util:AddBindShowScreen({
+    title = str_show,
+    id = "hx_" .. save_id,
+    data = {}
+})
+m_util:AddBindIcon(str_show, "book_web_tallbird",
+STRINGS.LMB .. 'View the scheduled updates', true, ShowLog,
+fn_right)

@@ -21,6 +21,28 @@ local PRECIP_RATE_SCALE = 10
 local LUNAR_HAIL_FLOOR = 0
 local LUNAR_HAIL_CEIL = 100
 local lunar_hail_rate_duration = LUNAR_HAIL_CEIL / TUNING.LUNARHAIL_EVENT_TIME
+local MOONPHASE_DAY = {
+    new = {
+        [true] = 1,
+        [false] = 1,
+    },
+    quarter = {
+        [true] = 2,
+        [false] = 18,
+    },
+    half = {
+        [true] = 5,
+        [false] = 15,
+    },
+    threequarter = {
+        [true] = 8,
+        [false] = 10, -- It could also be 12
+    },
+    full = {
+        [true] = 11,
+        [false] = 11,
+    }
+}
 
 ---@class Saver
 ---@field seed_world string Save/World Seed
@@ -106,6 +128,34 @@ local Saver = Class(function(self, world)
     -- self.env_world = self:LoadWorldEnv()
     total_day_time = TUNING.TOTAL_DAY_TIME
     lunar_hail_rate_duration = LUNAR_HAIL_CEIL / TUNING.LUNARHAIL_EVENT_TIME
+
+
+    -- Moon Phase Statistics
+    self.moonstyle = "default" -- "default","alter_active", "glassed_default", "glassed_alter_active"
+    self.moonphase = "new"
+    self.moonwaxing = true
+    self.moon_new = 1
+    self.moonright = self:GetWorldDays() < 3 -- Is it valid data?
+
+    e_util:SetBindEvent(world, "moonphasestylechanged", function(_, data)
+        self.moonstyle = data and data.style or self.moonstyle
+    end)
+    
+    -- 新月 (New) → 娥眉月 (Waxing Crescent) → 上弦月 (First Quarter) → 盈凸月 (Waxing Gibbous) → 满月 (Full)  
+    -- 满月 (Full) → 亏凸月 (Waning Gibbous) → 下弦月 (Last Quarter) → 残月 (Waning Crescent) → 新月 (New)
+
+    e_util:SetBindEvent(world, "moonphasechanged2", function(_, data)
+        if not data then return end
+        self.moonwaxing = data.waxing
+        self.moonphase = data.moonphase or self.moonphase
+        local moonphase_day = MOONPHASE_DAY[self.moonphase] and MOONPHASE_DAY[self.moonphase][self.moonwaxing] or 1     -- Standard Moon
+        moonphase_day = moonphase_day == 10 and (self.moonphase_last=="full" and 12 or 10) or moonphase_day
+        self.moon_new = (self:GetWorldDays() - moonphase_day)%20+1                                                      -- Standard Crescent
+        if (not self.moonright and table.contains({"new", "full"}, self.moonphase)) or (self.moonphase_last and self.moonphase_last~=self.moonphase) then
+            self.moonright = true
+        end
+        self.moonphase_last = self.moonphase
+    end)
 end)
 ----------------------- Initialization -----------------------
 -- World settings
@@ -235,6 +285,37 @@ function Saver:GetRainStop()
     return time_cost
 end
 
+-- Get rainfall statement
+-- 250314 VanCa: Edit str_say structure for more nature English
+function Saver:GetRainPredict()
+    local state = self.world.state
+    local time = state.pop == 1 and self:GetRainStop() or self:GetRainStart()
+    local str_say
+    local iscave = self.world:HasTag("cave")
+    local str_pos = iscave and "Cave" or "Surface"
+    if time then
+        local str_time = c_util:FormatSecond_ms(time)
+        local str_weather = state.season == "winter" and not iscave and "Snowfall" or "Rainfall"
+        if state.pop == 1 then
+            if state.islunarhailing then
+                str_say = "This moon hail will end in "..string.format("%d", time).." seconds"
+            else
+                str_weather = state.isacidraining and "Acid Rain" or str_weather
+                str_say = str_pos..": "..str_weather.." will end in "..str_time
+            end
+        else
+            str_say = str_pos.." will experience "..str_weather.." in "..str_time
+        end
+    else
+        if iscave then
+            str_say = "This season, there will be no more rain or snow in "..str_pos
+        else
+            str_say = "This season, there will be no more rain or snow on "..str_pos
+        end
+    end
+    return str_say.."。"
+end
+
 -- Get the world time
 local Last_time = 88888888
 -- Total world time
@@ -266,10 +347,25 @@ end
 function Saver:GetTotalSeasonTime()
     return (self.world.state.remainingdaysinseason+self.world.state.elapseddaysinseason)*total_day_time
 end
-
+-- World Days
+function Saver:GetWorldDays()
+    return math.ceil(self:GetWorldTime()/total_day_time)
+end
 -- World settings
 function Saver:GetFile()
     return w_mana:GetTheFileName()
+end
+
+-- Get moon phase data
+function Saver:GetNewMoonDay()
+    return {
+        right = self.moonright, -- Is it accurate?
+        waxing = self.moonwaxing, -- Whether to wind or not
+        day = self.moon_new,   -- New Moon Night
+        phase = self.moonphase, -- Current moon phase
+        alter = self.moonstyle == "alter_active" or self.moonstyle == "glassed_alter_active", -- Is it an enlightenment night?
+        glass = self.moonstyle == "glassed_default" or self.moonstyle == "glassed_alter_active", -- Have you killed a celestial being?
+    }
 end
 
 ----------------------- Data interaction related ----------------------------

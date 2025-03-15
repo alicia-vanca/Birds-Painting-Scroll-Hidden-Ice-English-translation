@@ -255,7 +255,7 @@ i_util:AddLeftClickFunc(function (pc, player, down, act_left, ent_mouse)
     if down then return end
     if not c_data.range_click then return end
     local range = ent_mouse and ent_mouse.prefab and r_data.click_range[ent_mouse.prefab]
-    if not range then return end
+    if not range or p_util:GetActiveItem() then return end
     local function add_hrange(num)
         if type(num) ~= "number" then return end
         local circle = ent_mouse:SpawnChild("hrange"):SetFixedRadius(num):SetColor(save_data.color_click)

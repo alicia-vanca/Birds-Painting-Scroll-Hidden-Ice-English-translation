@@ -13,7 +13,7 @@ Assets = {
 	-- Pioneer
 	Asset("ATLAS", "images/bottom_text_grid.xml"),
 	Asset("ATLAS", "images/hx_or.xml"),
-	-- Rendering deale setbloomecthandle (resolvefilepath ('shaders/hxshader.ksh')
+	-- Rendering deale ThePlayer.AnimState:SetBloomEffectHandle(resolvefilepath("shaders/hxshader.ksh"))
 	Asset("SHADER", "shaders/hxshader.ksh"),
 
 	-- Exclusive texture of painting rolls

@@ -323,7 +323,8 @@ function t_util:GetRecur(t, ipt)
     elseif tp == "string" then
         local ret = {}
         for w in ipt:gmatch("[^%.]+") do
-            table.insert(ret, w)
+            local num = tonumber(w)
+            table.insert(ret, num and num or w)
         end
         return t_util:GetRecur(t, ret)
     end
@@ -331,6 +332,13 @@ end
 
 function t_util:GetMetaIndex(t)
     return getmetatable(t).__index
+end
+
+-- Get the number to which the sequence interval
+function t_util:NumThreshold(num, tolds)
+    return t_util:GetElement(tolds, function(id, told)
+        return num <= told and id
+    end) or #tolds + 1
 end
 
 

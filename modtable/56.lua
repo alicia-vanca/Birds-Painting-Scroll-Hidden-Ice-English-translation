@@ -108,13 +108,10 @@ end
 
 -- Formula
 AddClassPostConstruct("widgets/ingredientui", function(self, ...)
-    local function getPrefab()
-        return self.ing and self.ing.texture and self.ing.texture:match('[^/]+$'):gsub('%.tex$', '')
-    end
     local _OnMouseButton = self.OnMouseButton
     function self.OnMouseButton(self, button, down, ...)
         if button == save_data.btn_conf and down then
-            SearchAndClickPrefab(getPrefab())
+            SearchAndClickPrefab(self.recipe_type)
         end
         return _OnMouseButton(self, button, down, ...)
     end
@@ -145,10 +142,10 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self, ...)
                 local items = grid.items
                 if index and items and items[index] then
                     local recipe = items[index].recipe
-                    prefab = recipe and recipe.name
+                    prefab = recipe and recipe.product
                 end
             elseif skin and skin.focus and skin.enabled and skin.shown then
-                prefab = skin.recipe and skin.recipe.name
+                prefab = skin.recipe and skin.recipe.product
             end
             SearchAndClickPrefab(prefab)
         end

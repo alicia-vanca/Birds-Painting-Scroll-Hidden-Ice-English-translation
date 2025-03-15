@@ -17,7 +17,7 @@ local UserTable = {
         hover = "It's the author!",
     },
     ["76561198993383229"] = {
-        fix = "Moon gods settle the world",
+        fix = "The arrival of the moon god",
         move = "Snowflake",
         label = "呼啦啦",
         desc = "Good morning, to prevent me from seeing you, so in the afternoon, good evening, good night!",
@@ -38,7 +38,7 @@ local UserTable = {
         hover = "Improve the t key console",
     },
     ['76561198309975624'] = {
-        fix = "Moon gods settle the world",
+        fix = "The arrival of the moon god",
         move = "Ice",
         label = "超级Joker",
         desc = "Believe that you have the ability, then you really have it.",
@@ -73,7 +73,7 @@ local UserTable = {
         hover = "Bug tester",
     },
     ["76561199088296896"] = {
-        fix = "Moon gods settle the world",
+        fix = "The arrival of the moon god",
         move = "Note",
         label = "抹茶麻薯糯米糍",
         desc = " The daily academic progress is 5%, and the famine progress is 100%",
@@ -99,6 +99,20 @@ local UserTable = {
         label = "󰀍西瓜@󰀍",
         desc = "Don’t put me in the fridge, I won’t turn into watermelon ice!",
         hover = "Improve function [monster warning]",
+    },
+    ['76561198205451564'] = {
+        fix = "The arrival of the moon god",
+        move = "Snowflake",
+        label = "JKstring",
+        desc = "This requirement is fine, but I need a 16-year-old beautiful girl to test the function",
+        hover = "Difficulties in Restoring Scrolls",
+    },
+    ["76561199471728571"] = {
+        fix = "The arrival of the moon god",
+        move = "Snowflake",
+        label = "Mumu the Devil",
+        desc = "Being in a daze and doing nothing seriously is already working hard",
+        hover = "T key console item classification",
     },
 }
 t_util:Pairs(UserTable, function(id, data)
@@ -154,7 +168,7 @@ local FixTable = {
         inst.AnimState:SetMultColour(1,0.7,0,0.3)
         return inst
     end,
-    ["Moon gods settle the world"] = function()
+    ["The arrival of the moon god"] = function()
         local inst = e_util:SpawnNull()
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
