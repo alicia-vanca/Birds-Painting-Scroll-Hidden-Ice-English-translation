@@ -94,12 +94,24 @@ function EntUtil:GetAtlasAndImage(ent)
 end
 
 -- Durable
+-- Optimized corruption detection function
+local function HasSpoilage(item)
+    if not (item:HasTag("fresh") or item:HasTag("stale") or item:HasTag("spoiled")) then
+        return false
+    elseif item:HasTag("show_spoilage") then
+        return true
+    else
+        return t_util:GetElement(FOODTYPE or {}, function(tp)
+            return item:HasTag("edible_"..tp) 
+        end)
+    end
+end
 function EntUtil:GetPercent(inst)
     local i = 100
     local classified = type(inst) == "table" and inst.replica and inst.replica.inventoryitem and
     inst.replica.inventoryitem.classified
     if classified then
-        if inst:HasOneOfTags({ "fresh", "show_spoilage" }) and classified.perish then
+        if classified.perish and HasSpoilage(inst) then
             i = math.floor(classified.perish:value() / 0.62)
         elseif classified.percentused then
             i = classified.percentused:value()
@@ -146,14 +158,19 @@ function EntUtil:ClonePrefab(prefab)
         MOD_SRM_LOCK = true
         getmetatable(TheWorld).GetPocketDimensionContainer = getmetatable(TheWorld).GetPocketDimensionContainer or function() end
         TheWorld.ismastersim = true
-        local prefab_copy = SpawnPrefab(prefab)
-        local coms = prefab_copy and prefab_copy.components
-        t_util:Pairs(coms or {}, function(k, v)
-            Mod_ShroomMilk.PrefabCopy[prefab].components[k] = v
+        local success, ret = pcall(function()
+            local prefab_copy = SpawnPrefab(prefab)
+            local coms = prefab_copy and prefab_copy.components
+            t_util:Pairs(coms or {}, function(k, v)
+                Mod_ShroomMilk.PrefabCopy[prefab].components[k] = v
+            end)
+            Mod_ShroomMilk.PrefabCopy[prefab].tags = self:GetTags(prefab_copy)
+            if prefab_copy then
+                prefab_copy:Remove()
+            end
         end)
-        Mod_ShroomMilk.PrefabCopy[prefab].tags = self:GetTags(prefab_copy)
-        if prefab_copy then
-            prefab_copy:Remove()
+        if not success then
+            print("[Birds Painting Scroll] ClonePrefab Error:", prefab, ret)
         end
         TheWorld.ismastersim = IsMasterSim
         MOD_SRM_LOCK = false

@@ -208,7 +208,6 @@ if m_util:IsBata() == tostring(STRINGS_BETA.APP_VERSION) then
     local STRINGS_ORI = {}
     t_util:EasyCopy(STRINGS_ORI, STRINGS_BETA)
 
-    t_util:JoinDebug(STRINGS_ORI, "mmmt")
     fn_strrep2(STRINGS_ORI, STRINGS)
 
     table.insert(screen_data, {

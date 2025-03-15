@@ -2,8 +2,7 @@ if not m_util:IsMilker() then
     return
 end
 
-local default_data = {
-}
+local default_data = {}
 local save_id, str_show = "sw_test", "Developer Testing"
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 
@@ -19,7 +18,7 @@ local function fn_left()
                 if ent then
                     local acts = picker:GetLeftClickActions(ent:GetPosition(), ent)
                     t_util:Pairs(acts, function(i, act)
-                        m_util:print("test"..i, act)
+                        m_util:print("test" .. i, act)
                     end)
                 end
                 d_util:Wait(0.5)
@@ -28,8 +27,6 @@ local function fn_left()
     end
 end
 
-local screen_data = {
-}
 
 local fn_right = m_util:AddBindShowScreen({
     title = str_show,
@@ -38,4 +35,4 @@ local fn_right = m_util:AddBindShowScreen({
 })
 
 m_util:AddBindIcon(str_show, "snowman", STRINGS.LMB .. 'Quick switch' .. STRINGS.RMB .. 'Advanced settings', true, fn_left,
-fn_right, 99999)
+    fn_right, 99999)

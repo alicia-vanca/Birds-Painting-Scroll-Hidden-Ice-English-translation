@@ -187,11 +187,7 @@ local attack_range = {
 		always = true,
 	},
 	{
-		prefabs = {"siving_foenix",},	--Zigui xuan bird
-		rotary = {3.5},
-	},
-	{
-		prefabs = {"siving_moenix",},	--Ziyi xuan birdgong
+		prefabs = {"siving_foenix", "siving_moenix", "ruinsnightmare"},	--Zigui Black Bird and Lurking Nightmare
 		rotary = {3.5},
 	},
 	{
@@ -371,7 +367,7 @@ local target_range = {
 		rotary = {5.5},		-- Aoe frozen range, the range of hatred is not written
 	},
 
-	-- åƒãzÅF November 2024 supplement
+	-- ÂëºÂê∏: November 2024 supplement
 	{
 		prefabs = {"daywalker2"},
 		rotary = {TUNING.DAYWALKER2_TACKLE_RANGE},
@@ -457,7 +453,7 @@ local hover = {
 	-- Tree essence statue
 	leif_idol = TUNING.LEIF_IDOL_SPAWN_RADIUS,
 	deerclopseyeball_sentryward =  TUNING.DEERCLOPSEYEBALL_SENTRYWARD_RADIUS,
-    voidcloth_umbrella = 16,	--Shadow umbrella
+	voidcloth_umbrella = 16,	--Shadow umbrella
 	phonograph = 8,	--The scope of the vocal machine care for the plant
 	singingshell_octave3 = 2,	--Shell clock care of the plant range
 	singingshell_octave4 = 2,	--Shell clock care of the plant range
@@ -489,10 +485,10 @@ local click = {
 	support_pillar_dreadstone_scaffold = TUNING.QUAKE_BLOCKER_RANGE,
 	leif_idol = TUNING.LEIF_IDOL_SPAWN_RADIUS,
 	deerclopseyeball_sentryward = TUNING.DEERCLOPSEYEBALL_SENTRYWARD_RADIUS,
-    -- dragonflyfurnace = 9.5,	--Dragon scale furnace
+	dragonflyfurnace = 9.5,	--Dragon scale furnace
 	lunarthrall_plant = {30, 12,	--Bright eggplant parasitic range
 	},
-    -- sapling_moon = 30,	--Moon saplings predict the range of bright eggplant parasites
+	-- sapling_moon = 30,	--Moon saplings predict the range of bright eggplant parasites
 	voidcloth_umbrella = 16,	--Shadow umbrella
 	-- phonograph = 8,	--The scope of the vocal machine care for the plant
 	moonbase = 8,	--Platform refrigeration range

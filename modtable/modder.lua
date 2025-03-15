@@ -34,7 +34,7 @@ end
 
 function _G.FEP_K(t, valuetype)
     if type(t) ~= "table" then
-        print("This is not a table, data type:", type(t), "Print directly:", t)
+        print("This is not a table, data type: ", type(t), "Print directly: ", t)
         return
     end
     local str = ""
@@ -56,11 +56,42 @@ function _G.FEP_K(t, valuetype)
     table.insert(lines, str)
     print(table.concat(lines, "\n"))
     if valuetype then
-        print("*********", t, "Length", #t_key, "Specify type:", valuetype, "*********")
+        print("*********", t, "Length", #t_key, "Specify type: ", valuetype, "*********")
     else
         print("*********", t, "Length", #t_key, "*********")
     end
     return t_key
+end
+
+function _G.FEP_V(t, valuetype)
+    if type(t) ~= "table" then
+        print("This is not a table, data type: ", type(t), "Direct Printing: ", t)
+        return
+    end
+    local str = ""
+    local lines = {}
+    local t_value = t_util:PairToIPair(t, function(k, v)
+        if not valuetype or type(v) == valuetype then
+            return tostring(v)
+        end
+    end)
+    table.sort(t_value)
+    t_util:IPairs(t_value, function(strk)
+        if (#str + #strk) < 100 then
+            str = str .. strk .. ", "
+        else
+            table.insert(lines, str)
+            str = strk .. ", "
+        end
+    end)
+    table.insert(lines, str)
+    print(table.concat(lines, "\n"))
+    if valuetype then
+        print("*********", t, "Length", #t_value, "Specify type: ", valuetype, "*********")
+    else
+        print("*********", t, "Length", #t_value, "*********")
+    end
+    return t_value
 end
 
 function _G.FEP(...)
@@ -131,14 +162,14 @@ function _G.compTags(tags1, tags2)
             table.insert(dif1, #dif1 + 1, tag)
         end
     end
-    print("In tag1 instead of tag2:")
+    print("In TAG1 instead of TAG2:")
     print(unpack(dif1))
     for _, tag in pairs(tags2) do
         if not table.contains(tags1, tag) then
             table.insert(dif2, #dif2 + 1, tag)
         end
     end
-    print("In tag2 instead of tag1:")
+    print("In TAG2 instead of TAG1:")
     print(unpack(dif2))
 end
 

@@ -82,24 +82,24 @@ Growth    Compost    Manure    Fertilizer
 ]])
 
 -- Vanca: edit the size of the note
-m_util:AddNoteData("farmcook", "Top Farm Recipes", 500, 700, [[
-2 Ingredients
+m_util:AddNoteData("farmcook", "Top Farm Recipes", 550, 700, [[
+[ 2 Ingredients ]
 Salsa: Onion+Tomato
 Veggie Burger: Onion+Leafy Meat
 Roasted Gluten: Twigs+Potato*1
 
-2.5 Ingredients
+[ 2.5 Ingredients ]
 Cocktail: Ice+Tomato/Asparagus
 
-3 Ingredients
-Mashed Potatoes: Garlic+2 Potatoes
+[ 3 Ingredients ]
+Mashed Potatoes: Garlic + 2*Potatoes
 
 Health: Eggplant    Potato    Tomato    Pomegranate    Dragon Fruit
 Hunger: Pumpkin    Corn    Durian    Dragon Fruit
 ]])
 
 -- Vanca: edit the size of the note
-m_util:AddNoteData("hermit_crab", "Hermit Crab Tasks", 650, 750, [[
+m_util:AddNoteData("hermit_crab", "Hermit Crab Tasks", 700, 800, [[
 1. 1st House: Cutstone*10, Boards*10, Firefly*1
 2. 2nd House: Marble*10, Cutstone*5, Light Bulb*3
 3. 3rd House: Moon Rock*10, Rope*5, Carpet Flooring*5
@@ -108,7 +108,8 @@ m_util:AddNoteData("hermit_crab", "Hermit Crab Tasks", 650, 750, [[
 6. Clear Lureplants: After first Spring
 7. Dry 6 Foods: Kelp or Raw Meat*6
 8. Plant 8 Berry Bushes and Fertilizes
-9. Place Chair: Relic Recipe Cutstone*1
+9. Place Chair: other chairs are needed, 
+the ruins chair is only used to unlock the Sawhorse
 10. Feed Flower Salad: Flower Salad*1
 11. Snow: Tooth Vest Beefalo Vest etc
 12. Rain: Umbrella Pretty Parasol Eyebrella etc

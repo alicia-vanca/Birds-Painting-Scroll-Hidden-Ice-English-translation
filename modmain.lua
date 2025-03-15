@@ -71,7 +71,7 @@ t_util:IPairs(mods.load, function(moddata)
 end)
 
 if m_util:IsHuxi() then
-    iMod({"modder", "test", 77})
+    iMod({"modder", "test", 77, 35})
 end
 
 

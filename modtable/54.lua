@@ -14,9 +14,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_details", function (self)
             local prefab = data and data.recipe and data.recipe.name
             if type(prefab) == "string" and self.panel_width then
                 local _prefab = prefab
-                if string.sub(prefab, 1, 10) == "transmute_" then
-                    prefab = string.sub(prefab, 11)
-                end
+                prefab = data.recipe.product or ""
                 if self.i_p then
                     self.i_p:Kill()
                 end

@@ -131,12 +131,12 @@ local function PressAttack()
         end
     end
 end
-local not_cane_prefabs = {"thurible", "bootleg"}
+local not_cane_prefabs = {"thurible", "bootleg", "bugnet", "thulecitebugnet"}
 local function PressWalk()
     if not (save_data.sw=="on" and save_data.ui_walk) then return end
     local hand = p_util:GetEquip("hands")
     if hand then
-        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod", "net_tool"}) 
+        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod"}) 
         or e_util:HasOneOfComps(hand, {"farmtiller", "wateryprotection", "terraformer", "oar"})
         or e_util:IsLightSourceEquip(hand) 
         or table.contains(not_cane_prefabs, hand.prefab) 

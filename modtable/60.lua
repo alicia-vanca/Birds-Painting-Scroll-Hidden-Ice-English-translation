@@ -84,32 +84,8 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
                 describe = info.describe,
             }
         end,
-        fn_left = function(data)
-            local time = data.time
-            local str_say
-            local iscave = TheWorld:HasTag("cave")
-            local str_pos = iscave and "Cave" or "Surface"
-            if time then
-                local str_time = c_util:FormatSecond_ms(time)
-                local str_weather = state.season == "winter" and not iscave and "Snowfall" or "Rainfall"
-                if state.pop == 1 then
-                    if state.islunarhailing then
-                        str_say = "This moon hail will end in "..string.format("%d", data.time).." seconds"
-                    else
-                        str_weather = state.isacidraining and "Acid Rain" or str_weather
-                        str_say = str_pos..": "..str_weather.." will end in "..str_time
-                    end
-                else
-                    str_say = str_pos.." will experience "..str_weather.." in "..str_time
-                end
-            else
-				if iscave then
-					str_say = "This season, there will be no more rain or snow in "..str_pos
-				else
-					str_say = "This season, there will be no more rain or snow on "..str_pos
-				end
-            end
-            u_util:Say(STRINGS.LMB..str_say.."。", nil, "net", nil, true)
+        fn_left = function()
+            u_util:Say(STRINGS.LMB.." "..saver:GetRainPredict(), nil, "net", nil, true)
         end
     }, {
         priority = -1,

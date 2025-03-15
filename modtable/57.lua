@@ -319,7 +319,7 @@ local function AutoCook(ent)
     if p_util:GetActiveItem() then
         p_util:ReturnActiveItem()
     end
-    if TheInput:IsKeyDown(KEY_CTRL) then
+    if TheInput:IsControlPressed(CONTROL_FORCE_ATTACK) then
         Say("Harvest mode")
         pusher:RegNowTask(Harvest, function()
             Say("End")
