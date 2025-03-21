@@ -32,6 +32,7 @@ Fix the problem of not displaying item seasoning
 【Middle Mouse Button Enhancement】
 1. Fix the problem of repeatedly opening the box
 2. When on the path to open the box, the recipe bar does not change
+3. Use the latest interface of Cray to adapt the middle key enhancement and right key pick-up
 
 【Item Manager】
 1. Change to whitelist mode, restrict the repair materials (so that it is compatible with mods like Elf Princess)
@@ -101,5 +102,9 @@ Add the function of one-click change of the entire skin on the character skin ch
 1. Use status animation to display percentage
 2. Fix the display problem under different resolutions
 
-【Admin Panel】
+[Cut a cane]
+Fix the problem of Yemei cutting canes
+
+[Admin panel]
+[Eyeball grass prediction]
 ]=]

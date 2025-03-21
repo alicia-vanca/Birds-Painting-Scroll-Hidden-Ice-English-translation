@@ -131,17 +131,7 @@ i_util:AddLeftClickFunc(function(pc, player, down, act_left, ent_mouse)
         u_util:Say("󰀍 thank you very much 别", data_fx.desc, "self", "Red")
     end
     if save_data[data_fx.id] then return end
-    local pos = ent_mouse:GetPosition()
-    local fx = SpawnPrefab("boatrace_fireworks")
-    fx.Transform:SetPosition(pos.x, 0, pos.z)
-    fx:DoTaskInTime(3, function(fx)
-        fx:Remove()
-    end)
-    local _fx = SpawnPrefab("moonpulse")
-    _fx.Transform:SetPosition(pos.x, 0, pos.z)
-    _fx:DoTaskInTime(3, function(fx)
-        _fx:Remove()
-    end)
+    e_util:AddMoonFx(ent_mouse)
 end)
 local FixTable = {
     ["Lightning attach"] = function()

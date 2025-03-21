@@ -1,7 +1,51 @@
 return 
 [=[
 --------------------------start logging here----------------------------
-2025.3.13
+2025.3.19 v4.8
+【Quick Declaration】
+1、Added 【AI Cat Girl】 declaration meow！
+2、Added 【Mew Mew Call】 declaration meow󰀍~
+【Development Interface】
+ShowScreen added imgstr related direct access variables（versions below this will crash）
+Database added TIP descriptions, making it easier for authors to leave messages
+
+
+2025.3.18 v4.74
+【Quick Declaration】
+1、Can interact with showme/insight/simple health bar/epic health bar to declare health
+2、Can interact with showme/insight to declare package contents
+【Behavior Queue Theory】 Fixed a rare crash
+【Packaging Memory】 This feature will automatically disable after enabling showme/insight
+
+
+2025.3.17 v4.73
+【Quick Declaration】
+1、Cooking pot can declare dishes
+2、Added WX-78 power declaration, chip declaration, and skill tree later
+【T Key Console】
+Fixed the issue where some players couldn't teleport
+【Development Interface】
+e_util.ClonePrefab: can now stably return name
+c_util.HashEqual: performs multiple forms of hash comparison for two elements
+
+2025.3.16 v4.72
+【Quick Declaration】
+1、Fixed issues with declaring blueprint drafts and advertisements incorrectly
+2、Added three-tier declarations for Woby
+3、Added 【Declaration Lock】 and 【Chat Lock】, newbies please do not open
+【Wind and Flower Chapter】
+Fixed crashes caused by certain mods
+
+
+2025.3.15
+【T Key Console】
+1、Improved search algorithm, thanks to Luka's help
+2、Now you can automatically search by typing content！
+3、Divided the Deadly Brightshade into a boss
+【Quick Declaration】
+Added the function of 【Preventing Key Sticking】, if you've changed the game's 【Forced Attack】 【Forced Stacking】 eys, disabling this option will allow you to use declarations normally
+
+2025.3.14
 [T Key Console] Fixed the bug that the dishes did not have seasoning textures, thanks to Luka for his help
 [Geometry Layout] Changed the default off to the default display preview texture
 [My Notes] Fixed [Hermit Crab Task]
