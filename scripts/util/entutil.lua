@@ -140,22 +140,25 @@ function EntUtil:GetTags(ent, isclone)
 end
 
 -- Get component entity
+local default_name = "MISSING NAME"
 function EntUtil:ClonePrefab(prefab)
     if type(prefab) ~= "string" then
         return {
             components = {},
             prefab = prefab,
-            tags = {}
+            tags = {},
+            name = default_name
         }
     end
     if not Mod_ShroomMilk.PrefabCopy[prefab] then
         Mod_ShroomMilk.PrefabCopy[prefab] = {
             components = {},
             prefab = prefab,
-            tags = {}
+            tags = {},
+            name = default_name
         }
-        local IsMasterSim = TheWorld.ismastersim
         MOD_SRM_LOCK = true
+        local IsMasterSim = TheWorld.ismastersim
         getmetatable(TheWorld).GetPocketDimensionContainer = getmetatable(TheWorld).GetPocketDimensionContainer or function() end
         TheWorld.ismastersim = true
         local success, ret = pcall(function()
@@ -165,15 +168,16 @@ function EntUtil:ClonePrefab(prefab)
                 Mod_ShroomMilk.PrefabCopy[prefab].components[k] = v
             end)
             Mod_ShroomMilk.PrefabCopy[prefab].tags = self:GetTags(prefab_copy)
+            Mod_ShroomMilk.PrefabCopy[prefab].name = self:GetPrefabName(prefab, prefab_copy) or default_name
             if prefab_copy then
                 prefab_copy:Remove()
             end
         end)
+        TheWorld.ismastersim = IsMasterSim
+        MOD_SRM_LOCK = false
         if not success then
             print("[Birds Painting Scroll] ClonePrefab Error:", prefab, ret)
         end
-        TheWorld.ismastersim = IsMasterSim
-        MOD_SRM_LOCK = false
     end
     return Mod_ShroomMilk.PrefabCopy[prefab]
 end
@@ -582,5 +586,19 @@ function EntUtil:debug(ent)
     return watcher or ent:AddComponent("hx_watcher")
 end
 
+function EntUtil:AddMoonFx(ent)
+    if not self:IsValid(ent) then return end
+    local pos = ent:GetPosition()
+    local fx = SpawnPrefab("boatrace_fireworks")
+    fx.Transform:SetPosition(pos.x, 0, pos.z)
+    fx:DoTaskInTime(3, function(fx)
+        fx:Remove()
+    end)
+    local _fx = SpawnPrefab("moonpulse")
+    _fx.Transform:SetPosition(pos.x, 0, pos.z)
+    _fx:DoTaskInTime(3, function(fx)
+        _fx:Remove()
+    end)
+end
 
 return EntUtil

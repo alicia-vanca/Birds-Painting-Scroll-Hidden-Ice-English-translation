@@ -12,4 +12,5 @@ return {
     "mutatedwarg","mutatedbearger","mutateddeerclops","sharkboi",
     -- 24-11-12 Added boss
     "rabbitking_passive", "rabbitking_aggressive","rabbitking_lucky","worm_boss",
+    "lunarthrall_plant",
 }

@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Hidden Ice 󰀜"
-version = "4.7_00"
+version = "4.8_00"
 
 
 description =

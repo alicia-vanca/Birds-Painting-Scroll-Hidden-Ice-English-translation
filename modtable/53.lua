@@ -90,6 +90,9 @@ i_util:AddHoverOverFunc(function(str, player, item_inv, item_world)
             if data then
                 local sbox = h_util:GetSBox()
                 if sbox then
+                    if m_util:EnableShowme() or m_util:EnableInsight() then
+                        return
+                    end
                     if item_inv then
                         sbox:SetData(data, TheInput:GetScreenPosition(), true)
                     elseif item_world then

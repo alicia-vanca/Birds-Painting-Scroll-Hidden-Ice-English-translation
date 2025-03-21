@@ -235,6 +235,7 @@ end
 function ScreenScreen:MakeImgStr(b_data)
     local w = Widget("imgstr")
     local btn = w:AddChild(TextBtn())
+    w.ui_text = btn
     btn:SetText(b_data.label)
     btn:SetTextColour(UICOLOURS.BLACK)
     btn:SetFont(HEADERFONT)
@@ -263,6 +264,7 @@ function ScreenScreen:MakeImgStr(b_data)
         xml, tex = h_util:GetPrefabAsset(b_data.prefab)
     end
     local img = btn:AddChild(Image(xml, tex))
+    w.ui_img = img
     -- img:SetScale(65 / btn:GetSize())
     h_util:ActivateBtnScale(img, 65)
     img:SetPosition(-200, 0)

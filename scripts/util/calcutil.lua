@@ -400,8 +400,16 @@ function c_util:NumIn(num, a, b)
     return num >= a and num <= b
 end
 -- Hash equality
-function c_util:HashEqual(str, str_to_hash)
-    return str and (tostring(str) == tostring(str_to_hash) or tostring(str) == tostring(hash(str_to_hash)))
+function c_util:HashEqual(a, b)
+    if not (a and b) then return end
+    local str_a, str_b = tostring(a), tostring(b)
+    local hash_a, hash_b = hash(str_a), hash(str_b)
+    local str_hash_a, str_hash_b = tostring(hash_a), tostring(hash_b)
+    return t_util:IGetElement({str_a, hash_a, str_hash_a}, function(data_a)
+        return t_util:IGetElement({str_b, hash_b, str_hash_b}, function(data_b)
+            return data_a == data_b
+        end)
+    end)
 end
 
 return c_util
