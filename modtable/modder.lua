@@ -232,7 +232,8 @@ end
 
 local showevent
 local _PushEvent = EntityScript.PushEvent
-local dontshow = {"onremove", "clocktick", "entitywake", "weathertick", "temperaturetick", "overridecolourmodifier",
+local dontshow = {"onremove",
+ "clocktick", "entitywake", "weathertick", "temperaturetick", "overridecolourmodifier",
                   "entity_spawned", "actioncomponentsdirty", "entitysleep", "fx_spawned", "animqueueover", "locomote",
                   "newstate", "nightmareclocktick", "ontalk", "donetalking", "animover", "mouseover", "mouseout", -- Mouse movement and movement (quite useful)
                   "hungerdelta", "serverpauseddirty", "hungerdirty", "temperaturedelta", "temperaturedirty",

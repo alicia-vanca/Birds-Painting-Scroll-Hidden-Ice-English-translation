@@ -374,11 +374,15 @@ local target_range = {
 	}, {
 		prefabs = {"rabbitking_aggressive"},
 		rotary = {TUNING.RABBITKING_ABILITY_DROPKICK_SPEED * TUNING.RABBITKING_ABILITY_DROPKICK_MAXAIRTIME},
-	}
+	},
+	-- {
+	-- 	prefabs = {"trap_starfish"},
+	-- 	rotary = {TUNING.STARFISH_TRAP_RADIUS},
+	-- },
 }
 local target_auto = {
 	"WALRUS", "KNIGHT", "BISHOP", "ROOK", "SLURTLE",
-	"SPAT", "WORM", "TALLBIRD",
+	"SPAT", "WORM", -- "TALLBIRD",
 	-- "ALTERGUARDIAN_PHASE1",
 	-- "ALTERGUARDIAN_PHASE2",
 	"ALTERGUARDIAN_PHASE3",
@@ -499,11 +503,23 @@ local click = {
 	junk_pile_big = {16.8, 22.8},
 	daywalker2 = 12,
 	toadstool_cap = {TUNING.TOADSTOOL_AGGRO_DIST, 28},
+
+	scarecrow = TUNING.BIRD_CANARY_LURE_DISTANCE,
+	trap_starfish = 4,
 }
 -- Placement
 local placer = {
 	lightning_rod_placer = 40,
 	eyeturret_item_placer = TUNING.EYETURRET_RANGE+3,
+	mushroom_light_placer = 11,		-- Not accurate, measured manually
+	mushroom_light2_placer = 11,		-- Not accurate, measured manually
+    dragonflyfurnace_placer = 9.5,	--Dragonfly Scale Furnace
+	winch_placer = TUNING.SHADE_CANOPY_RANGE_SMALL,
+	deerclopseyeball_sentryward_kit_placer = TUNING.DEERCLOPSEYEBALL_SENTRYWARD_RADIUS,
+	-- Scarecrow, starfish,
+	scarecrow_placer = TUNING.BIRD_CANARY_LURE_DISTANCE,
+	dug_trap_starfish_placer = 4,
+	-- Night lights, bonfire
 }
 
 return {

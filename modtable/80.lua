@@ -5,12 +5,24 @@ list_boss = t_util:MergeList(list_boss)
 t_util:Sub(list_boss, "deciduoustree")      -- The T key does not spawn birch spirits normally
 t_util:Add(list_boss, "beequeenhivegrown")
 local list_dirtpile = {"dirtpile"}
-local list_sea = {"underwater_salvageable", "pirate_stash", "messagebottle"}
 local list_wormhole = require("data/mapicons").wormhole_data
 local list_item = require "data/itemlist_indicator"
 local list_inbox = {"inspectaclesbox","inspectaclesbox2",}
-
-
+local toy_trinket_nums = {1,2,7,10,11,14,18,19,42,43,}
+local toys =
+{
+    "lost_toy_1",
+    "lost_toy_2",
+    "lost_toy_7",
+    "lost_toy_10",
+    "lost_toy_11",
+    "lost_toy_14",
+    "lost_toy_18",
+    "lost_toy_19",
+    "lost_toy_42",
+    "lost_toy_43",
+}
+local list_sea = t_util:MergeList(toys, {"underwater_salvageable", "pirate_stash", "messagebottle"})
 local list_prefab = t_util:MergeList(list_boss, list_dirtpile, list_sea, list_item, list_wormhole, list_inbox)
 
 

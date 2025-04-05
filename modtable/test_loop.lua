@@ -34,5 +34,5 @@ local fn_right = m_util:AddBindShowScreen({
     data = screen_data
 })
 
-m_util:AddBindIcon(str_show, "snowman", STRINGS.LMB .. 'Quick switch' .. STRINGS.RMB .. 'Advanced settings', true, fn_left,
+m_util:AddBindIcon(str_show, "snowman", STRINGS.LMB .. 'Quick switch' .. STRINGS.RMB .. 'Advanced Settings', true, fn_left,
     fn_right, 99999)

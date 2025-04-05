@@ -71,8 +71,11 @@ t_util:IPairs(mods.load, function(moddata)
 end)
 
 if m_util:IsHuxi() then
-    iMod({"modder", "test", 77, 35})
+    iMod({"modder", "test_loop","test_temp", 77, 35})
 end
 
+if os.date("%m%d") == "0401" then
+    iMod("foolsday")
+end
 
 iMod({"thanks", "end"})

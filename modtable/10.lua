@@ -1,3 +1,4 @@
+-- Reserve
 if m_util:IsServer() and not m_util:IsLava() then return end
 local r_data = require "data/rangetable"
 local save_id = "range_key"
@@ -149,29 +150,7 @@ t_util:Pairs(r_data.track_range, function (prefab)
         end)
     end)
 end)
-local toys =
-{
-    "lost_toy_1",
-    "lost_toy_2",
-    "lost_toy_7",
-    "lost_toy_10",
-    "lost_toy_11",
-    "lost_toy_14",
-    "lost_toy_18",
-    "lost_toy_19",
-    "lost_toy_42",
-    "lost_toy_43",
-}
-if m_util:IsTurnOn("sw_ghost") and m_util:IsTurnOn("sw_wendy") then
-    t_util:IPairs(toys, function (prefab)
-        AddPrefabPostInit(prefab, function (inst)
-            inst:DoTaskInTime(1, function ()
-                core_tasks[inst] = true
-            end)
-        end)
-        apply(prefab, "Thistle color", 2, true)
-    end)
-end
+
 
 -- Footprint guidance
 AddPrefabPostInit("animal_track", function (inst)
@@ -225,7 +204,6 @@ i_util:AddPlayerActivatedFunc(function (player, world, pusher)
         end
     end)
 end)
-
 
 -- Suspended
 local hover_range

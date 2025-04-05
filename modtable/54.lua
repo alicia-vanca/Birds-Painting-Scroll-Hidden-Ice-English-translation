@@ -21,8 +21,13 @@ AddClassPostConstruct("widgets/redux/craftingmenu_details", function (self)
                 self.i_p = self:AddChild(Widget("info_panel"))
                 self.i_p:SetPosition(-self.panel_width / 4, -120)
                 local width = self.panel_width/2
+                -- Get data
 
-                
+                -- Sort data
+
+                -- Determine position based on length
+
+                -- Determine whether to add a row based on length
                 local mod_add
                 local mod = m_util:IsModPrefab(_prefab)
                 local modname = mod and mod.modname

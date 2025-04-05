@@ -3,6 +3,10 @@ local m_util = {
     enable_showme = false,
     enable_insight = false,
     f_datas = {},
+    screen_data = {
+        ids = {},
+        titles = {},
+    }
 }
 local t_util = require "util/tableutil"
 local c_util = require "util/calcutil"
@@ -316,6 +320,9 @@ end
 function m_util:IsBata()
     return BRANCH ~= "release" and APP_VERSION;
 end
+function m_util:IsAdmin()
+    return TheNet and TheNet:GetIsServerAdmin()
+end
 
 -- That's right, it's me
 local ishuxi = TheSim:GetUsersName() == "466540397@steam"
@@ -343,7 +350,7 @@ function m_util:AddBindIcon(name, icondata, hover, closewindow, func_left, func_
                 close = closewindow and true,
                 func_right = type(func_right) == "function" and func_right,
                 priority = type(priority) == "number" and priority or 0,
-                imgdata = icondata,
+                imgdata = icondata
             }
             local name = type(name) == "table" and name.name or name
             if type(name) ~= "string" then
@@ -392,11 +399,49 @@ function m_util:AddBindShowScreen(conf, title, icon, hover, screen_data, modname
         if tp_screen == "table" then
             m_util:AddBindConf(conf, ScreenFn, nil, {title, icon, hover, true, ScreenFn, nil, priority}, modname)
         elseif tp_screen == "function" then
-            return m_util:AddBindConf(conf, screen_data, nil, {title, icon, hover, true, screen_data, nil, priority}, modname)
+            return m_util:AddBindConf(conf, screen_data, nil, {title, icon, hover, true, screen_data, nil, priority},
+                modname)
         end
     end
     self:RefreshIcon(true)
 end
+
+-- This method should not be called by mod authors, it is automatically called by showscreen
+function m_util:HookShowScreenData(screen_data)
+    local id, title = screen_data.id, screen_data.title
+    local fns_id = id and self.screen_data.ids[id]
+    local fns_title = title and self.screen_data.titles[title]
+    if fns_id then
+        t_util:IPairs(fns_id, function(fn)
+            fn(screen_data.data, screen_data)
+        end)
+    end
+    if fns_title then
+        t_util:IPairs(fns_title, function(fn)
+            fn(screen_data.data, screen_data)
+        end)
+    end
+end
+
+function m_util:BindShowScreenID(id, fn)
+    if id and type(fn) == "function" then
+        if self.screen_data.ids[id] then
+            table.insert(self.screen_data.ids[id], fn)
+        else
+            self.screen_data.ids[id] = {fn}
+        end
+    end
+end
+function m_util:BindShowScreenTitle(title, fn)
+    if title and type(fn) == "function" then
+        if self.screen_data.titles[title] then
+            table.insert(self.screen_data.titles[title], fn)
+        else
+            self.screen_data.titles[title] = {fn}
+        end
+    end
+end
+
 
 function m_util:PopShowScreen()
     if "ShowScreen" == h_util:GetActiveScreen().name then
@@ -430,12 +475,11 @@ function m_util:print(...)
         return
     end
     local args = {}
-    for _, v in ipairs({...})do
-        table.insert(args, tonumber(v) and math.floor(v)~=v and string.format("%.2f", v) or v)
+    for _, v in ipairs({...}) do
+        table.insert(args, tonumber(v) and math.floor(v) ~= v and string.format("%.2f", v) or v)
     end
     print(os.date("%I:%M:%S %p", os.time()), unpack(args))
 end
-
 
 -- Mod items
 local ModPrefabs, LoadPrefabs = {}, {}
@@ -457,7 +501,6 @@ end
 function m_util:EnableInsight()
     return m_util.enable_insight
 end
-
 
 function m_util:QueryShowme(target)
     local guid = target and target.GUID
@@ -494,7 +537,9 @@ function m_util:QueryShowme(target)
         return
     end
     local str = data_hint:sub(i + 1)
-    if not str or str == "" then return end
+    if not str or str == "" then
+        return
+    end
     str = UnpackData(str, "\2")
     local data_pack = {}
     for i, v in ipairs(str) do
@@ -505,7 +550,7 @@ function m_util:QueryShowme(target)
     end
     local ret = {}
     t_util:IPairs(data_pack, function(data)
-        if type(data)=="table" then
+        if type(data) == "table" then
             t_util:IPairs(data, function(i)
                 table.insert(ret, tonumber(i))
             end)
@@ -544,7 +589,7 @@ function m_util:AddRightMouseData(id, label, hover, default, fn, meta)
         default = default,
         fn = fn,
         screen_data = meta.screen_data,
-        priority = meta.priority or 0,
+        priority = meta.priority or 0
     }
 end
 -- Press the mobile key
@@ -556,7 +601,7 @@ function m_util:IsMovePressing()
     end
 end
 
-local notedata = {} 
+local notedata = {}
 -- Register a string to the note
 function m_util:AddNoteData(id, title, width, height, content, meta)
     meta = meta or {}
@@ -566,7 +611,7 @@ function m_util:AddNoteData(id, title, width, height, content, meta)
         content = content,
         width = width,
         height = height,
-        priority = meta.priority or 0,
+        priority = meta.priority or 0
     }
 end
 -- Get data
@@ -599,12 +644,14 @@ end
 function m_util:AddKeyBind(func, keycode, up)
     local press = up and "onkeyup" or "onkeydown"
     local ipt = TheInput[press]
-    local id = self.f_datas[func] 
+    local id = self.f_datas[func]
     if id then
         self:RemoveHandler(ipt, id, func)
         m_util.f_datas[func] = nil
     end
-    if not keycode then return end
+    if not keycode then
+        return
+    end
     ipt:AddEventHandler(keycode, func)
     self.f_datas[func] = keycode
 end
@@ -614,9 +661,9 @@ function m_util:Load(path, default_data)
     local data = {}
     TheSim:GetPersistentString(path, function(success, data_load)
         if success and string.len(data_load) > 0 then
-			success, data_load = RunInSandbox(data_load)
+            success, data_load = RunInSandbox(data_load)
             data = success and data_load or {}
-		end
+        end
     end)
     t_util:Pairs(default_data or {}, function(k, v)
         if data[k] == nil then
@@ -626,11 +673,8 @@ function m_util:Load(path, default_data)
     return data
 end
 
-
 function m_util:Save(path, save_data)
     TheSim:SetPersistentString(path, DataDumper(save_data, nil, false), false)
 end
-
-
 
 return m_util
