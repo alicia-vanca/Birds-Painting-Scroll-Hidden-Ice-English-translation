@@ -388,8 +388,9 @@ end
 -- Storage file data
 function Saver:Save()
     -- Data processing before saving
+    local now = GetTime()
     t_util:IGetElement(self.func_save, function(func)
-        func(self.world)
+        func(now, self.world)
     end)
     self.data:Save()
 end

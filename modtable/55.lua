@@ -49,7 +49,7 @@ local function QuickJoin(data)
         local screen = h_util:GetActiveScreen("ConnectingToGamePopup")
         if screen then
             screen.dialog.title:SetString("Reconnecting" .. 
-			((data.type == "ip" and ": "..data.ip..":"..data.port) or ""))
+                ((data.type == "ip" and ": "..data.ip..":"..data.port) or ""))
         end
     end)
 end
@@ -123,7 +123,7 @@ local function Quick()
             end
         end
     else
-        h_util:CreatePopupWithClose("No server found", "Please enter a server through [browse game] first", {{text="I know"}})
+        h_util:CreatePopupWithClose("No server found", "Please enter a server through [Browse game] first")
     end
 end
 
@@ -165,9 +165,9 @@ local ui_data = {
         fn = ModSave("server_reco"),
         type = "radio",
         data = {
-			{description = "Normal", data = "sim"},
-			{description = "IP reconnect", data = "ip"},
-		},
+            {description = "Normal", data = "sim"},
+            {description = "IP reconnect", data = "ip"},
+        },
         default = fn_moddata,
     },
 }

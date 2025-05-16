@@ -39,7 +39,7 @@ AddClassPostConstruct("widgets/mapcontrols", function(self)
             if save_data.hud_mouse then
                 fn_set("hud_show")(not save_data.hud_show)
             end
-            -- I remember that if you open a global positioning before, it will be invalid here
+            -- I remember that if I turned on global positioning before, this would fail.
             if save_data.map_mouse then
                 fn_set("map_show")(not save_data.map_show)
             end
@@ -72,7 +72,7 @@ end)
 
 local function GetScreenData()
     local screen_data = {
-        title = "Super powerful " .. map_str,
+        title = map_str .. " - Advanced settings",
         id = save_id,
         data = {},
     }
@@ -96,14 +96,14 @@ local function GetScreenData()
         if data.screen_data then
             table.insert(ui_data, {
                 id = data.id.."_setting",
-                label = "Advanced settings:",
-                hover = "Click to enter"..data.label.."Advanced settings",
+                label = "Config:",
+                hover = "Click to open "..data.label.."'s advanced settings",
                 default = data.label,
                 type = "textbtn",
                 fn = function()
                     m_util:PopShowScreen()
                     m_util:AddBindShowScreen({
-                        title = data.label .. " Advanced settings",
+                        title = data.label .. " - Advanced settings",
                         id = data.id.."_showscreen",
                         data = type(data.screen_data) == "function" and data.screen_data() or data.screen_data,
                     })()
@@ -114,36 +114,36 @@ local function GetScreenData()
     screen_data.data = t_util:MergeList(ui_data, {
         {
             id = "map_show",
-            label = "Total switch: map icon display",
+            label = "Map Icons display",
             fn = fn_set("map_show"),
-            hover = "After turning on the map \n whether the icon is displayed",
+            hover = "Whether the icon in the map is displayed",
             default = fn_get,
         },
         {
             id = "map_mouse",
-            label = "Icon map fast cut",
+            label = "Map icon toggle",
             fn = fn_set("map_mouse"),
-            hover = "Click the [map button] switch icon display",
+            hover = "Click the [Map Button] with the mouse hotkey to quickly toggle icons display",
             default = fn_get,
         },
         {
             id = "hud_show",
-            label = "Total switch: hawkye icon display",
+            label = "Hawkeye icon display",
             fn = fn_set("hud_show"),
-            hover = "After opening the eagle eye \n, do you display the icon?",
+            hover = "After entering the eagle eye view\n, do you want to see the icon?",
             default = fn_get,
         },
         {
             id = "hud_mouse",
-            label = "Icon eagle eye cut",
+            label = "Hawkeye icon toggle",
             fn = fn_set("hud_mouse"),
-            hover = "Click the [map button] switch icon display",
+            hover = "Click the [Map Button] with the mouse hotkey to quickly toggle icons display",
             default = fn_get,
         }, {
             id = "btn_conf",
-            label = "Fast-cut binding:",
+            label = "Hotkey:",
             fn = fn_save("btn_conf"),
-            hover = "Set fast-cut binding button",
+            hover = "Set the mouse hotkey to quickly toggle icon display when click the [Map Button]",
             default = fn_get,
             type = "radio",
             data = h_util:SetMouseSecond()

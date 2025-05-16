@@ -12,10 +12,8 @@ local ui_data = {{
     id = "readme",
     label = "Instruction",
     fn = function()
-        h_util:CreatePopupWithClose("Automatic way to find ways · use instructions",
-            "When the Right-click is right, the Right-click the way to find the road will not take effect, \n, you can change other keys or open the following [Double-click replacement].", {{
-                text = h_util.ok
-            }})
+        h_util:CreatePopupWithClose("Automatic Pathfinding · User Manual",
+            "When the rightclick in the map is in action, the Rightclick Pathfinding will not take effect, \n, you can change it to other keys or enable the following [Double-click map action].")
     end,
     hover = "Click to view the tutorial",
     default = true
@@ -23,11 +21,11 @@ local ui_data = {{
     id = "tele",
     label = "One-click transmission",
     fn = fn_save("tele"),
-    hover = "In God mode, map pathfinding is directly transmitted\nOnly when the cave closing, delay compensation is turned on!",
+    hover = "In God Mode, map pathfinding will directly teleport you there\nOnly when the cave is opening , delay compensation is turned off!",
     default = fn_get
 }, {
     id = "double",
-    label = "Double-click replacement",
+    label = "Double-click map action",
     fn = fn_save("double"),
     hover = "Should we change the original right click action on the map to double click, so that Wotox can right click to find the way. \n Note: Throwing a boot will also become a double click",
     default = fn_get,
@@ -35,7 +33,7 @@ local ui_data = {{
     id = "double_time",
     label = "Double-click interval:",
     fn = fn_save("double_time"),
-    hover = "[Double-click replacement addition setting] The time interval for double-clicking the right button",
+    hover = "[Double-click map action addition setting] The time interval for double-clicking the right button",
     default = fn_get,
     type = "radio",
     data = t_util:BuildNumInsert(1, 10, 1, function(t)

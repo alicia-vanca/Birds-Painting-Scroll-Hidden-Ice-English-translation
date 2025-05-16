@@ -6,16 +6,11 @@ return
 2. Fire and honey (non-destructive acquisition of honey)
 
 【Production Bar Information】
-1. Display ammunition damage
-2. Wendy's potion effect
 3. Valkyrie war song effect
 
 【Cattle Training Assistant】
 1. Timed, fixed-point, quantitative feeding
 2. Display riding time, or predict taming degree based on riding time
-
-【Perspective Change】
-Fix the problem of resetting the view of the boy scout riding a dog or boarding a ship
 
 
 【Map Icons】
@@ -35,10 +30,6 @@ Fix the problem of resetting the view of the boy scout riding a dog or boarding 
 【Item Manager】
 1. Change to whitelist mode, restrict the repair materials (so that it is compatible with mods like Elf Princess)
 2. Linkage with [Cut a Cane], quick repair will support the repair of specified items such as eye masks and terror shields
-
-
-【One-click Suit Change】
-Add the function of one-click change of the entire skin on the character skin change page
 
 
 【Boat Assistant】
@@ -67,16 +58,17 @@ Add the function of one-click change of the entire skin on the character skin ch
 3. Add icon to wildfire warning
 
 
-【Quick Announcement】
-1. Can upload your own language pack
-2. Fix the problem of non-compromise compatibility
-3. Support for MOD showme and insight
-4. Skill tree, tab page announcement
+【Scroll of Winter】
+2、Scout's Assistant:
+Implementing the shortest charging time for automatic firing of the slingshot
+Implementing automatic firing of the slingshot during double damage time
+Implementing fully automatic firing of the slingshot with double damage charging
+Walter automatically loads bird and butterfly bullets
+Middle key or side key for dashing
 
-【Frost Moon Chapter】
-2. Boy Scout Assistant: Roulette shortcut key
-3. Wormwood Assistant: Bloom meter
-4. Wanda Assistant: Table naming, 150/60HP conversion
+
+3、Plant Person's Assistant: Flower Ceremony
+4、Wanda's Assistant: Naming Table, 150/60HP Conversion
 
 
 【Elegance Chapter】
@@ -100,8 +92,8 @@ Add the function of one-click change of the entire skin on the character skin ch
 2. Fix the display problem under different resolutions
 
 [Cut a cane]
-Fixed an issue with Night Plum and Night Vision Potion staff switching
-Added "Press V to feed cows" shortcut
+Fix the problem of Yemei cutting canes
+Press V to feed the cow
 
 [Admin panel]
 [Eyeball grass prediction]

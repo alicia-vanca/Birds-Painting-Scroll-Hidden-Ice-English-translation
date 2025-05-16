@@ -261,12 +261,14 @@ end
 -- Destroy equipment
 function Pusher:DestroyEquip(item)
     local slot = e_util:GetItemEquipSlot(item)
-    if item and slot and item == p_util:GetEquip(slot) then
+    if item and slot then
         t_util:IPairs(self.func_destroyequip, function (func)
             func(slot, item)
         end)
+        if item == self:GetItem(self.inst, slot) then
+            self:UnEquip(slot)
+        end
     end
-    self:UnEquip(slot)
 end
 
 -- The recommended interface is here; feel free to hook the one above if you want
@@ -287,6 +289,7 @@ function Pusher:AllRefresh()
         self:Equip(slot, equip)
     end)
 end
+
 -- Register equipment installation
 -- It will take effect once all equipment items, and every time there are new equipment, it will take effect
 ---@param func function Function triggered when the equipment is installed
@@ -305,6 +308,7 @@ function Pusher:DelEquip(func)
     end
 end
 -- Uninstalling the registered equipment, triggers when the player uninstalls the equipment, each uninstallation will take effect
+-- Note: There is a chance that it will be triggered when logging online or offline!
 ---@param func function Function triggered when the equipment is uninstalled
 function Pusher:RegUnequip(func)
     table.insert(self.func_unequip, func)
@@ -318,6 +322,7 @@ function Pusher:DelUnequip(func)
     end
 end
 -- Register equipment destroy
+-- Note: There is a chance that it will be triggered when logging online or offline!
 function Pusher:RegDestroyEquip(func)
     table.insert(self.func_destroyequip, func)
 end

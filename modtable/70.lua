@@ -5,7 +5,7 @@ local save_id, string_r = "sw_right", "Right-click"
 
 local function GetScreenData()
     local screen_data = {
-        title = "Super easy to use " .. string_r,
+        title = "Convenient " .. string_r,
         id = save_id,
         data = {},
     }
@@ -21,14 +21,14 @@ local function GetScreenData()
         if data.screen_data then
             table.insert(ui_data, {
                 id = data.id.."_setting",
-                label = "Advanced settings:",
-                hover = "Click to enter"..data.label.."Advanced settings",
+                label = "Config:",
+                hover = "Click to enter "..data.label.."'s advanced settings",
                 default = data.label,
                 type = "textbtn",
                 fn = function()
                     m_util:PopShowScreen()
                     m_util:AddBindShowScreen({
-                        title = data.label .. " Advanced settings",
+                        title = data.label .. " - Advanced settings",
                         id = data.id.."_showscreen",
                         data = type(data.screen_data) == "function" and data.screen_data() or data.screen_data,
                     })()

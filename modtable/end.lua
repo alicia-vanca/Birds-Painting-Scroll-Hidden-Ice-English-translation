@@ -121,17 +121,17 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
 end)
 
 
-m_util:AddBindIcon("Mod FAQ", "penguin", "Mod Q&A QQ group: 941438122", true, function()
-    h_util:CreatePopupWithClose(Mod_ShroomMilk.Mod["藏冰"].name, "Mod Q&A QQ group: 941438122", {
+m_util:AddBindIcon("Mod FAQ", "penguin", "Engineers are repairing...", true, function()
+    h_util:CreatePopupWithClose(Mod_ShroomMilk.Mod["春"].name, "Please attach the log and send it to hanhuxi@qq.com", {
         -- {text = "QQ Group", cb = function()
         --     VisitURL("https://qm.qq.com/q/Hbhfb3fskw/")
         -- end},
         -- {text = "Bilibili", cb = function()
         --     VisitURL("http://b23.tv/NzZKC5T/")
         -- end},
-        {text = "Steam Message", cb = function()
-            VisitURL("https://steamcommunity.com/sharedfiles/filedetails/?id=3161117403/")
-        end},
+        -- {text = "Steam Message", cb = function()
+        --     VisitURL("https://steamcommunity.com/sharedfiles/filedetails/?id=3161117403/")
+        -- end},
         {text = h_util.ok},
     })
 end, nil, -10000)

@@ -243,7 +243,7 @@ local dontshow = {"onremove",
 function _G.watchEvent()
     showevent = not showevent
     if showevent then
-        print("************** open the event record ***************")
+        print("************ open the event record ************")
         EntityScript.PushEvent = function(self, event, ...)
             if not table.contains(dontshow, event) then
                 print(self, event, ...)
@@ -251,7 +251,7 @@ function _G.watchEvent()
             return _PushEvent(self, event, ...)
         end
     else
-        print("************** turn off the event record **************")
+        print("************ turn off the event record ************")
         EntityScript.PushEvent = _PushEvent
     end
 end

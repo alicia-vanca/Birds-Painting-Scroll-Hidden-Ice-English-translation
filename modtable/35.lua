@@ -11,7 +11,7 @@ local function GetLog()
     local content = ""
     
     for line in string.gmatch(logtxt, "[^\n]+") do
-        if string.find(line, "Åy.-Åz") then
+        if string.find(line, "„Äê.-„Äë") then
             if content ~= "" then
                 table.insert(log, {time = time, content = content})
                 content = ""
@@ -33,16 +33,13 @@ local function GetLog()
 end
 
 
-local function ShowLog()
-    local screen_data = {
-        id = save_id,
-        title = str_show,
-        data = GetLog(),
-        type = "log",
-    }
-    TheFrontEnd:PushScreen(require("screens/huxi/showscreen")(screen_data))
-end
 
+local fn_left = m_util:AddBindShowScreen({
+    id = save_id,
+    title = str_show,
+    data = GetLog(),
+    type = "log",
+})
 
 local fn_right = m_util:AddBindShowScreen({
     title = str_show,

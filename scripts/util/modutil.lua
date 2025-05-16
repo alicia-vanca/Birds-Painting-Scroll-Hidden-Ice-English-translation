@@ -6,7 +6,8 @@ local m_util = {
     screen_data = {
         ids = {},
         titles = {},
-    }
+    },
+    game_data = {},
 }
 local t_util = require "util/tableutil"
 local c_util = require "util/calcutil"
@@ -14,6 +15,7 @@ local h_util = require "util/hudutil"
 local s_mana = require "util/settingmanager"
 local i_util = require "util/inpututil"
 local e_util = require "util/entutil"
+local TEMPLATES = require "widgets/redux/templates"
 local ismodder = s_mana:GetSettingLine("i_am_modder", true).ismodder
 local MID_CONF = "biubiu"
 local function NullFunction()
@@ -27,6 +29,28 @@ function m_util:OpenPrint()
     print = _print
 end
 
+----------------------------------- Customized interface -----------------------------------
+function m_util:Load(path, default_data)
+    local data = {}
+    TheSim:GetPersistentString(path, function(success, data_load)
+        if success and string.len(data_load) > 0 then
+            success, data_load = RunInSandbox(data_load)
+            data = success and data_load or {}
+        end
+    end)
+    t_util:Pairs(default_data or {}, function(k, v)
+        if data[k] == nil then
+            data[k] = v
+        end
+    end)
+    return data
+end
+
+function m_util:Save(path, save_data)
+    TheSim:SetPersistentString(path, DataDumper(save_data, nil, false), false)
+end
+
+----------------------------------- Function  -----------------------------------
 m_util:ClosePrint()
 local modname_table = t_util:PairFilter(KnownModIndex:GetModsToLoad(), function(_, modname)
     local mod = KnownModIndex:GetModInfo(modname)
@@ -43,7 +67,7 @@ end
 
 -- Maybe i will check the validity of mod after
 local function getModName(modname)
-    return type(modname) == "string" and modname or (Mod_ShroomMilk and Mod_ShroomMilk.Mod["藏冰"].path)
+    return type(modname) == "string" and modname or (Mod_ShroomMilk and Mod_ShroomMilk.Mod["春"].path)
 end
 function m_util:IsTurnOn(conf, modname)
     modname = getModName(modname)
@@ -85,7 +109,7 @@ function m_util:AddBindConf(conf, fn, down, meta, modname)
     if tp == "number" then
         -- A bug is buried here. multiple changes will be binded by ingame suit, but it does not affect performance, so don't care about it.
         func = function()
-            if m_util:InGame() then
+            if m_util:InGame() and fn then
                 fn()
             end
         end
@@ -284,8 +308,7 @@ function m_util:RegisterScreenInGame(screen_name)
     t_util:Add(screen_names, screen_name)
 end
 function m_util:InGame()
-    return ThePlayer and ThePlayer.HUD and
-               (not ThePlayer.HUD:HasInputFocus() or table.contains(screen_names, h_util:GetActiveScreen().name)) and
+    return ThePlayer and ThePlayer.HUD and not ThePlayer.HUD:HasInputFocus() and (not table.contains(screen_names, h_util:GetActiveScreen().name)) and
                ThePlayer.components.hx_pusher and ThePlayer.prefab
 end
 -- Delay compensation
@@ -350,7 +373,7 @@ function m_util:AddBindIcon(name, icondata, hover, closewindow, func_left, func_
                 close = closewindow and true,
                 func_right = type(func_right) == "function" and func_right,
                 priority = type(priority) == "number" and priority or 0,
-                imgdata = icondata
+                imgdata = icondata,
             }
             local name = type(name) == "table" and name.name or name
             if type(name) ~= "string" then
@@ -384,7 +407,7 @@ hover 面板提示
 local screen
 function m_util:AddBindShowScreen(conf, title, icon, hover, screen_data, modname, priority)
     local function ScreenFn()
-        if "ShowScreen" == h_util:GetActiveScreen().name then
+        if "ShowScreen" == h_util:GetActiveScreen().name and not screen_data.dontpop then
             TheFrontEnd:PopScreen(screen)
         else
             screen = require("screens/huxi/showscreen")(screen_data)
@@ -421,6 +444,7 @@ function m_util:HookShowScreenData(screen_data)
             fn(screen_data.data, screen_data)
         end)
     end
+    return screen_data
 end
 
 function m_util:BindShowScreenID(id, fn)
@@ -442,9 +466,10 @@ function m_util:BindShowScreenTitle(title, fn)
     end
 end
 
-
+-- I think it is more appropriate to put it in hud_util
 function m_util:PopShowScreen()
-    if "ShowScreen" == h_util:GetActiveScreen().name then
+    local screen = h_util:GetShowScreen()
+    if screen then
         TheFrontEnd:PopScreen(screen)
     end
 end
@@ -578,57 +603,61 @@ function m_util:AddWatcher(inst)
     return watcher or inst:AddComponent("hx_watcher")
 end
 
-local rightdata = {}
--- Registration function to Right-click enhancement
+-- Add game data
+function m_util:AddGameData(cate, id, data)
+    if not (cate and id) then return end
+    local cate_data = self.game_data[cate]
+    if cate_data then
+        cate_data[id] = data
+    else
+        self.game_data[cate] = {[id] = data}
+    end
+end
+-- Get game data
+function m_util:GetGameData(cate)
+    return cate and self.game_data[cate]
+end
+
+
+-- Register function to right-click enhancement (compatible with old interface)
 function m_util:AddRightMouseData(id, label, hover, default, fn, meta)
-    meta = meta or {}
-    rightdata[id] = {
+    self:AddGameData("RIGHT", id, {
         id = id,
         label = label,
         hover = hover,
         default = default,
         fn = fn,
-        screen_data = meta.screen_data,
-        priority = meta.priority or 0
-    }
+        screen_data = meta and meta.screen_data,
+        priority = meta and meta.priority,
+    })
 end
--- Press the mobile key
+-- Register a string to the note (compatible with the old interface)
+-- Add icon
+function m_util:AddNoteData(id, title, width, height, content, meta)
+    self:AddGameData("NOTE", id, 
+    t_util:MergeMap({
+        id = id,
+        title = title,
+        content = content,
+        width = width,
+        height = height,
+    }, meta or {}))
+end
+-- Get data
+function m_util:GetData(name)
+    local r_data = t_util:PairToIPair(self:GetGameData(name) or {}, function(id, data)
+        return data
+    end)
+    t_util:SortIPair(r_data)
+    return r_data
+end
+-- Press the move key
 function m_util:IsMovePressing()
     for control = CONTROL_MOVE_UP, CONTROL_MOVE_RIGHT do
         if TheInput:IsControlPressed(control) then
             return true
         end
     end
-end
-
-local notedata = {}
--- Register a string to the note
-function m_util:AddNoteData(id, title, width, height, content, meta)
-    meta = meta or {}
-    notedata[id] = {
-        id = id,
-        title = title,
-        content = content,
-        width = width,
-        height = height,
-        priority = meta.priority or 0
-    }
-end
--- Get data
-function m_util:GetData(name)
-    local Data = {}
-    if name == "NOTE" then
-        Data = notedata
-    elseif name == "RIGHT" then
-        Data = rightdata
-    end
-    local r_data = t_util:PairToIPair(Data, function(id, data)
-        return data
-    end)
-    table.sort(r_data, function(a, b)
-        return a.priority > b.priority
-    end)
-    return r_data
 end
 
 function m_util:RemoveHandler(ipt, eventname, func)
@@ -640,7 +669,7 @@ function m_util:RemoveHandler(ipt, eventname, func)
     end
 end
 
--- When using this interface, func must remain unchanged
+-- Use this interface to ensure that func does not change
 function m_util:AddKeyBind(func, keycode, up)
     local press = up and "onkeyup" or "onkeydown"
     local ipt = TheInput[press]
@@ -656,25 +685,167 @@ function m_util:AddKeyBind(func, keycode, up)
     self.f_datas[func] = keycode
 end
 
------------------------------------ Customized interface
-function m_util:Load(path, default_data)
-    local data = {}
-    TheSim:GetPersistentString(path, function(success, data_load)
-        if success and string.len(data_load) > 0 then
-            success, data_load = RunInSandbox(data_load)
-            data = success and data_load or {}
-        end
-    end)
-    t_util:Pairs(default_data or {}, function(k, v)
-        if data[k] == nil then
-            data[k] = v
-        end
-    end)
-    return data
-end
 
-function m_util:Save(path, save_data)
-    TheSim:SetPersistentString(path, DataDumper(save_data, nil, false), false)
+-- General item selector
+function m_util:PushPrefabScreen(info)
+    local info = c_util:FormatDefault(info, "table")
+    local context_grid = info.context or {prefab = t_util:GetRecur(t_util, "ent.prefab")}
+    local function fn_setprefab(prefab, ui)
+        if not (h_util:IsValid(ui) and ui.detail) then return end
+        if ui.grid then ui.grid:RefreshView() end
+        if type(prefab)=="string" and prefab~="" then
+            ui.detail.icon_show.SetPrefabIcon({prefab = prefab})
+            local name = e_util:GetPrefabName(prefab)
+            name = name == e_util.NullName and "" or name
+            ui.detail.text_show:SetString(name.."\n"..prefab)
+            -- This logic can also be written in fn_load
+            ui.detail.btn_ok:SetOnClick(function()
+                if info.fn_btnok then
+                    info.fn_btnok(prefab, ui)
+                end
+                self:PopShowScreen()
+            end)
+            ui.detail.btn_ok:Enable()
+        else
+            ui.detail.icon_show.SetPrefabIcon({prefab = "cookbook_missing"})
+            ui.detail.text_show:SetString("")
+            ui.detail.btn_ok:Disable()
+        end
+    end
+    local function GetPrefabsData(prefabs)
+        if not prefabs then
+            local prefab_skins = {}
+            t_util:Pairs(PREFAB_SKINS or {}, function(_, skindata)
+                t_util:IPairs(skindata, function(skinname)
+                    prefab_skins[skinname] = true
+                end)
+            end)
+            prefabs = t_util:PairToIPair(Prefabs or {}, function(prefab, data)
+                return not prefab_skins[prefab] and not(prefab:find("_spawner") or prefab:find("_blueprint"))  and prefab
+            end)
+        end
+        table.sort(prefabs, function(a, b)
+            return a < b
+        end)
+        return t_util:IPairFilter(prefabs, function(prefab)
+            local xml, tex, name = h_util:GetPrefabAsset(prefab)
+            return xml and {
+                xml = xml,
+                tex = tex,
+                name = name,
+                prefab = prefab,
+                hover = name == e_util.NullName and prefab or name.."\n"..prefab
+            }
+        end)
+    end
+    local function fn_edited()
+        local ui = h_util:GetLines()
+        local textedit = t_util:GetRecur(ui, "editline.textedit.textbox")
+        if not textedit then return end
+        local text = c_util:TrimString(textedit:GetString())
+        local p_data = GetPrefabsData()
+        if text == "" then
+            ui.grid:SetItemsData(p_data)
+        else
+            ui.grid:SetItemsData(t_util:IPairFilter(p_data, function(data)
+                if data.prefab:find(text) then
+                    return data
+                else
+                    if data.name ~= e_util.NullName and data.name:find(text) then
+                        return data
+                    end
+                end
+            end))
+        end
+    end
+    local function fn_clear()
+        local ui = h_util:GetLines()
+        local textedit = t_util:GetRecur(ui, "editline.textedit.textbox")
+        if textedit then
+            textedit:SetString("")
+            ui.grid:SetItemsData(GetPrefabsData())
+        end
+    end
+    local function fn_btn_clear()
+        return h_util:CreateImageButton({prefab = "delete", hover = "Clear results", hover_meta = {offset_y = 50}, pos = {245}, size = 70, fn = fn_clear})
+    end
+    local function fn_loadui(ui)
+        ui.editline:SetPosition(-220, 165)
+        ui.detail:SetPosition(305, 100)
+
+        ui.detail.btn_write.image:SetTint(1, 1, .5, 1)
+        ui.detail.btn_write:SetPosition(0, -240)
+        ui.detail.btn_write:SetHoverText(info.hover_btnwrite or "Manually enter the item code that cannot be found on the left", {offset_y = 60})
+        ui.detail.btn_write:SetOnClick(function()
+            h_util:CreateWriteWithClose("Enter item code:", {
+                text = "Confirm",
+                cb = function(prefab)
+                    info.fn_btnok(prefab, ui)
+                    self:PopShowScreen()
+                    -- The following method also works, the player will confirm again
+                    -- fn_setprefab(prefab, ui)
+                end
+            })
+        end)
+
+        ui.detail.btn_ok.image:SetTint(.4, 1, .4, 1)
+        ui.detail.btn_ok:SetPosition(0, -315)
+        ui.detail.btn_ok:SetHoverText(info.hover_btnok or "Decided to choose you!", {offset_y = 60})
+
+        ui.grid:SetItemsData(GetPrefabsData())
+        fn_setprefab(context_grid.prefab, ui)
+    end
+    self:AddBindShowScreen{
+        title = info.text_title or "Item Selector",
+        id = info.id or "prefab_selected",
+        data = {},
+        type = "player",
+        data_create = {
+            {
+                id = "grid",
+                name = "BuildGrid_PrefabButton",
+                meta = {
+                    context = context_grid,
+                    fn_sel = fn_setprefab,
+                }
+            },{
+                id = "editline",
+            },{
+                id = "textedit",
+                pid = "editline",
+                fn = function()
+                    return h_util:CreateTextEdit({width = 380, height = 80, hover = "Enter the name or code of the item", fn = fn_edited})
+                end
+            },{
+                id = "btn_clear",
+                pid = "editline",
+                fn = fn_btn_clear,
+            },{
+                id = "btn_filter", -- Useless button, because the input result can be automatically searched
+                pid = "editline",
+                fn = function()
+                    return h_util:CreateImageButton({xml = HUD_ATLAS, tex = "magnifying_glass_off.tex", hover = "Click to search", hover_meta = {offset_y = 50}, pos = {320}, size = 70, fn = fn_edited})
+                end,
+            },{
+                id = "detail",
+                name = "BuildGrid_PrefabDetail",
+            },{
+                id = "btn_ok",
+                pid = "detail",
+                fn = function()
+                    return TEMPLATES.StandardButton(nil, info.text_btnok or "Confirm selection", {250, 80})
+                end
+            },{
+                id = "btn_write",
+                pid = "detail",
+                fn = function()
+                    return TEMPLATES.StandardButton(nil, info.text_btnwrite or "Manually enter", {250, 80})
+                end
+            },
+        },
+        fn_line = fn_loadui,
+        dontpop = true,
+    }()
 end
 
 return m_util

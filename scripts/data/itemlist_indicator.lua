@@ -15,4 +15,5 @@ return {
     "krampus","mandrake_planted",
     "terrariumchest", "terrarium",
     "smallghost",
+    "wobysmall", "wobybig"
 }

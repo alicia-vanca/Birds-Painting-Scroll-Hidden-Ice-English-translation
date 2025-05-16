@@ -178,12 +178,12 @@ local color_red,color_white = h_util:GetRGB("Red"), h_util:GetRGB("White")
 i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
     -- Register buff
     saver:RegStat(stat_name, buff_str, "Countdown to the attributes of various foods", function()return save_data.sw end, fn_save("sw"), {
-        periodic = function(data, id, wt, now)
+        periodic = function(data, id)
             -- Calculation method (although it can be continuously implemented -1, that method should be inaccurate, i am not sure if it is accurate)
             -- Buff total detaire -buff has taken effect time 
             -- Buff total time- (current time -buff start time)
             -- Because the game can be suspended, the current time cannot be used in os.time but gettime
-            data.value = data.duration - (now - data.time_start)
+            data.value = data.duration - (GetTime() - data.time_start)
             if data.value > 0 then
                 return {
                     text = {
@@ -248,13 +248,13 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
     end)
 
     -- Synchronous buff data
-    saver:RegSaveFunc(function()
+    saver:RegSaveFunc(function(now)
         t_util:Pairs(save_buff, function(key)
             save_buff[key] = nil
         end)
         local data = saver:GetStatData(stat_name) or {}
         t_util:Pairs(data, function(buff_name, buff_data)
-            save_buff[buff_name] = math.floor(buff_data.duration - (GetTime() - buff_data.time_start))
+            save_buff[buff_name] = math.floor(buff_data.duration - (now - buff_data.time_start))
         end)
     end)
 end)

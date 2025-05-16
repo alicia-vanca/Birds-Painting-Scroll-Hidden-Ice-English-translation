@@ -36,7 +36,7 @@ local function func_l()
 end
 local xml, tex = h_util:GetRandomSkin(true)
 m_util:AddBindIcon("General", { xml = xml, tex = tex }, STRINGS.LMB .. "Advanced settings" .. STRINGS.RMB .. "Reset the small icon", true, func_l, func_r, 99999)
-m_util:AddBindIcon("Hotkeys", "bookstation", "Modify the binding settings of the mod function", true, function()
+m_util:AddBindIcon("Hotkeys", "butterflymuffin", "Modify the binding settings of the mod function", true, function()
     m_util:AddBindShowScreen({
         title = "Function binding",
         id = "funcsbind",

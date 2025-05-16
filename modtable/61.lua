@@ -13,7 +13,7 @@ local DataBoss = {
 }
 local color_red,color_white = h_util:GetRGB("Red"), h_util:GetRGB("White")
 i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
-    saver:RegStat(stat_name, boss_str, "Boss countdown advanced settings", function()return save_data.sw end, fn_save("sw"), {
+    saver:RegStat(stat_name, boss_str, "Boss countdown - Advanced settings", function()return save_data.sw end, fn_save("sw"), {
         periodic = function(data, id, worldtime)
             local time = data.value - worldtime
             if time > 0 then
@@ -67,23 +67,23 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
         screen_data = {
             {
                 id = "way",
-                label = "Warning prompt:",
-                hover = "The location of the prompt when the monster attacks",
+                label = "Type:",
+                hover = "The location of the warning message when the boss respawn",
                 default = fn_get,
                 fn = fn_save("way"),
                 type = "radio",
                 data = {
-                    {data = "idea", description = "Follow system"},
+                    {data = "idea", description = "Default"},
                     {data = "ann", description = "Announce"},
-                    {data = "head", description = "Player's head"},
+                    {data = "head", description = "My head"},
                     {data = "self", description = "My chat"},
                     {data = "null", description = "Off"},
                 }
             },
             {
                 id = "color",
-                label = "Warning color:",
-                hover = "The color of the prompt when the monster attacks",
+                label = "Color:",
+                hover = "The color of the warning message when the boss respawn",
                 default = fn_get,
                 fn = fn_save("color"),
                 type = "radio",

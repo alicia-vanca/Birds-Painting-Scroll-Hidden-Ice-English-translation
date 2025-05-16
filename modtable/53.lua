@@ -81,14 +81,16 @@ playerhud.OpenContainer = function(self, cont, side, ...)
     end
     return _OpenContainer(self, cont, side, ...)
 end
-
+local function GetSBox()
+    return h_util:GetControls().sbox
+end
 i_util:AddHoverOverFunc(function(str, player, item_inv, item_world)
     if m_data.brain_bundle then
         local item = item_inv or item_world
         if item then
             local data = item[bundle_info_id]
             if data then
-                local sbox = h_util:GetSBox()
+                local sbox = GetSBox()
                 if sbox then
                     if m_util:EnableShowme() or m_util:EnableInsight() then
                         return
@@ -433,7 +435,7 @@ i_util:AddHoverOverFunc(function(str, player, item_inv, item_world)
     end
     local cont_shadow = e_util:IsShadowContainer(item_world)
     if e_util:GetContainer(item_world) or cont_shadow then
-        local sbox = h_util:GetSBox()
+        local sbox = GetSBox()
         if sbox then
             local id_cont_pos = e_util:GetPosID(item_world)
             if id_cont_pos and DataBox then
@@ -542,10 +544,10 @@ local function fn()
         data = screen_data
     })()
     if not save_data.force_memory and (m_util:EnableInsight() or m_util:EnableShowme()) then
-        h_util:CreatePopupWithClose("Memory · tips", "You currently have insight or showme turned on, some functions will be disabled", {{text = h_util.ok}})
+        h_util:CreatePopupWithClose("Memory · tips", "You currently have insight or showme turned on, some functions will be disabled")
     end
     if enable_smart_minisign then
-        h_util:CreatePopupWithClose("Memory · tips", "You currently have the server's [Smart Mini Sign] enabled, so the local mini sign will be automatically disabled", {{text = h_util.ok}})
+        h_util:CreatePopupWithClose("Memory · tips", "You currently have the server's [Smart Mini Sign] enabled, so the local mini sign will be automatically disabled")
     end
 end
 m_util:AddBindIcon(string_brain, "icon_sanity", STRINGS.LMB .. "Memory-related settings", true, fn, nil, 10000)

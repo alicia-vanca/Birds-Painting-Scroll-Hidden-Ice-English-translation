@@ -43,7 +43,7 @@ AddClassPostConstruct("widgets/redux/worldsettings/worldsettingstab", function(s
                             local seed = savedata.meta and savedata.meta.seed
                             if seed then
                                 local function btnfn()
-                                    local popup = Popup(Mod_ShroomMilk.Mod["藏冰"].name,
+                                    local popup = Popup(Mod_ShroomMilk.Mod["春"].name,
                                                         "The function of generating the world through seed is still under development ... \n \nThis world's seed: " ..
                                                             seed .. "\nSession: " .. session, {{
                                         text = "I see",

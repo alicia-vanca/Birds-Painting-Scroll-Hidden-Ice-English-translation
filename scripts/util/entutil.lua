@@ -1,6 +1,8 @@
 local t_util = require "util/tableutil"
 local c_util = require "util/calcutil"
-local EntUtil = {}
+local EntUtil = {
+    NullName = "Unknown",
+}
 
 -- Whether it is effective
 function EntUtil:IsValid(ent, dead_not_valid)
@@ -316,7 +318,6 @@ function EntUtil:GetAngle(ent) -- EntityScript:GetRotation()
     local heading = tonumber(tags_string and tags_string:match(" Heading=(.-) Prediction"))
     return heading and -heading
 end
-
 -- Relative angle, the biological direction is connected to a straight line angle with players and creatures
 -- It is 0 when facing the player, and the player is 180, the total number is a positive number
 -- Less than 45 is for players
@@ -363,21 +364,52 @@ function EntUtil:GetRadius(ent, default)
 end
 
 -- Prefab gets the name
-local NullName = "Unknown"
+local PrefabNames = {}
+local function GetStrPrefab(prefab)
+    return STRINGS.NAMES[prefab:upper()]
+end
 function EntUtil:GetPrefabName(prefab, ent)
     if not prefab then
-        return NullName
+        return self.NullName
     end
-    local name = STRINGS.NAMES[prefab:upper()]
-    if not name and string.sub(prefab, 1, 10) == "transmute_" then
-        prefab = string.sub(prefab, 11)
-        name = STRINGS.NAMES[prefab:upper()]
+    local pdata = PrefabNames[prefab]
+    local name
+    if pdata then
+        prefab, name = pdata[1], pdata[2]
+    else
+        name = GetStrPrefab(prefab)
+        if not name and prefab:sub(1, 10) == "transmute_" then
+            prefab = prefab:sub(11)
+            name = GetStrPrefab(prefab)
+        end
+        if not name and prefab:sub(-10) == "_blueprint" then
+            prefab = prefab:sub(1, prefab:len()-10)
+            name = GetStrPrefab(prefab)
+            name = name and subfmt(GetStrPrefab("BLUEPRINT_RARE"), {item=name})
+        end
+        if not name then
+            local skinname = GetSkinName(prefab)
+            name = STRINGS.SKIN_NAMES.missing ~= skinname and skinname
+        end
+        if not name then
+            local spice_start = prefab:find("_spice_")
+            if spice_start then
+                local base_prefab = prefab:sub(1, spice_start - 1)
+                local base_name = GetStrPrefab(base_prefab)
+                if base_name then
+                    local spice_prefab = prefab:sub(spice_start + 1)
+                    local spice_name = GetStrPrefab(spice_prefab.."_FOOD")
+                    name = spice_name and subfmt(spice_name, {food = base_name})
+                end
+            end
+        end
+        PrefabNames[prefab] = {prefab, name}
     end
     if ent then
         name = name or ent:GetBasicDisplayName()
         name = name == "MISSING NAME" and prefab or name
     end
-    return name or NullName
+    return name or self.NullName
 end
 
 -- Get the equipment field

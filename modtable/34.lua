@@ -34,16 +34,12 @@ local function GetLog()
 end
 
 
-local function ShowLog()
-    local screen_data = {
-        id = save_id,
-        title = str_show,
-        data = GetLog(),
-        type = "log",
-    }
-    TheFrontEnd:PushScreen(require("screens/huxi/showscreen")(screen_data))
-end
-
+local ShowLog = m_util:AddBindShowScreen({
+    id = save_id,
+    title = str_show,
+    data = GetLog(),
+    type = "log",
+})
 
 AddClassPostConstruct("screens/redux/multiplayermainscreen", function(self)
     if not save_data.startshow then return end

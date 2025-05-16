@@ -1,63 +1,79 @@
--- Reserve
-local function getbook()
-    local book = p_util:GetItemFromAll("willow_ember", nil, nil, "mouse")
-    local spell = t_util:GetRecur(book or {}, "components.spellbook")
-    local hud = ThePlayer.HUD
-    if not (spell and hud) then return end
-    return book, spell, hud
-end
+-- Space Filter
+local default_data = {
+    prefabs = {"flower_evil"}
+}
+local save_id, str_show, img_show = "sw_space", "Space Filter", "stagehand"
+local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 
--- Copy lao mai directly
-local quick = m_util:IsTurnOn("wllw_quick")
-for i = 1,5 do
-    m_util:AddBindConf("wllw_bind"..i, function()
-        if m_util:InGame() ~= "willow" then return end
-        local book, spell, hud = getbook()
-        if not hud then return end
-        spell:SelectSpell(i)
-        if quick then
-            local pos = TheInput:GetWorldPosition()
-            local act = BufferedAction(ThePlayer, nil, ACTIONS.CASTAOE, book, pos)
-            p_util:DoAction(act, RPC.LeftClick, act.action.code, pos.x, pos.z, nil, true, 10, nil, nil, nil, nil, book, i)
+AddComponentPostInit("playercontroller", function(self, inst)
+    if inst ~= ThePlayer then return end
+    local _GetActionButtonAction = self.GetActionButtonAction
+    self.GetActionButtonAction = function(self, ...)
+        local act = _GetActionButtonAction(self, ...)
+        if act and table.contains(save_data.prefabs, act.target and act.target.prefab) then
+            return
+        end
+        return act
+    end
+end)
+
+local function fn_showdata()
+    return t_util:IPairToIPair(save_data.prefabs, function(prefab)
+        local name = e_util:GetPrefabName(prefab)
+        local label = name == e_util.NullName and prefab or name
+        local data = {}
+        if h_util:GetPrefabAsset(prefab) then
+            data.type = "imgstr"
+            data.prefab = prefab
+            data.label = label
         else
-            local power = spell.SelectSpell and spell.items[i]
-            if power and power.onselect and power.execute then
-                power.onselect(book)
-                power.execute(book)
-            end
+            data.type = "textbtn"
+            data.label = "Unknown Item: "
+            data.default = label
         end
-    end, true)
+        return t_util:MergeMap({
+            id = prefab,
+            hover = "Item Code: "..prefab.."\nClick to remove this item from the filter!",
+            fn = function()
+                h_util:CreatePopupWithClose(str_show, "Are you sure you want to remove the filter for "..label.. "?", {{
+                    text = h_util.no,
+                }, {text = h_util.yes, cb = function()
+                    t_util:Sub(save_data.prefabs, prefab)
+                    fn_save()
+                end}})
+            end
+        }, data)
+    end)
 end
 
-m_util:AddBindConf("wllw_ember", function()
-    if m_util:InGame() ~= "willow" then return end
-    local book, spell, hud = getbook()
-    if not hud then return end
-    if hud:IsSpellWheelOpen() then
-        hud:CloseSpellWheel()
-    else
-        spell:OpenSpellBook(ThePlayer)
-    end
-end)
-
--- One -click lighter
-m_util:AddBindConf("wllw_take", function()
-    if m_util:InGame() ~= "willow" then return end
-    local data = p_util:GetSlotFromAll("lighter", nil, function(item)
-        return e_util:GetItemEquipSlot(item)=="hands" and e_util:GetPercent(item)>0
-    end, {"equip", "mouse", "container", "backpack", "body"})
-    local lighter = data and data.item
-    if not lighter then return end
-    if data.slot == "hands" then
-        p_util:UnEquip(lighter)
-    else
-        p_util:Equip(lighter)
-        if e_util:FindEnt(nil, {"willow_ember", "fire"}, 20, nil, {"player", "inlimbo", "DECOR"}) then
-            e_util:WaitToDo(ThePlayer, 3*FRAMES, 10, function()
-                return p_util:GetAction("inv", "START_CHANNELCAST", true, lighter)
-            end, function(act)
-                p_util:DoAction(act, RPC.UseItemFromInvTile, act.action.code, lighter)
-            end)
+local fn_screenadd = function()
+    -- Pop up selection page
+    m_util:PushPrefabScreen({
+        text_title = "Select Items to Filter",
+        text_btnok = "Add Filter",
+        hover_btnok = "Add this item to the filter list",
+        fn_btnok = function(prefab)
+            t_util:Add(save_data.prefabs, prefab, true)
+            fn_save()
         end
-    end
-end)
+    })
+end
+
+local icondata = {
+    {
+        id = "add",
+        prefab = "mods",
+        hover = "Click to add items to be filtered by space!",
+        fn = fn_screenadd,
+    }
+}
+
+local fn_left = m_util:AddBindShowScreen{
+    title = str_show,
+    id = "hx_" .. save_id,
+    data = fn_showdata,
+    icon = icondata,
+    help = 'Items shown here will not respond to space, but will respond to mouse click actions.\nClick the wrench button on the right to add filters, and click the item name below to remove filters.',
+    fn_active = true,
+}
+m_util:AddBindConf(save_id, fn_left, nil, {str_show, img_show, STRINGS.LMB .. str_show..' Settings', true, fn_left})

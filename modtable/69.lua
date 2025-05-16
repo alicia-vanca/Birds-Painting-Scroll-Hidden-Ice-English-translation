@@ -57,9 +57,7 @@ local function fn_left()
         local str_popup = #arrows == 0 and
                               "Insufficient positioning marks, please place a Astral detector or treasure hunting device\nTwo arrow marks are required within the range of one screen" or
                               "Insufficient positioning marks, please continue to place the Astral detector or treasure hunting device\nTwo arrow marks are required within the range of one screen"
-        return h_util:CreatePopupWithClose(map_str .. "·hint", str_popup, {{
-            text = h_util.ok
-        }})
+        return h_util:CreatePopupWithClose(map_str .. "·hint", str_popup)
     end
 
     -- Calculate location
@@ -69,9 +67,7 @@ local function fn_left()
     local m1, m2 = math.tan(rad1), math.tan(rad2)
     if m1 == m2 then
         return h_util:CreatePopupWithClose(map_str .. "·hint",
-            "The two positioning marks are parallel and cannot be determined\nPlease reposition the Astral detector or treasure hunting device.", {{
-                text = h_util.ok
-            }})
+            "The two positioning marks are parallel and cannot be determined\nPlease reposition the Astral detector or treasure hunting device.")
     end
     local x1, _, y1 = a1.Transform:GetWorldPosition()
     local x2, _, y2 = a2.Transform:GetWorldPosition()
@@ -93,7 +89,7 @@ end
 
 
 i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
-    saver:RegHMap(save_id, map_str, "This function cannot be closed ...", function() return save_data.sw end, fn_save("sw"))
+    saver:RegHMap(save_id, map_str, "This function cannot be turned off ...", function() return save_data.sw end, fn_save("sw"))
 end)
 
 m_util:AddBindConf(save_id, fn_left, nil, {map_str, "archive_resonator_item",

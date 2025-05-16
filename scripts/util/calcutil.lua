@@ -365,6 +365,7 @@ function c_util:FormatSecond_dms(time)
         local modtime = math.floor(time) % total
         local minute = math.floor(modtime / 60)
         local second = math.floor(modtime) % 60
+        -- VanCa: Edit countdown format
         return string.format("%dd %dm", day, minute)
     else
         local minute = math.floor(time / 60)
@@ -410,6 +411,32 @@ function c_util:HashEqual(a, b)
             return data_a == data_b
         end)
     end)
+end
+-- Format Defaults
+function c_util:FormatDefault(value, default)
+    local tp = type(value)
+    if tp == "function" then
+        return value()
+    end
+    if value then
+        return value
+    else
+        if default == "table" then
+            return {}
+        elseif tp == "string" then
+            return ""
+        end
+    end
+end
+
+-- Loop acquisition default num up to 10 times
+function c_util:LoopGet(value, fn_check, fn_result, fn_next, num)
+    local function fn_get(v, num)
+        if not fn_check(v) or num < 0 then return end
+        if fn_result(value) then return value end
+        return fn_get(fn_next(v), num-1)
+    end
+    return fn_get(value, num or 10)
 end
 
 return c_util

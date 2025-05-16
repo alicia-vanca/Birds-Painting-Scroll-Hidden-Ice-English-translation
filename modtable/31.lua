@@ -1,4 +1,4 @@
-local save_id, str_auto_read = "sw_autoread", "Automatic"..STRINGS.ACTIONS.READ
+local save_id, str_auto_read = "sw_autoread", "Automatic "..STRINGS.ACTIONS.READ
 local default_data = {
     sw = true,
     timetick = 0,
@@ -22,9 +22,7 @@ end, fn_save("sw"), {
             label = "Use guide",
             fn = function()
                 h_util:CreatePopupWithClose(str_auto_read.." · use guide",
-                    "Hold down ctrl and click the book to automatically read the book \n (retain one durability)", {{
-                        text = h_util.ok
-                    }})
+                    "Hold down ctrl and click the book to automatically read the book \n (retain one durability)")
             end,
             hover = "Click to view the tutorial",
             default = true
@@ -86,9 +84,7 @@ end, fn_save("sw"), {
             label = "Player message",
             fn = function()
                 h_util:CreatePopupWithClose("󰀍"..str_auto_read.." · Special thanks󰀍",
-                    "Please show more love to the reading bot.\n              —Kaka", {{
-                        text = h_util.ok
-                    }})
+                    "Please show more love to the reading bot.\n              —Kaka")
             end,
             hover = "Special thanks",
             default = true
@@ -125,6 +121,7 @@ i_util:AddRightClickFunc(function(pc, player, down, act_right, ent_mouse)
     -- Main logic
     local min_perc = 100 / total
     Say(save_data.timetick == 0 and "Start, the current fastest speed" or "Start, the current interval "..save_data.timetick.." Second")
+
     local stations_openned = {}
     pusher:RegNowTask(function()
         local books = p_util:GetItemsFromAll(prefab, nil, function(ent)

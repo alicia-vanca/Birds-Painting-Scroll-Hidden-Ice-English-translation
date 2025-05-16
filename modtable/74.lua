@@ -1,1 +1,233 @@
--- Reserve
+-- Skin Preset Suits (This feature should be written by Cole)
+local TEMPLATES = require "widgets/redux/templates"
+local title, shift = "Part of the set", 55
+
+-- MISC_ITEMS TheItems:GetIAPDefs() PREFAB_SKINS  SKIN_SET_ITEMS = require("skin_set_info")
+local function GetSkinSetForPrefab(prefab)
+    if not table.contains(DST_CHARACTERLIST, prefab) then return end
+    local suits = t_util:IPairFilter(TheItems:GetIAPDefs(), function(iap)
+        local itp = iap.item_type
+        local pack = itp and itp:find(prefab) and MISC_ITEMS[itp]
+        if pack then
+            local otp = pack.output_items
+            local psb = PREFAB_SKINS[prefab]
+            if otp and psb then
+                local bases = t_util:IPairFilter(otp, function(base)
+                    return table.contains(psb, base) and base
+                end)
+                -- More than one is a character package
+                if #bases ~= 1 then return end
+                local skins = {base = bases[1]}
+                t_util:IPairs(otp, function(skin)
+                    local cloth = CLOTHING[skin]
+                    local type = cloth and cloth.type
+                    if type then
+                        if skins[type] then
+                            print("Function exception, please contact the developer:", itp, skin, type)
+                        else
+                            skins[type] = skin
+                        end
+                    end
+                end)
+                return {
+                    suit = skins,
+                    time = type(pack.release_group) == "number" and pack.release_group or 0,
+                    itp = itp,
+                }
+            end
+        end
+    end)
+    table.sort(suits, function(a, b)
+        return a.time > b.time
+    end)
+    return suits
+end
+
+local function GetSkinSetForDefault()
+    return {
+        {
+            itp = "suit_sleepy1",
+            suit = {
+                body = "body_pj_blue_agean",
+                legs = "legs_pj_blue_agean",
+            },
+        },
+        {
+            itp = "suit_sleepy2",
+            suit = {
+                body = "body_pj_red_redbird",
+                legs = "legs_pj_red_redbird",
+            },
+        },
+        {
+            itp = "suit_sleepy3",
+            suit = {
+                body = "body_pj_grey",
+                legs = "legs_pj_grey",
+            },
+        },
+        {
+            itp = "suit_yawn1",
+            suit = {
+                body = "body_pj_purple_mauve",
+                legs = "legs_pj_purple_mauve",
+            },
+        },
+        {
+            itp = "suit_yawn2",
+            suit = {
+                body = "body_pj_green_hunters",
+                legs = "legs_pj_green_hunters",
+            },
+        },
+        {
+            itp = "suit_yawn3",
+            suit = {
+                body = "body_pj_orange_honey",
+                legs = "legs_pj_orange_honey",
+            },
+        },
+        {itp = "none"},
+    }
+end
+
+local function GetSuitName(prefabname, itp)
+    local name = GetSkinName(itp)
+    if name == STRINGS.SKIN_NAMES.missing then
+        if itp:find("sleepy") then
+            name = STRINGS.SET_NAMES.emote_sleepy..itp:sub(-1)
+        elseif itp:find("yawn") then
+            name = STRINGS.SET_NAMES.emote_yawn..itp:sub(-1)
+        end
+    end
+    name = name:gsub(prefabname, ""):gsub(STRINGS.SKIN_TAG_CATEGORIES.ITEM.CHEST, ""):gsub(STRINGS.UI.COLLECTIONSCREEN.SET_INFO, ""):gsub("“I", "")
+    return name
+end
+
+local function GetPlayerSuits(prefab, list_ban)
+    local suits = t_util:MergeList(GetSkinSetForPrefab(prefab) or {}, GetSkinSetForDefault())
+    local prefabname = e_util:GetPrefabName(prefab)
+    prefabname = prefabname:gsub("%-", "%%%-") -- %%- also works
+    t_util:IPairs(suits, function(suit)
+        suit.name = GetSuitName(prefabname, suit.itp)
+    end)
+    if list_ban then
+        t_util:IPairs(list_ban, function(ban)
+            t_util:IPairs(suits, function(suit)
+                if suit.suit and suit.suit[ban] then
+                    suit.suit[ban] = nil
+                end
+            end)
+        end)
+    end
+    return suits
+end
+
+local function BuildPlayerSuitBtn(prefab, fn, list_ban)
+    local xml, tex = h_util:GetPrefabAsset("reskin_tool_brush")
+    local btn = TEMPLATES.IconButton(xml, tex, title, false, false, function()
+            local suits = GetPlayerSuits(prefab, list_ban)
+            local suit_screen = require "screens/huxi/suitscreen" -- Prevent update crashes, bydsteam
+            TheFrontEnd:PushScreen(suit_screen(suits, {title = title}, prefab, fn))
+        end)
+    btn:SetScale(0.77)
+    return btn
+end
+
+-- Player Wardrobe Screen
+AddClassPostConstruct("screens/redux/wardrobescreen", function(self)
+    if not self.presetsbutton then return end
+    self.btn_suit = self.root:AddChild(BuildPlayerSuitBtn(self.currentcharacter, function(skins) self:ApplySkinPresets(skins) end))
+    self.btn_suit:SetPosition(-480+shift, 212)
+end)
+
+-- In-Game Wardrobe Player
+AddClassPostConstruct("screens/redux/wardrobepopupgridloadout", function(self)
+    if not t_util:GetRecur(self, "loadout.presetsbutton") then return end
+    local loadout = self.loadout
+    loadout.btn_suit = loadout.loadout_root.wardrobe_root:AddChild(BuildPlayerSuitBtn(self.owner_player.prefab, function(skins) loadout:ApplySkinPresets(skins) end))
+    loadout.btn_suit:SetPosition(200-shift, 315)
+end)
+
+-- Lobby Screen Player
+AddClassPostConstruct("screens/redux/lobbyscreen", function(self)
+    t_util:IPairs(self.panels or {}, function(fn_data)
+        local LoadoutPanel = fn_data.panelfn
+        if not LoadoutPanel then return end
+        local __ctor = LoadoutPanel._ctor
+        if not __ctor then return end
+        LoadoutPanel._ctor = function(self, owner, ...)
+            local ret = __ctor(self, owner,...)
+                if t_util:GetRecur(self, "loadout.presetsbutton") then
+                    local loadout = self.loadout
+                    loadout.btn_suit = loadout.loadout_root.wardrobe_root:AddChild(BuildPlayerSuitBtn(owner.lobbycharacter, function(skins) loadout:ApplySkinPresets(skins) end))
+                    loadout.btn_suit:SetPosition(loadout.itemskinsbutton and 200-2*shift or 200-shift, 315)
+                end
+            return ret
+        end
+    end)
+end)
+
+
+-- In-Game Scarecrow
+-- Haha, against the sky
+AddClassPostConstruct("screens/redux/scarecrowpopupgridloadout", function(self)
+    if not t_util:GetRecur(self, "loadout.loadout_root.wardrobe_root") then return end
+    local loadout = self.loadout
+    loadout.btn_suit = loadout.loadout_root.wardrobe_root:AddChild(BuildPlayerSuitBtn(ThePlayer and ThePlayer.prefab, function(skins) loadout:ApplySkinPresets(skins) end, {"base"}))
+    loadout.btn_suit:SetPosition(200+shift/2, 315)
+end)
+
+-------------------- Brave Ox, Not Afraid of Difficulty------------------------------
+local function GetBeefaloSuits()
+    -- Young Ox Five Directions: body feet head horn tail
+    local suits = t_util:PairToIPair(BEEFALO_CLOTHING, function(hornname, iap)
+        if not (hornname:find("_horn_") and iap.type) then return end
+        local skin = {
+            name = GetSkinName(hornname):gsub(STRINGS.NAMES.HORN, ""),
+            time = type(iap.release_group) == "number" and iap.release_group or 0,
+            suit = {
+                [iap.type] = hornname
+            }
+        }
+        skin.time = skin.time == 999 and -1 or skin.time -- sb klei
+        t_util:IPairs({"body", "feet", "head", "tail"}, function(point)
+            local pointname = hornname:gsub("_horn_", "_"..point.."_")
+            local iap = BEEFALO_CLOTHING[pointname]
+            if iap and iap.type then
+                skin.suit[iap.type] = pointname
+            end
+        end)
+        return skin
+    end)
+    table.sort(suits, function(a, b)
+        return a.time > b.time
+    end)
+    return suits
+end
+
+
+local function BuildBeefaloSuitBtn(fn)
+    local xml, tex = h_util:GetPrefabAsset("brush")
+    local btn = TEMPLATES.IconButton(xml, tex, title, false, false, function()
+            local suits = GetBeefaloSuits()
+            local suit_screen = require "screens/huxi/beefaloscreen" -- Prevent update crashes, bydsteam
+            TheFrontEnd:PushScreen(suit_screen(suits, {title = title}, fn))
+        end)
+    btn:SetScale(0.77)
+    return btn
+end
+
+-- Player Wardrobe Screen
+AddClassPostConstruct("widgets/redux/beefaloexplorerpanel", function(self)
+    if not self.presetsbutton then return end
+    self.btn_suit = self.puppet_root:AddChild(BuildBeefaloSuitBtn(function(skins) self:ApplySkinSet(skins) self:TryToClickSelected() end))
+    self.btn_suit:SetPosition(-240+shift, 440)
+end)
+
+-- In-Game Makeup Station
+AddClassPostConstruct("widgets/redux/loadoutselect_beefalo", function(self)
+    if not self.presetsbutton then return end
+    self.btn_suit = self.loadout_root:AddChild(BuildBeefaloSuitBtn(function(skins) self:ApplySkinPresets(skins) end))
+    self.btn_suit:SetPosition(200-shift, 315)
+end)

@@ -1,4 +1,3 @@
--- Reserve
 if m_util:IsServer() and not m_util:IsLava() then return end
 local r_data = require "data/rangetable"
 local save_id = "range_key"
@@ -49,20 +48,25 @@ local function apply(prefab, color, range, always, add, quick, callback)
                         callback(rotary, inst, trans:GetScale())
                     end
                 end
-                if not c_data.range_attack then             -- After turning off the function, you still need to cancel the highlight
+				-- 250516 VanCa: Bring back old change: Highlight not depend on Show attack range.
+                if not c_data.range_attack and not save_data.highlight then             -- After turning off the function, you still need to cancel the highlight
                     e_util:SetHighlight(inst, false)
                     rotary:SetVisable(false)
                     return
                 end
                 if e_util:GetCombatTarget(inst) == ThePlayer then
                     e_util:SetHighlight(inst, save_data.highlight)
-                    rotary:SetVisable(true):SetColor(save_data.color_combat)
-                elseif always or not save_data.autoshow then
+					if c_data.range_attack then
+						rotary:SetVisable(true):SetColor(save_data.color_combat)
+					end
+                elseif c_data.range_attack and (always or not save_data.autoshow) then
                     rotary:SetVisable(true):SetColor(tcolor)
                 else
-                    e_util:SetHighlight(inst, false)
-                    local dist = e_util:GetDist(inst)
-                    rotary:SetVisable(not (dist and dist > 3*range) and not e_util:GetLeaderTarget(inst)):SetColor(tcolor)
+                    e_util:SetHighlight(inst, false)					
+					if c_data.range_attack then
+						local dist = e_util:GetDist(inst)
+						rotary:SetVisable(not (dist and dist > 3*range) and not e_util:GetLeaderTarget(inst)):SetColor(tcolor)
+					end
                 end
             end
         end)
@@ -205,6 +209,7 @@ i_util:AddPlayerActivatedFunc(function (player, world, pusher)
     end)
 end)
 
+
 -- Suspended
 local hover_range
 local function RemoveHoverRange()
@@ -224,9 +229,6 @@ i_util:AddHoverOverFunc(function (str, player, item_inv, item_world)
     end
 end)
 
-_G.rrr = function()
-    return hover_range
-end
 
 -- Click the range
 i_util:AddLeftClickFunc(function (pc, player, down, act_left, ent_mouse)
@@ -300,7 +302,7 @@ local screen_data = {
         id = "autoshow",
         label = "Only display near",
         fn = fn_save("autoshow"),
-        hover = "Only highlight/display the range near the player (beautiful + save memory)",
+        hover = "Only display the attack range of monsters near the player (beautiful + save memory)",
         default = fn_get,
         reset = default_data.autoshow,
     },{
