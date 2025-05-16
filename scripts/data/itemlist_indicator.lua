@@ -14,4 +14,5 @@ return {
     "sculpture_rookbody",
     "krampus","mandrake_planted",
     "terrariumchest", "terrarium",
+    "smallghost",
 }

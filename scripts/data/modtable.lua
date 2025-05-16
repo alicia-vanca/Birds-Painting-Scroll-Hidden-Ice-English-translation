@@ -139,11 +139,11 @@ m_table.load = {
         {"One-click rescue"},
         26,
     },
-    {
-        {"sw_wendy"},
-        {"Wendy assist", "Abigail Keybinds","Abigail shortcut keys"},
-        27,
-    },
+    -- {
+    --     {"sw_wendy"},
+    --     {"Wendy assist", "Abigail Keybinds","Abigail shortcut keys"},
+    --     27,
+    -- },
     {
         {"sw_wanda"},
         {"Wanda shortcut keys", "wanda keybinds"},

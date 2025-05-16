@@ -11,8 +11,8 @@ local i_util = {
     player_func_out = {},
     ltor_push_func = {},
     prefabs_hook_end = {},
-    food_func_in = {},
-    food_func_out = {}
+    listencode_pre = {},
+    listencode_end = {},
 }
 
 -- Execute remote instructions
@@ -136,21 +136,44 @@ function i_util:AddPrefabsHook(data)
     end
 end
 
--- Prefab is bound to be provided, there is no need to judge
--- Prepare to eat
--- prefab, food
+-- This interface is deprecated. Please use AddInvItemUsePre and AddInvItemUseEnd
 function i_util:AddFoodActivatedFunc(func)
-    if type(func) == "function" then
-        table.insert(i_util.food_func_in, func)
-    end
+    self:AddInvItemUsePre("eat", func)
 end
--- Eat
--- prefab, food
 function i_util:AddFoodDeactivatedFunc(func)
+    self:AddInvItemUseEnd("eat", func)
+end
+
+-- New interface prefab, item
+-- Before using the item
+function i_util:AddInvItemUsePre(act_id, func)
     if type(func) == "function" then
-        table.insert(i_util.food_func_out, func)
+        local act = ACTIONS[tostring(act_id):upper()]
+        local code = act and act.code
+        if code then
+            if i_util.listencode_pre[code] then
+                table.insert(i_util.listencode_pre[code], func)
+            else
+                i_util.listencode_pre[code] = {func}
+            end
+        end
     end
 end
+-- After using the item
+function i_util:AddInvItemUseEnd(act_id, func)
+    if type(func) == "function" then
+        local act = ACTIONS[tostring(act_id):upper()]
+        local code = act and act.code
+        if code then
+            if i_util.listencode_end[code] then
+                table.insert(i_util.listencode_end[code], func)
+            else
+                i_util.listencode_end[code] = {func}
+            end
+        end
+    end
+end
+
 
 -- Loading layout files
 function i_util:LoadLayout(path)
@@ -191,5 +214,6 @@ function i_util:ShowDefi(name)
     local ldata = ol.LayoutForDefinition(name)
     self:ShowLData(ldata)
 end
+
 
 return i_util

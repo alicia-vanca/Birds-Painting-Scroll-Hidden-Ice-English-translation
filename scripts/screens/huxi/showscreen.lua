@@ -5,13 +5,14 @@ local Image = require "widgets/image"
 local Text = require "widgets/text"
 local t_util = require "util/tableutil"
 local h_util = require "util/hudutil"
+local m_util = require "util/modutil"
 local TextBtn = require "widgets/textbutton"
 
 -- Id, explain text, prompt text, callback function
 local ScreenScreen = Class(Screen, function(self, screen_data)
     Screen._ctor(self, "ShowScreen")
 
-    
+    m_util:HookShowScreenData(screen_data)
     self.data = screen_data.data
     self.default = screen_data.default
     self.value = {} -- widget_cache_data

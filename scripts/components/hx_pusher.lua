@@ -470,7 +470,8 @@ end
 
 -- This method can be used to refresh point marks, more map icons, etc.
 -- Do not write for the time being, wait for others to customize these functions to enhance the version
--- Tears, someone customized
+-- func_near executes x, z when approaching
+-- func_leave executes x, z when leaving
 function Pusher:RegNearStart(ent, func_near, func_leave, range)
     local trans = e_util:IsValid(ent)
     if not trans then return end

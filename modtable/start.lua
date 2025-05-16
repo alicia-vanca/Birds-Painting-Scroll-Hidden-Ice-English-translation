@@ -17,7 +17,9 @@ AddPrefabPostInit("world", function(world)
     end)
     local saver
     world:ListenForEvent("playeractivated", function(world, player)
-        if player ~= ThePlayer then return end            
+        if player ~= ThePlayer then
+            return
+        end
         local pusher = player:AddComponent("hx_pusher")
         if not saver then
             saver = world:AddComponent("hx_saver")
@@ -65,7 +67,8 @@ AddComponentPostInit("playercontroller", function(self, player)
     end
     local _OnRightClick = self.OnRightClick
     self.OnRightClick = function(self, down, ...)
-        if self:UsingMouse() and not self.placer_recipe and not self.placer and not self:IsAOETargeting() and self:IsEnabled() then
+        if self:UsingMouse() and not self.placer_recipe and not self.placer and not self:IsAOETargeting() and
+            self:IsEnabled() then
             local act_right = self:GetRightMouseAction()
             local ent_mouse = TheInput:GetWorldEntityUnderMouse()
             if t_util:IGetElement(i_util.rightclick_func, function(func)
@@ -169,50 +172,53 @@ function _G.MigrateToServer(ip, port, ...)
     return _MigrateToServer(ip, port, ...)
 end
 
-
--- Eat
-local function fn_eaten(prefab, food)
-    t_util:IPairs(i_util.food_func_out, function(func)
-        func(prefab, food)
-    end)
-end
-local function fn_eat(food)
-    local prefab = food and food.prefab
-    if not prefab then return end
-    t_util:IPairs(i_util.food_func_in, function(func)
-        func(prefab, food)
-    end)
-    local size = e_util:GetStackSize(food)
-    -- 2s determines whether there is a decrease in quantity
+-- Advanced monitoring, listening to left-click actions on the player themselves and right-click actions on items
+local function fn_actcode(code, item)
+    if not code then
+        return
+    end
+    local fns_pre = i_util.listencode_pre[code]
+    local fns_end = i_util.listencode_end[code]
+    if not fns_pre and not fns_end then
+        return
+    end
+    local prefab = type(item) == "table" and item.prefab
+    if not prefab then
+        return
+    end
+    if fns_pre then
+        t_util:IPairs(fns_pre, function(fn_pre)
+            fn_pre(prefab, item)
+        end)
+    end
+    if not fns_end then
+        return
+    end
+    local size = e_util:GetStackSize(item)
+    -- Check if the quantity has decreased within 2 seconds
+    -- TODO: Check for infinite capacity
     e_util:WaitToDo(nil, 0.1, 20, function()
-        if e_util:IsValid(food) then
-            return size > e_util:GetStackSize(food)
+        if e_util:IsValid(item) then
+            return size > e_util:GetStackSize(item)
         else
             return true
         end
     end, function()
-        fn_eaten(prefab, food)
+        t_util:IPairs(fns_end, function(fn_end)
+            fn_end(prefab, item)
+        end)
     end)
 end
--- Monitor food
-local eat_code = ACTIONS.EAT.code
 i_util:AddPlayerActivatedFunc(function()
     i_util:AddServerRPCFunc(function(rpc, ...)
         local args = {...}
         if rpc == RPC.LeftClick then
-            if args[1] == eat_code then
-                fn_eat(p_util:GetActiveItem())
-            end
+            fn_actcode(args[1], p_util:GetActiveItem())
         elseif rpc == RPC.UseItemFromInvTile or rpc == RPC.ControllerUseItemOnSelfFromInvTile then
-            if args[1] == eat_code then
-                fn_eat(args[2])
-            end
+            fn_actcode(args[1], args[2])
         end
     end)
     i_util:AddPushActionFunc(function(act)
-        if not (act and act.action and act.action.code == eat_code) then
-            return
-        end
-        fn_eat(act.invobject)
+        fn_actcode(act and act.action and act.action.code, act and act.invobject)
     end)
 end)

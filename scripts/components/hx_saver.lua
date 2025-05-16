@@ -108,8 +108,9 @@ local Saver = Class(function(self, world)
             local periodic = cate_data.funcs.periodic
             if periodic then
                 local worldtime = self:GetWorldTime()
+                local now = GetTime()
                 t_util:Pairs(self.stat_data[stat_name], function(id, data)
-                    local ret = periodic(data, id, worldtime)
+                    local ret = periodic(data, id, worldtime, now)
                     if ret then
                         if self:GetStatSW(stat_name) then
                             self:ChanTimerUI(self:GetStatID(stat_name, id), ret)

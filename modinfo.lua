@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Hidden Ice 󰀜"
-version = "4.8_00"
+version = "4.84_00"
 
 
 description =
@@ -970,38 +970,6 @@ configuration_options =
 			{ description = "Wide View", data = true, hover = "Start a big horizon when entering the game" },
 		},
 		default = false,
-	},
-	addTitle("Wendy auxiliary"),
-	{
-		name = "sw_wendy",
-		label = "Switch",
-		hover = "Wendy -assisted general switch",
-		options = tof,
-		default = true,
-	},
-	{
-		name = "wendy_summonkey",
-		label = "Summon and retract",
-		hover = "Summon or retract the shortcut key for Abigail...",
-		options = theKeys,
-		default = 120,
-	},
-	{
-		name = "wendy_commandkey",
-		label = "Angry or comfort",
-		hover = "This button can anger or comfort Abigail...",
-		options = theKeys,
-		default = 114,
-	},
-	{
-		name = "sw_ghost",
-		label = "Help Pipspooks",
-		hover = "When you are close to the lost toys, there will be an arrow instruction under your feet",
-		options = {
-			{description = "On", data = true, hover = "This feature requires turning on the [Treasure Indicator]!"},
-			{description = "Off", data = false},
-		},
-		default = true,
 	},
 
 	addTitle("Wanda auxiliary"),

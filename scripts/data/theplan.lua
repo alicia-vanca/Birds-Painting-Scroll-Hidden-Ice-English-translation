@@ -17,8 +17,6 @@ return
 【Perspective Change】
 Fix the problem of resetting the view of the boy scout riding a dog or boarding a ship
 
-【T Key Console】
-Fix the problem of not displaying item seasoning
 
 【Map Icons】
 1. Enlarge some icons, such as the treasure's X
@@ -76,9 +74,8 @@ Add the function of one-click change of the entire skin on the character skin ch
 4. Skill tree, tab page announcement
 
 【Frost Moon Chapter】
-1. Wendy Assistant: Roulette shortcut key, toy assistant
 2. Boy Scout Assistant: Roulette shortcut key
-3. Plant Assistant: Flowering instrument
+3. Wormwood Assistant: Bloom meter
 4. Wanda Assistant: Table naming, 150/60HP conversion
 
 
@@ -103,7 +100,8 @@ Add the function of one-click change of the entire skin on the character skin ch
 2. Fix the display problem under different resolutions
 
 [Cut a cane]
-Fix the problem of Yemei cutting canes
+Fixed an issue with Night Plum and Night Vision Potion staff switching
+Added "Press V to feed cows" shortcut
 
 [Admin panel]
 [Eyeball grass prediction]

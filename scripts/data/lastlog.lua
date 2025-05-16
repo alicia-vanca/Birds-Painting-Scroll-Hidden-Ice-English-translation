@@ -1,6 +1,48 @@
 return 
 [=[
 --------------------------start logging here----------------------------
+2025.4.4 v4.84
+**[Range Tracking]**
+- Removed Tallbird's aggro range
+**[Fenghua Chapter]**
+- Migrated **[Mod Compatibility Test]** from the "Hidden Ice" mod
+**[Wendy Assist]**
+- Added **[Forced Attack]**
+**[Developer API]**
+- Allowed mods to modify pop-up panels via the `m_util` interface:
+  1. BindShowScreenID
+  2. BindShowScreenTitle
+
+2025.4.3 v4.83
+**[Quick Announcements]**
+- Added numerous meow sounds 󰀍 for AI
+- Items can now be individually defined in the corpus for announcements
+- Regex replacement for statements now supported in the corpus
+**[Behavior Queue Theory]**
+- Disabled queue preview for Abigail's Flower (to prevent crashes)
+**[Range Tracking]**
+- Added placement range for structures: Mushroom Lamp, Scaled Furnace, Winch, etc.
+
+2025.3.22
+**[Direction Indicator]**
+- Added Little Gestalt support
+**[Wendy Assist]**  
+1. Added timers for **[Abigail's Potion]** and **[Abigail Affinity]**
+2. Added **[Little Gestalt Assist]**
+3. Added shortcut for **[Picnic Basket]**
+**[T-key Console]**
+- Fixed partial key malfunctions, adjusted category layouts
+
+2025.3.20 v4.81
+**[T-key Console]**
+1. Reverted to lazy mode; search function no longer hidden
+2. Fixed crash when removing modded items
+**[Wendy Assist]**
+1. Shortcut for summoning/recalling Abigail
+2. Skill wheel and skill shortcuts
+3. Skill cooldown display (shown on Abigail's Flower)
+4. "Potions and Little Gestalt features coming soon – patience!"
+
 2025.3.19 v4.8
 【Quick Declaration】
 1、Added 【AI Cat Girl】 declaration meow！

@@ -228,38 +228,6 @@ if m_util:IsBata() == tostring(STRINGS_BETA.APP_VERSION) then
 end
 
 
-if m_util:IsHuxi() then
-    if m_util:EnableShowme() then
-        table.insert(screen_data, {
-            id = "showme_break",
-            fn = function()
-                SendModRPCToServer(MOD_RPC.ShowMeSHint.Hint, nil, ThePlayer)
-            end,
-            label = "Showme compatible test",
-            hover = "Warn!this function will cause collapse!",
-            default = true
-        })
-    end
-    table.insert(screen_data, {
-        id = "boom",
-        fn = function()
-            t_util:Pairs(MOD_RPC, function(_, r) 
-                if type(r) == "table" then 
-                    t_util:Pairs(r, function(_, rr) 
-                        SendModRPCToServer(rr) 
-                        SendModRPCToServer(rr, 1, 1) 
-                        SendModRPCToServer(rr, "", "") 
-                        SendModRPCToServer(rr, TheWorld, TheWorld)
-                        SendModRPCToServer(rr, TheSim, TheSim)
-                    end)
-                end
-            end)
-        end,
-        label = "Full mod compatibility test",
-        hover = "This function will try to send all RPC to the server, but it does not provide data\nused to detect server mod compatibility",
-        default = true
-    })    
-end
 
 
 AddClassPostConstruct("screens/consolescreen", function(self)
