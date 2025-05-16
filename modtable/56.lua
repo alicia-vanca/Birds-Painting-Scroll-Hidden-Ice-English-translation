@@ -454,16 +454,14 @@ local function fn_left()
 end
 
 local fn_right = m_util:AddBindShowScreen({
-    title = "Super easy to use "..string_mid,
+    title = string_mid .. " - Advanced settings",
     id = save_id,
     data = {{
         id = "readme",
         label = "Use guide",
         fn = function()
             h_util:CreatePopupWithClose("Mid-key enhancement · use guide",
-                "Try middle-clicking the crafting bar, sidebar, or inventory item", {{
-                    text = h_util.ok
-                }})
+                "Try middle-clicking the crafting bar, sidebar, or inventory item")
         end,
         hover = "Click to view the tutorial",
         default = true
@@ -517,7 +515,7 @@ local fn_right = m_util:AddBindShowScreen({
         end)
     }, {
         id = "btn_conf",
-        label = "Binding button:",
+        label = "Hotkey:",
         fn = fn_save("btn_conf"),
         hover = "Set related binding buttons",
         default = fn_get,
@@ -531,9 +529,7 @@ local fn_right = m_util:AddBindShowScreen({
             if h_util:IsValid(ui) then
                 ui:SetUIPos(true)
             else
-                h_util:CreatePopupWithClose(nil, "The search panel is not display yet!", {{
-                    text = h_util.ok
-                }})
+                h_util:CreatePopupWithClose(nil, "The search panel is not display yet!")
             end
         end,
         hover = "Reset UI position",

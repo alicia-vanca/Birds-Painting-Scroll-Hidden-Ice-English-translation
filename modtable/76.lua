@@ -13,16 +13,26 @@ local function GetUIData()
     local ui_data = {}
     local note_data = m_util:GetData("NOTE")
     t_util:Pairs(note_data, function(dot, data)
-        table.insert(ui_data, {
+        local info = {
             id = data.id,
             label = data.title,
             default = true,
-            hover = "View " .. data.title,
+            hover = STRINGS.LMB .. "View " .. data.title,
             fn = function()
                 m_util:PopShowScreen()
                 h_util:AddAnonUI(HxNote(funcs, save_data, note_data, dot))
-            end
-        })
+            end,
+            priority = data.priority,
+        }
+        -- Compatible with new and old interfaces
+        if data.icon then
+            info = t_util:MergeMap(info, {
+                type = "imgstr",
+                prefab = data.icon,
+            })
+        end
+        table.insert(ui_data, info)
+        t_util:SortIPair(ui_data)
     end)
 
     return ui_data
@@ -62,7 +72,7 @@ Fall:
 Winter:
 1:1:1    Pumpkin:Potato:Asparagus
 1:2:2    Garlic:Potato:Pumpkin
-]])
+]], {icon = "tomato_oversized"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("fertilizer", "Fertilizer Guide", 700, 570, [[
@@ -79,7 +89,7 @@ Growth    Compost    Manure    Fertilizer
      0              0               2       Bucket-o-poop
      1               1                1       Glommer
      1              4                1       Jam
-]])
+]], {icon = "fertilizer"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("farmcook", "Top Farm Recipes", 550, 700, [[
@@ -96,11 +106,11 @@ Mashed Potatoes: Garlic + 2*Potatoes
 
 Health: Eggplant    Potato    Tomato    Pomegranate    Dragon Fruit
 Hunger: Pumpkin    Corn    Durian    Dragon Fruit
-]])
+]], {icon = "cookbook"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("hermit_crab", "Hermit Crab Tasks", 700, 800, [[
-1. 1st House: Cutstone*10, Boards*10, Firefly*1
+1. 1st House: Cutter shell*10, Boards*10, Firefly*1
 2. 2nd House: Marble*10, Cutstone*5, Light Bulb*3
 3. 3rd House: Moon Rock*10, Rope*5, Carpet Flooring*5
 4. Plant 10 Flowers: Butterfly*10
@@ -115,7 +125,7 @@ the ruins chair is only used to unlock the Sawhorse
 12. Rain: Umbrella Pretty Parasol Eyebrella etc
 13. Heavy Sea Fish*5
 14. Any Heavy Seasonal Fish
-]])
+]], {icon = "hermitcrab"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("relic", "Relic Recipes", 480, 450, [[
@@ -128,7 +138,7 @@ Vase: Red Gem, Butterfly, Petals
 Plate: Petals, Berries, Carrot
 Bowl: Rabbit, Carrot, Petals
 Floor: Carrot, Berries, Petals
-]])
+]], {icon = "ancient_altar"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("wx_78", "WX-78 Scanner Data", 670, 800, [[
@@ -147,7 +157,7 @@ m_util:AddNoteData("wx_78", "WX-78 Scanner Data", 670, 800, [[
 2 Electric (30 Reflect) Volt Goat
 4 Solar (Night Vision) Mole
 3 Illumination (Glow) Octopus/Firefly/Depth Worm
-]])
+]], {icon = "wx78"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("alter", "Lunar Siphonator", 600, 350, [[
@@ -155,7 +165,7 @@ Stage 1: Scrap*4, Moongleam*5, Electrical Doodad*2
 Stage 2: Scrap*4, Moongleam*10, Infused Moon Shard*10
 Stage 3: Restrained Static*1, Celestial Orb*1, Infused Moon Shard*20 
 Total: Orb*1, Static*1, Electrical Doodad*2, Moongleam*15, Scrap*8, Infused Shards*30
-]])
+]], {icon = "moon_device"})
 
 -- Vanca: edit the size of the note
 m_util:AddNoteData("crabking", "Crab King Buff", 500, 650, [[
@@ -165,10 +175,10 @@ Yellow: +Turret Quantity, Health -Collision Damage
 Purple: +Crab Guard Quantity, Health, Hypnosis Resistance
 Orange: +Healing Amount, +Interrupt Healing Required Hits
 Green: +Crab Claw Quantity, Health, Damage
-    
-Pearl of Pearls: All Gem Quantities +3
-Rainbow Gem: All Gem Quantities +1
-]])
+
+Pearl of Pearls: All Gem Color +3
+Rainbow Gem: All Gem Color +1
+]], {icon = "crabking"})
 
 if not m_util:IsHuxi() then
     return
@@ -185,4 +195,4 @@ m_util:AddNoteData("showme", "Console Commands", 800, 500, [[
     Watch RPC: watchRPC()
     Listen for eventsÅF watchEvent()
     Inventory UI: getui(slot), ESlot(ui)
-]])
+]], {icon = icon, priority = 999})

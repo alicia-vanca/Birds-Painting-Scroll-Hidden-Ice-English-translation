@@ -230,59 +230,59 @@ end)
 
 local screen_data = {{
     id = "bundle",
-    label = "Prefer to enter the wrapped paper",
+    label = "Prefer Bundle Wrap",
     fn = fn_save("bundle"),
-    hover = "At the same time, open the box and packing paper, and transfer items to the packaging paper first",
+    hover = "When open the container and bundle wrap at the same time,\ntransfer items to the bundle wrap first",
     default = fn_get
 }, {
     id = "cookpot",
-    label = "Priority to cooking pot",
+    label = "Prefer Crock Pot",
     fn = fn_save("cookpot"),
-    hover = "At the same time, open the refrigerator and cooking pot, and transfer items to the cooking pot first",
+    hover = "When open the refrigerator and crock pot at the same time,\ntransfer items to the crock pot first",
     default = fn_get
 }, {
     id = "drop",
-    label = "Quickly discard",
+    label = "Quick discard",
     fn = fn_save("drop"),
-    hover = "Two consecutive discarding, non -stop discarding",
+    hover = "If you double click to discard an item, the discard will repeat with all same items",
     default = fn_get
 }, {
     id = "trade",
-    label = "Rapid transfer",
+    label = "Quick transfer",
     fn = fn_save("trade"),
-    hover = "Continuously transferred twice, but constantly transferred",
+    hover = "If you double click to transfer an item, the transfer will repeat with all same items",
     default = fn_get
 }, {
     id = "trade_cookpot",
-    label = "Quickly fill in",
+    label = "Quick pot filling",
     fn = fn_save("trade_cookpot"),
-    hover = "[quick transfer] auxiliary function \n whether it allows fast transfer to fill the cooking cooker",
+    hover = "[Quick transfer] additional setting\n Whether to allow quick transfer to fill the crock pot",
     default = fn_get
 }, {
     id = "trade_mode",
-    label = "Dive mode:",
+    label = "Trans speed:",
     fn = fn_save("trade_mode"),
-    hover = "Choose a fast transfer mode \n high -speed mode is unstable, low -speed mode is slower but stable",
+    hover = "Transfer speed: High speed mode is unstable, low speed mode is slower but stable",
     default = fn_get,
     type = "radio",
     data = {{
         data = 1,
-        description = "High -speed mode"
+        description = "Fast"
     }, {
         data = 2,
-        description = "Low -speed mode"
+        description = "Slow"
     }}
 }, {
     id = "time_min",
-    label = "Double-click interval:",
+    label = "Doubleclick:",
     fn = fn_save("time_min"),
-    hover = "Two Double-click judgment time",
+    hover = "Double-click judgment time",
     default = fn_get,
     type = "radio",
     data = t_util:BuildNumInsert(0.1, 1, 0.1, function(i)
         return {
             data = i,
-            description = i .. " second"
+            description = i .. " sec"
         }
     end)
 }}

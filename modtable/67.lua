@@ -81,39 +81,39 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
         screen_data = {
             {
                 id = "addcolor",
-                label = "Dyeing of ground worm caves",
+                label = "Highlight wormhole",
                 fn = function(v)
                     fn_save("addcolor")(v)
                     ChanWormholes()
                 end,
-                hover = "Whether to dye the insect hole on the ground",
+                hover = "Whether to highlight the wormhole on the ground",
                 default = fn_get,
             },
             {
                 id = "addtext",
-                label = "Wormhole label number",
+                label = "Numbering wormhole",
                 fn = function(v)
                     fn_save("addtext")(v)
                     ChanWormholes()
                 end,
-                hover = "Whether to give the wormhole on the ground",
+                hover = "Whether to numbering the wormhole on the ground",
                 default = fn_get,
             },
             {
                 id = "delete",
-                label = "Delete the wormhole label",
+                label = "Clean up",
                 fn = function()
-                    h_util:CreatePopupWithClose("Warn", "Are you sure you want to delete all the wormhole marks?", {{text = "Cancel"}, {text = "Confirm delete", cb = ClearWormholes}})
+                    h_util:CreatePopupWithClose("Warn", "Are you sure you want to clear all the wormhole marks?", {{text = "Cancel"}, {text = "Confirm", cb = ClearWormholes}})
                 end,
                 hover = "Dangerous operation",
                 type = "textbtn",
-                default = "Click to clean up",
+                default = "Clear marks",
             },
             {
                 id = "scale",
-                label = "The size of the wormhole icon:",
+                label = "Icon size:",
                 fn = fn_save("scale"),
-                hover = "[restart the game] after the effect \n recommended [map icon] to set [all icon size] instead of modifying this",
+                hover = "The size of the wormhole icon in the map\n[Restart the game] to take effect\nIt's recommended to go to [Map Icon] and set [All Icon Size], instead of modifying this",
                 default = fn_get,
                 type = "radio",
                 data = t_util:BuildNumInsert(1, 50, 1, function(i)

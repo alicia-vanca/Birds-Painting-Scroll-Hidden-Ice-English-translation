@@ -1,5 +1,4 @@
 local ctitle = "Bird painting roll · smart mod 󰀏"
-local errors_exceed = {"SpawnPrefab", "mainfunctions", "ClonePrefab", "PopulateRecipeDetailPanel"}
 local errors_highlight = {"componentactions", "UnregisterComponentActions", "highlight"}
 AddClassPostConstruct("widgets/scripterrorwidget", function(self, title, text, buttons, texthalign, additionaltext, ...)
     -- Hijacking button
@@ -26,15 +25,10 @@ AddClassPostConstruct("widgets/scripterrorwidget", function(self, title, text, b
             return text:match(pattern) or true
         end
         -- Overlapping
-        local ee_mod= isAssignmentError(errors_exceed)
-        if type(ee_mod)=="string" then
-            local mods_ban = s_mana:GetSettingLine("sw_info", true)
-            s_mana:SaveSettingLine("sw_info", mods_ban, {[ee_mod] = 0})
-            text = "This error has been fixed by this mod by itself! Please restart the game!\n\n\n"..text
-            self.additionaltext:SetString("The collapse has been automatically repaired! Please restart the game!\nmod crash feedback QQ group: 941438122")
-        elseif isAssignmentError(errors_highlight) then
-            text = "This error is because you have a conflict server mod, which leads to different from the lord.\n\n\n"..text
-            self.additionaltext:SetString("This collapse is not caused by painting! Please check yourself!\nper other collapse feedback QQ group: 941438122")
+        if isAssignmentError(errors_highlight) then
+            text = "This error is because you have a server mods conflict, causing the master and cave to be out of sync.\n\n\n"..text
+            self.additionaltext:SetString("This crash is not caused by Bird Painting! Please restart the game! \n Mod crash feedback QQ group: 941438122")
+            -- self.additionaltext:SetString("Search [ 擦屁股 ] in the workshop, subscribe and enable to fix!")
         end
 
         

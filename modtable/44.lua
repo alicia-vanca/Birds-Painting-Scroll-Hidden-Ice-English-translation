@@ -46,7 +46,7 @@ end)
 
 local function GetScreenData()
     local screen_data = {
-        title = "Super easy to use " .. string_timer,
+        title = string_timer,
         id = save_id,
         data = {
             {
@@ -84,15 +84,15 @@ local function GetScreenData()
             },
             {
                 id = "num_col",
-                label = "Maximum number:",
+                label = "Max icon:",
                 fn = fn_set("num_col"),
-                hover = "Change the line when you exceed how many attributes",
+                hover = "Line break when the icon number exceed this value",
                 default = fn_get,
                 type = "radio",
                 data = t_util:BuildNumInsert(1, 40, 1, function(i)
                     return {
                         data = i,
-                        description = i .. " Indivual"
+                        description = i
                     }
                 end)
             },
@@ -106,7 +106,7 @@ local function GetScreenData()
                 data = t_util:BuildNumInsert(0, 100, 2, function(i)
                     return {
                         data = i,
-                        description = i .. " Font"
+                        description = i
                     }
                 end)
             },
@@ -120,35 +120,35 @@ local function GetScreenData()
                 data = t_util:BuildNumInsert(-50, 50, 1, function(i)
                     return {
                         data = i,
-                        description = i .. " Distance"
+                        description = i
                     }
                 end)
             },
             {
                 id = "space_x",
-                label = "Horizontal distance:",
+                label = "X-spacing:",
                 fn = fn_set("space_x"),
-                hover = "Display the horizontal distance between the icon",
+                hover = "The horizontal distance between icons",
                 default = fn_get,
                 type = "radio",
                 data = t_util:BuildNumInsert(-50, 50, 1, function(i)
                     return {
                         data = i,
-                        description = i .. " Distance"
+                        description = i
                     }
                 end)
             },
             {
                 id = "space_y",
-                label = "Vertical distance:",
+                label = "Y-spacing:",
                 fn = fn_set("space_y"),
-                hover = "Display the vertical distance between the icons",
+                hover = "The vertical distance between lines of icons",
                 default = fn_get,
                 type = "radio",
                 data = t_util:BuildNumInsert(-50, 50, 1, function(i)
                     return {
                         data = i,
-                        description = i .. " Distance"
+                        description = i
                     }
                 end)
             },},
@@ -173,8 +173,8 @@ local function GetScreenData()
         if data.screen_data then
             table.insert(ui_data, {
                 id = data.id.."_setting",
-                label = "Settings:",
-                hover = "Click to enter "..data.label.." advanced settings",
+                label = "Config:",
+                hover = "Click to enter "..data.label.."'s advanced settings",
                 default = data.label,
                 type = "textbtn",
                 fn = function()

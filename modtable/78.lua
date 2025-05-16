@@ -88,10 +88,7 @@ end, fn_save("sw"), {
         label = "Usage Guidelines",
         fn = function()
             h_util:CreatePopupWithClose(str_push .. " · Usage Guidelines",
-                "Thanks to the player 虾仁平安 for the customization!\nThis function is used to push creatures. Just hold down SHIFT + right click.",
-                {{
-                    text = h_util.ok
-                }})
+                "Thanks to the player 虾仁平安 for the customization!\nThis function is used to push creatures. Just hold down SHIFT + right click.")
         end,
         hover = "Click to view tutorial",
         default = true

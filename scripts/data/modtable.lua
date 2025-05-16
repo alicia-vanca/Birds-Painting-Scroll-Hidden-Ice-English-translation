@@ -179,11 +179,11 @@ m_table.load = {
     --     {"Maxwell assist", "Old man assist", "Old man shortcut keys"},
     --     36,
     -- },
-    -- {
-    --     "sw_wllw",
-    --     {"Willow assist", "Fire girl assist", "Fire girl shortcut keys"},
-    --     37,
-    -- },
+    {
+        "sw_space",
+        {"Space bar filter","Space bar filter", "pickup filter"},
+        37,
+    },
     {
         {"sw_mySeedTex"},
         {"Seed sticker restore", "Seed map", "Item icon", "High-definition icon"},
@@ -256,13 +256,13 @@ m_table.load = {
     },
     {
         {"sw_lantern",},
-        {"Press the item"},
+        {"Button to drop items"},
         52,
     },
     {
-        "sw_info",
-        {"Production bar information","More Crafting Details"},
-        54,
+        "sw_craft",
+        {"Crafting bar information","More Crafting Details"},
+        27,
     },
     {
         {"sw_server",},
@@ -408,6 +408,16 @@ m_table.load = {
         {"sw__keytweak"},
         {"Key prompts"},
         28,
+    },
+    {
+        {"sw_suggest"},
+        {"Gift pack purchase advice", "Look at the spool", "Cost-effectiveness"},
+        54,
+    },
+    {
+        {"sw_skinpreset"},
+        {"Skin Preset Pack",},
+        74,
     },
 }
 

@@ -391,9 +391,7 @@ m_util:AddBindConf(save_id, AutoCook, nil, {string_cook, "cookpot_tureen", STRIN
         label = "Use guide",
         fn = function()
             h_util:CreatePopupWithClose("Auto cooking · use guide",
-                "[breeding by default] use a pot to make a dish, and then click it to click it \n [only harvested] press and hold the key in the ctrl. click the pot", {{
-                    text = h_util.ok
-                }})
+                "[Start cooking] Fill a pot with ingredients, then middle-click it\n[Harvest] Hold down CTRL and middle-click the pot")
         end,
         hover = "Click to view the tutorial",
         default = true
@@ -429,7 +427,7 @@ m_util:AddBindConf(save_id, AutoCook, nil, {string_cook, "cookpot_tureen", STRIN
         end,
         hover = "When the UI position is not satisfied, it is used to drag it again",
         default = true
-    }, { 
+    }, {
         id = "range_search",
         label = "Search range:",
         fn = fn_save("range_search"),

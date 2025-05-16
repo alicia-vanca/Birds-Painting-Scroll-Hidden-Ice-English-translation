@@ -245,24 +245,21 @@ local screen_data = {
         data = V.RGB_datatable,
         fn = fn_set("color_item"),
     },
-    {
-        id = "readme",
-        label = "Special thanks!",
-        fn = function()
-            h_util:CreatePopupWithClose("󰀍"..str_show.." · Special Thanks󰀍",
-                "This feature is specially customized by the player 虾远山\n\nMessage: Haha, had a great time. 远山 was here!", {{
-                    text = h_util.ok
-                }})
-        end,
-        hover = "Special Thanks",
-        default = true
-    },
 }
-local fn_right = m_util:AddBindShowScreen({
+local fn_right = m_util:AddBindShowScreen{
     title = str_show,
     id = "hx_" .. save_id,
-    data = screen_data
-})
+    data = screen_data,
+    icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Click to add the entity you want to indicate direction!",
+        fn = function()
+            h_util:CreatePopupWithClose(str_show, "You have not installed Langya Chapter, so you can't control an option independently!")
+        end,
+    }}
+}
 m_util:AddBindConf(save_id, fn_left, nil, {str_show, "arrowsign_post_factory",
                                            STRINGS.LMB .. 'Quick switch' .. STRINGS.RMB .. 'Advanced settings', true, fn_left,
                                            fn_right})

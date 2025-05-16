@@ -227,6 +227,29 @@ if m_util:IsBata() == tostring(STRINGS_BETA.APP_VERSION) then
     end
 end
 
+if m_util:IsHuxi() then
+    local utils = {"c_util", "e_util", "h_util", "i_util", "m_util", "p_util", "t_util", "s_mana", "u_util", "r_util", "d_util", "a_util"}
+    AddClassPostConstruct("screens/consolescreen", function(self)
+        local c_edit = self.console_edit
+        if not c_edit then return end
+        t_util:IPairs(utils, function(delim)
+            local util = rawget(_G, delim)
+            if type(util) ~= "table" then return end
+            local words = t_util:PairToIPair(util, function(word, func)
+                return type(func) == "function" and word
+            end)
+            c_edit:AddWordPredictionDictionary({
+                delim = delim..":",
+                words = words,
+                num_chars = 0,
+                postfix = "()",
+                GetDisplayString = function(word)
+                    return word
+                end,
+            })
+        end)
+    end)
+end
 
 
 

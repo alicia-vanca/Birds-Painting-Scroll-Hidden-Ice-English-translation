@@ -24,7 +24,7 @@ _G.Mod_ShroomMilk = {
     },
     Data = {} -- This interface allows external mods to customize the mousefs functionality, such as adding or modifying buttons
 }
-Mod_ShroomMilk.Func.WriteToMod("藏冰", modname)
+Mod_ShroomMilk.Func.WriteToMod("春", modname)
 
 c_util, e_util, h_util, i_util, m_util, p_util, t_util, s_mana, u_util, d_util = 
 require "util/calcutil", -- Manage Calculations
@@ -52,7 +52,7 @@ iMod("start")
 local mods = require "data/modtable"
 assert(not t_util:IGetElement(mods.ban, function(modname)
     return m_util:HasModName(modname)
-end), Mod_ShroomMilk.Mod["藏冰"].name .. "Can't enable with other collection mods at the same time")
+end), Mod_ShroomMilk.Mod["春"].name .. "Can't enable with other collection mods at the same time")
 
 iMod("preload")
 t_util:IPairs(mods.load, function(moddata)
@@ -71,7 +71,10 @@ t_util:IPairs(mods.load, function(moddata)
 end)
 
 if m_util:IsHuxi() then
-    iMod({"modder", "test_loop","test_temp", 77, 35})
+    iMod({"modder", 77, 35, 36})
+end
+if m_util:IsMilker() then
+    iMod({"test_loop","test_temp"})
 end
 
 if os.date("%m%d") == "0401" then

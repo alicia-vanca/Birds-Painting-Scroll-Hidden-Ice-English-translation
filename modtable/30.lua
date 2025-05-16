@@ -136,9 +136,7 @@ end, fn_save("sw"), {
             label = "What is this?",
             fn = function()
                 h_util:CreatePopupWithClose("󰀍"..str_show.." · Special Thanks󰀍",
-                    "Don't Starve is really fun.\n                           —Only willing to sink into eternal sleep in dreams", {{
-                        text = h_util.ok
-                    }})
+                    "Don't Starve is really fun.\n                           —Only willing to sink into eternal sleep in dreams")
             end,
             hover = "Special Thanks",
             default = true

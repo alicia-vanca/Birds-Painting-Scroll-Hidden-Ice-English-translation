@@ -85,7 +85,7 @@ local prefab_npc = "wagstaff_npc"
 local function fn()
     local npc = e_util:FindEnt(nil, prefab_npc)
     if not npc then
-        Say("Didn't find wagstap")
+        Say("Didn't find Wagstaff")
         return
     end
     local pusher = ThePlayer.components.hx_pusher
@@ -298,7 +298,7 @@ local screen_data = {{
     default = fn_get
 }, {
     id = "tool_tip",
-    label = "Tool prompt",
+    label = "Show tool name",
     fn = fn_save("tool_tip"),
     hover = "Whether to display the name of the auxiliary tool",
     default = fn_get
@@ -306,31 +306,31 @@ local screen_data = {{
     id = "textsize",
     label = "Font size:",
     fn = fn_save("textsize"),
-    hover = "[tool tips] the size of the text",
+    hover = "[Tool name] the size of the text",
     default = fn_get,
     type = "radio",
     data = range_table
 }, {
     id = "color_ori",
-    label = "Default color:",
+    label = "Default:",
     fn = fn_save("color_ori"),
-    hover = "[tool prompt] the color of the prompt of small tools",
+    hover = "[Tool name] the name color of all small tools",
     default = fn_get,
     type = "radio",
     data = font_color
 }, {
     id = "color_need",
-    label = "High bright color:",
+    label = "Highlight:",
     fn = fn_save("color_need"),
-    hover = "[tool tips] the color of the tools needed by wagstov",
+    hover = "[Tool name] the name color of the tool needed by Wagstaff",
     default = fn_get,
     type = "radio",
     data = font_color
 }, {
     id = "bird_warn",
-    label = "Scope of warning:",
+    label = "Combat range:",
     fn = fn_save("bird_warn"),
-    hover = "Monthly blind crow enters the npc this range to trigger the character combat mode",
+    hover = "Moonblind Crow enters this range from Wagstaff will trigger the character combat mode",
     default = fn_get,
     type = "radio",
     data = t_util:BuildNumInsert(6, 60, 2, function(i)
@@ -341,17 +341,17 @@ local screen_data = {{
     end)
 }, {
     id = "range_pick",
-    label = "Scope of picking:",
+    label = "Pickup range:",
     fn = fn_save("range_pick"),
-    hover = "The scope of helping wagstov picking tools",
+    hover = "The range of helping Wagstaff picking tools",
     default = fn_get,
     type = "radio",
     data = range_table
 }, {
     id = "range_catch",
-    label = "Collection scope:",
+    label = "Collect range:",
     fn = fn_save("range_catch"),
-    hover = "Collect the range of moonlight or digging energy glass stones",
+    hover = "The range of catching Moongleams or digging Infused Moon Shards.",
     default = fn_get,
     type = "radio",
     data = range_table

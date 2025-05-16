@@ -1,9 +1,16 @@
-local Label = require "widgets/huxi/hx_label"
 local t_util = require "util/tableutil"
-local PopupDialogScreen = require "screens/redux/popupdialog"
 local c_util = require "util/calcutil"
-local Image = require "widgets/image"
 local r_data = require "data/redirectdata"
+local e_util = require "util/entutil"
+local TEMPLATES = require "widgets/redux/templates"
+local Widget = require "widgets/widget"
+local PopupDialogScreen = require "screens/redux/popupdialog"
+local Image = require "widgets/image"
+local Label = require "widgets/huxi/hx_label"
+local ImageButton = require "widgets/imagebutton"
+local xml_quag = "images/quagmire_recipebook.xml"
+local xml_ui = "images/ui.xml"
+
 
 local h_util = {
     doubleclicktime = 0.3,
@@ -15,7 +22,8 @@ local h_util = {
         "serverplaystyles.xml",
         "quagmire_recipebook.xml",
         "skilltree.xml",
-        -- 'crafting_menu.xml', -s not recommended, please use resolvefilepath (crafting_atlas)
+        "global_redux.xml",
+        -- "crafting_menu.xml", -s not recommended, please use resolvefilepath (crafting_atlas)
     },
     minimap_path = {
         "minimap/minimap_data.xml",
@@ -173,6 +181,126 @@ function h_util:AddText(ent, text, offset_y, font, size, color)
     label:SetColour(unpack(self:GetRGB(color)))
     label:Enable(text and true or false)
 end
+-- Set UI position
+function h_util:SetUIPosition(ui, pos)
+    if type(pos) == "table" and (pos[1] or pos.x) then
+        ui:SetPosition(Vector3(pos[1] or pos.x, pos[2] or pos.y or 0))
+    end
+end
+
+-- Create a button with an image, make sure it can be a prefab/xml/tex
+-- {prefab, size, pos, fn, hover, hover_meta}
+-- ForceImageSize
+function h_util:CreateImageButton(info)
+    -- Set the icon
+    local xml, tex = info.xml, info.tex
+    if h_util:GetPrefabAsset(info.prefab) then
+        xml, tex = h_util:GetPrefabAsset(info.prefab)
+    end
+    -- Set the size
+    local sizes = (type(info.size)=="table" and info.size) or (type(info.size)=="number" and {info.size, info.size}) or {80,80}
+    local btn = TEMPLATES.StandardButton(nil, nil, sizes, {xml, tex})
+    -- Set the hover
+    if info.hover then
+        btn:SetHoverText(info.hover, info.hover_meta and info.hover_meta or {offset_y = -sizes[1]})
+    end
+    -- Set the position
+    self:SetUIPosition(btn, info.pos)
+    -- Set the function
+    if info.fn then
+    btn:SetOnClick(function()
+        info.fn(btn)
+    end)
+    end
+    return btn
+end
+
+-- Create a single image button {id, scale, bg, noclick}
+-- CreateFoodImage
+-- SetPrefabIcon
+local bgs_prefab = {
+    quag = {xml_quag, "cookbook_known.tex", "cookbook_known_selected.tex"},
+    ui = {xml_ui, "in-window_button_tile_hl.tex", "in-window_button_tile_hl_noshadow.tex"}
+}
+function h_util:CretePrefabButton(info)
+    local w = Widget(info.id or "btn_prefab")
+    local tp_bg = info.bg or "quag"
+    local bg_prefab = bgs_prefab[tp_bg] or bgs_prefab.quag
+    w.cell_root = w:AddChild(ImageButton(unpack(bg_prefab)))
+    if info.noclick then
+        w.cell_root:Disable()
+    end
+    w.cell_root:SetNormalScale(info.scale or 1, info.scale or 1)
+    w.prefab_img = w.cell_root.image:AddChild(self:CreateFoodImage())
+    w.SetPrefabIcon = w.prefab_img.SetPrefabIcon
+    return w
+end
+
+-- Create a food image {prefab, scale}
+function h_util:CreateFoodImage()
+    local img = Image(xml_quag, "cookbook_missing.tex")
+    img.img_hover = img:AddChild(Image(xml_quag, "cookbook_hover.tex"))
+    img.img_hover:Hide()
+    img.SetPrefabIcon = function(info)
+        local xml, tex = self:GetPrefabAsset(info.prefab)
+        if not xml then return end
+        local spice_start = tex:find("spice_") and info.prefab:find("_spice_")
+        local xml_hover, tex_hover
+        if spice_start then
+            local baseprefab = info.prefab:sub(1, spice_start - 1)
+            xml_hover, tex_hover = self:GetPrefabAsset(baseprefab)
+            if xml_hover then
+                xml_hover, tex_hover, xml, tex = xml, tex, xml_hover, tex_hover
+            end
+        end
+        img:SetTexture(xml, tex)
+        local size = img:GetParent():GetScaledSize()*(info.scale or 0.9)
+        if img.atlas:find("scrapbook_icons") then
+            img:ScaleToSize(size*1.45, size*1.45)
+        else
+            img:ScaleToSize(size, size)
+        end
+        if xml_hover then
+            img.img_hover:SetTexture(xml_hover, tex_hover)
+            img.img_hover:SetScale(1.3)
+            img.img_hover:Show()
+        else
+            img.img_hover:Hide()
+        end
+    end
+    return img
+end
+
+-- Create a single line text entry
+-- {hover, prompt, width, height, font_size, fn, pos}
+function h_util:CreateTextEdit(info)
+    local searchbox = Widget("search")
+    info = info or {}
+    local text_hover = info.hover or STRINGS.UI.SERVERCREATIONSCREEN.SEARCH
+    local text_prompt = info.prompt or STRINGS.UI.SERVERCREATIONSCREEN.SEARCH
+    local box_width, box_height = info.width or 430, info.height or 60
+    local font_size = info.font_size or 50
+
+	searchbox:SetHoverText(text_hover, {offset_y = font_size})
+    searchbox.textbox_root = searchbox:AddChild(TEMPLATES.StandardSingleLineTextEntry(nil, box_width, box_height, nil, font_size))
+    searchbox.textbox = searchbox.textbox_root.textbox
+    -- searchbox.textbox:SetForceEdit(true)
+    searchbox.textbox:EnableWordWrap(false)
+    searchbox.textbox:EnableScrollEditWindow(true)
+    searchbox.textbox:SetTextPrompt(text_prompt, UICOLOURS.GREY)
+    searchbox.textbox.prompt:SetHAlign(ANCHOR_MIDDLE)
+    searchbox.textbox.OnTextInputted = info.fn and function(down)
+        if down then
+            info.fn()
+        end
+    end or nil
+     -- If searchbox ends up focused, highlight the textbox so we can tell something is focused.
+    searchbox:SetOnGainFocus( function() searchbox.textbox:OnGainFocus() end )
+    searchbox:SetOnLoseFocus( function() searchbox.textbox:OnLoseFocus() end )
+    searchbox.focus_forward = searchbox.textbox
+    self:SetUIPosition(searchbox, info.pos)
+    return searchbox
+end
 
 local function PopFunc()
     TheFrontEnd:PopScreen()
@@ -180,19 +308,19 @@ end
 
 -- Key to identify screen
 function h_util:CreatePressScreen(title, currentkey, defaultkey, allowmid, options, fn_modsave)
-    local format_string = "[%s] you need to bind keyboard buttons!\n \n current: [%s] by default: [%s]"
+    local format_string = "[%s] need to bind to a keyboard buttons!\n \nCurrent: [%s] Default: [%s]"
     local body_text = format_string:format(title, currentkey, defaultkey)
 
     local btns = {
         { text = STRINGS.UI.CONTROLSSCREEN.CANCEL, cb = PopFunc },
-        { text = "Binded default ["..defaultkey.."]", cb = function ()
+        { text = "Bind default ["..defaultkey.."]", cb = function ()
             fn_modsave(nil, "Default:"..defaultkey)
             PopFunc()
         end },
         {
             text = STRINGS.UI.CONTROLSSCREEN.UNBIND,
             cb = function()
-                local popup_in = PopupDialogScreen("󰀐: warning", "If you unbind it, this operation will be written into the mod settings.\nAfter restarting the game, you will need to manually enable it from the mod settings next time.", {
+                local popup_in = PopupDialogScreen("󰀐: warning", "If you unbind, this operation will be written into the mod settings.\nAfter restarting the game, you will need to manually enable it from the mod settings next time.", {
                     { text = STRINGS.UI.CONTROLSSCREEN.CANCEL, cb = PopFunc },
                     { text = "I'm sure. "..STRINGS.UI.CONTROLSSCREEN.UNBIND, cb = function ()
                         fn_modsave(false, "Disabled")
@@ -235,9 +363,9 @@ function h_util:CreatePressScreen(title, currentkey, defaultkey, allowmid, optio
     TheFrontEnd:PushScreen(popup)
 end
 
--- btns:{text, cb(autopop)}
-function h_util:CreatePopupWithClose(title, bodytext, btns)
-    local btns = t_util:IPairFilter(btns, function (btn)
+-- btns:{text, cb(autopop)}  {spacing, longness, style}
+function h_util:CreatePopupWithClose(title, bodytext, btns, meta)
+    local btns = t_util:IPairFilter(btns or {{text = h_util.ok}}, function (btn)
         return type(btn.text)=="string" and {text = btn.text, cb = function ()
             if type(btn.cb) == "function" then
                 btn.cb()
@@ -245,11 +373,19 @@ function h_util:CreatePopupWithClose(title, bodytext, btns)
             PopFunc()
         end}
     end)
-    title = title or Mod_ShroomMilk.Mod["藏冰"].name
-    local popup = PopupDialogScreen(title, bodytext, btns)
+    title = title or Mod_ShroomMilk.Mod["春"].name
+    meta = c_util:FormatDefault(meta, "table")
+    local popup = PopupDialogScreen(title, bodytext, btns, meta.spacing, meta.longness, meta.style)
     TheFrontEnd:PushScreen(popup)
 end
 
+-- info:{text, cb(prefab)}
+function h_util:CreateWriteWithClose(title, info)
+    local w_screen = require "screens/huxi/writescreen"
+    local screen = w_screen(title, info)
+    TheFrontEnd:PushScreen(screen)
+    return screen
+end
 
 local function checkAtlas(xml, tex)
     xml = xml and resolvefilepath_soft(xml) or xml
@@ -259,7 +395,7 @@ end
 
 local function GetImageAsset(prefab)
     local tex = prefab .. ".tex"
-    local name = STRINGS.NAMES[string.upper(prefab)] or prefab
+    local name = e_util:GetPrefabName(prefab)
     local xml = GetInventoryItemAtlas(tex)
     local atlas = checkAtlas(xml, tex)
     if atlas then
@@ -471,7 +607,7 @@ end
 function h_util:GetActiveScreen(name)
     local screens = TheFrontEnd.screenstack or {}
     if name then
-        return t_util:IGetElement(screens, function(screen)
+        return t_util:IGetElement(table.reverse(screens), function(screen)
             return screen.name == name and screen
         end)
     end
@@ -492,6 +628,15 @@ function h_util:CtrlBoard()
         board:Show()
     end
 end
+-- Get ShowScreen
+function h_util:GetShowScreen()
+    return self:GetActiveScreen("ShowScreen")
+end
+
+-- Get lines
+function h_util:GetLines()
+    return (self:GetShowScreen() or {}).lines
+end
 
 -- Get a small icon
 function h_util:GetHicon()
@@ -504,10 +649,7 @@ function h_util:GetECtrl()
     return t_util:GetRecur(h_util:GetControls(), "inv.ectrl")
 end
 
--- Preview of the box
-function h_util:GetSBox()
-    return h_util:GetControls().sbox
-end
+-- Get ShowScreen
 
 -- Get the info tray
 function h_util:GetTimer()
@@ -606,5 +748,16 @@ function h_util:SpawnScrapBookImage(width, height)
 end
 
 
+
+
+-----------------------------------For Modder-----------------------------------
+function h_util:debug_pos(ui)
+    if self:IsValid(ui) then
+        self:ActivateUIDraggable(ui, function(pos)
+            print("debug_pos", pos)
+        end)
+        t_util:JoinDebug(ui)
+    end
+end
 
 return h_util

@@ -513,7 +513,7 @@ local placer = {
 	eyeturret_item_placer = TUNING.EYETURRET_RANGE+3,
 	mushroom_light_placer = 11,		-- Not accurate, measured manually
 	mushroom_light2_placer = 11,		-- Not accurate, measured manually
-    dragonflyfurnace_placer = 9.5,	--Dragonfly Scale Furnace
+	dragonflyfurnace_placer = 9.5,	--Dragonfly Scale Furnace
 	winch_placer = TUNING.SHADE_CANOPY_RANGE_SMALL,
 	deerclopseyeball_sentryward_kit_placer = TUNING.DEERCLOPSEYEBALL_SENTRYWARD_RADIUS,
 	-- Scarecrow, starfish,

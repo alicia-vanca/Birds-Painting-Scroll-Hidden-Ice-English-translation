@@ -186,7 +186,7 @@ local function widget_apply(context, w, data, index)
             str = str.."Password:"..data.pwd.."\n"
         end
         str = str.."GUID："..data.guid
-        h_util:CreatePopupWithClose(data.name, str,{{text = "Ok"}})
+        h_util:CreatePopupWithClose(data.name, str)
     end)
     w.widgets.info:Show()
 

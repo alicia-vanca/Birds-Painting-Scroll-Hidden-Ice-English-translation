@@ -69,9 +69,7 @@ local function fn()
     end)
     if not (star and fx) then
         h_util:CreatePopupWithClose(string_show.." · hint",
-                "Please move closer to the spawn point and bring a starfish before trying this function", {{
-                    text = h_util.ok
-                }})
+                "Please move closer to the spawn point and bring a starfish before trying this function")
         return u_util:Say("No starfish or spawn point mark")
     end
 
@@ -115,9 +113,7 @@ local screen_data = {
         label = "󰀍󰀍󰀍󰀍",
         fn = function()
             h_util:CreatePopupWithClose("󰀍"..string_show.." · special thanks",
-                "This feature is specially customized by player Moonlight\n\nMessage: I hope everyone can meet the one who can accompany you to play Don't Starve for a long time~", {{
-                    text = h_util.ok
-                }})
+                "This feature is specially customized by player Moonlight\n\nMessage: I hope everyone can meet the one who can accompany you to play Don't Starve for a long time~")
         end,
         hover = "Thank you very much",
         default = true

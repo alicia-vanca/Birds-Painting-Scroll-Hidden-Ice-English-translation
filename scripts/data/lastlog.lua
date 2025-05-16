@@ -1,17 +1,159 @@
 return 
 [=[
 --------------------------start logging here----------------------------
+2025.5.17 v5.61
+【Spring Scroll】
+【Skin Preset Outfit】Now even Pferulox can change skin outfits
+【Security Guard Chapter】Customized chapters
+【Range Tracking】Now you can customize the monster's【Attack Range】
+【Range Tracking】Now you can customize the【Placement Range】
+【Range Tracking】Now you can customize the【Click Range】
+【Wigfrid Assistant】Added battle song hover range
+
+2025.5.16 v5.6
+【Spring Scroll】
+【Crafting Information】Fixed the issue of some properties not being able to be toggled in-game
+【Winter Scroll】
+【Wigfrid Assistant】Added crafting information for【Battle Song Effects】
+
+2025.5.16 v5.5
+【Spring Scroll】
+【Skin Preset Outfit】Can directly wear outfits on the character skin page
+【Runtime Library】e_util:GetPrefabName uses caching mechanism, improving smoothness
+
+
+2025.5.15 v5.4
+【Spring Scroll】
+【Skins Pack Purchase Suggestions】Providing more cost-effective suggestions for in-game gift packs
+
+
+2025.5.14 v5.32
+【Scroll·Liangyue】Customized chapters
+【Direction Indication】Now you can customize the addition or deletion of arrowhead indicators, even changing their color individually
+
+
+
+2025.5.13 v5.31
+【Scroll·Spring】
+【Space Filter】Fixed the issue of space filtering failure for special states such as riding a cow or casting spells
+
+
+2025.5.12 v5.3
+【Scroll·Spring】
+Added 【Space Filter】, allowing you to choose in-game items that do not respond to space
+
+
+2025.5.11 v5.26
+【Flock Scroll】Series main chapter renaming:
+藏冰【Core Library and Main Function】Spring Rain
+云霞【Authorized Function】Summer Full Summer
+江海【Unauthorized Function】Autumn Exposure Autumn
+霜月【Role Assistance】Winter Snow Winter
+The names of the remaining chapters remain unchanged, and the names of subsequent chapters will be based on the solar terms
+
+
+2025.5.11 v5.25
+【Ayang Chapter】Customized chapters
+【Breath Bar】Adapted to 【Ability Medal】, taking over buff display
+【Breath Bar】Adapted to 【Rich and Risky】, taking over buff display
+【Auto Flip Footprints】Adapted to 【Island Adventure】, automatically finding water bubbles
+【Scroll·Spring】
+【To Developers】Added the function of the 【Icon Library】, allowing you to view or declare the icon codes of all items
+【To Developers】t_util:GetChild has been deprecated, please use other interfaces as soon as possible
+
+
+
+2025.5.10 v5.24
+【Scroll·Spring】
+【My Notes】Added icon interface
+【Qifang Chapter】
+【My Notes】Added data related to 【Never Compromise】
+
+
+2025.5.9 v5.23
+【Qifang Chapter】Customized chapters
+【Breath Bar】Added countdown for 【Never Compromise】 mouse nest
+【Range Tracking】Added attack range for 【Never Compromise】 creatures
+【Quick Declaration】Added quick declaration for the role of 【Never Compromise】's【Wotom】
+【Character Assistance】Added assistance for the role of 【Never Compromise】's【Wotom】
+【Scroll·Spring】
+Some UI changes, adding several development interfaces
+
+
+2025.5.5
+【Developer Mode】【Console Enhancement】Added function references to the console
+Some UI changes
+
+
+2025.5.3
+【Scroll·Winter】
+【Walter Assistance】
+1. The crafting bar shows the properties of ammunition and crossbow accessories
+2. Supports the shortcut key for opening the ammunition bag
+
+
+
+2025.5.2
+【Scroll·Winter】
+【Walter Assistance】
+1. Can use the skill wheel at long distances
+2. The view will not be locked onto Wobi
+3. The view will not be reset
+3. Supports shortcut keys for 【Open Wobi】【Call Wobi】【Open Wobi Bag】
+4. Supports the separate binding of all skills in the skill wheel and determines whether to announce actions
+【Scroll·Spring】【Direction Indication】Added Wobi
+【Fenghua Chapter】【Crafting Bar Information】Added attribute descriptions
+
+2025.5.1
+【Crafting Bar Information】
+1. Opened the interface, allowing other mods to register for display
+2. Added a wiki entry, allowing direct access to the wiki of items
+【Scroll·Winter】【Wendi Assistance】The crafting bar can preview the effects of potions
+【Scroll·Summer】【Nini Monster】Fixed several text omissions
+【Fenghua Chapter 5.1】【Crafting Bar Information】Added attribute descriptions
+
+2025.4.28
+【Fenghua Chapter】Terrain preview added a clown machine
+【Scroll·Summer】【T Key Console】Added a clown machine
+
+2025.4.27
+【Custom·Jiucheng Chapter】
+1. Added countdown for 【Wraith's Wreath】
+2. Added countdown for 【Shadow Sisterhood】
+Thanks to player 老虎 for the suggestion:
+【My Notes】Corrected some descriptions
+【Geometric Layout】Linked with 【Range Tracking】【Placement Range】to control the visibility of some buildings in-game
+
+2025.4.26
+v5.02
+【Quick Declaration】【Enable Debug】Declaring items or entities on the ground will save data to t_util.ent
+【Development Interface】i_util:AddInvItemUseEnd allows a third parameter func_get, allowing the retrieval of the original data of items
+【Development Interface】Added AddInvItemWithEnd, AddInvItemWithPre interfaces
+v5.01 
+Thanks to player 1234 for the suggestion:
+【Quick Declaration】Added the corpus of 【Nini Monster】
+
+2025.4.12 v5
+【Thanks to Players】Thanks to players for their long-term support of the scroll, the QQ group is temporarily disbanded.
+【Mod Issues】Please attach logs to emails hanhuxi@qq.com for any issues encountered
+
+2025.4.12 v4.87
+【Behavior Queue Theory】Fixed the issue of batch deployment of buildings failing
+
+
+
+2025.4.9 v4.86
+【Panel Pop-up Window】One crash fix
+【Smart Pot】One crash fix
+
 2025.4.4 v4.84
-**[Range Tracking]**
-- Removed Tallbird's aggro range
-**[Fenghua Chapter]**
-- Migrated **[Mod Compatibility Test]** from the "Hidden Ice" mod
-**[Wendy Assist]**
-- Added **[Forced Attack]**
-**[Developer API]**
-- Allowed mods to modify pop-up panels via the `m_util` interface:
-  1. BindShowScreenID
-  2. BindShowScreenTitle
+【Range Tracking】Remove the hatred range of the high bird
+【Fenghua Chapter】Migrate the mod compatibility test from spring
+【Wendy's Assistant】Add 【Forced Attack】
+【Development Interface】
+Allow any mod to modify the pop-up panel through the m_util interface
+1、BindShowScreenID
+2、BindShowScreenTitle
 
 2025.4.3 v4.83
 **[Quick Announcements]**
@@ -45,11 +187,11 @@ return
 
 2025.3.19 v4.8
 【Quick Declaration】
-1、Added 【AI Cat Girl】 declaration meow！
-2、Added 【Mew Mew Call】 declaration meow󰀍~
+1、Added【AI Kitten】declaration meow！
+2、Added【Mew Mew Call】declaration meow~
 【Development Interface】
-ShowScreen added imgstr related direct access variables（versions below this will crash）
-Database added TIP descriptions, making it easier for authors to leave messages
+ShowScreen adds imgstr related direct access variables (versions below this will crash the scroll·summer)
+Database adds TIP descriptions, making it easier for authors to leave messages
 
 
 2025.3.18 v4.74
@@ -147,19 +289,30 @@ Optimized code performance and fixed some crashes
 
 
 2025.2.17
-【Range Tracking】Increased the attack range of the hidden nightmare
-【Breath Bar】Attempted to fix a sporadic crash issue with 【Automatic Footprint】
-【Development Interface】Added a function FEP_V for printing console key values, corresponding to FEP_K
-【Range Tracking】Increased the thermal range of the dragon scale furnace, but when there is an item on the mouse, clicking will no longer display the range
-【Special Thanks】Added a list of thanked players (contribution: fixed multiple difficult issues with the scroll)
+【Scroll·Spring】
+【Range Tracking】Increase the attack range of the lurking nightmare
+【Breath Bar】Attempt to fix an occasional crash problem with 【Auto Flip Footprints】
+【Development Interface】Add a function FEP_V to print key values in the console, corresponding to FEP_K
+【Range Tracking】Add the thermal range of the dragon scale furnace, but when there is an item on the mouse, the click will no longer display the range
+【Special Thanks】Add a list of players to thank (Contribution: Fixing multiple difficult problems in the scroll)
+
+【Scroll·Autumn】JKString repair
+【Queue Theory】Fix the problem that when the attack queue equips a weapon, it must be close to the target to attack
+【Queue Theory】Fix the conflict between the queue theory and the game when using items (you can queue to eat and read books for yourself)
 
 
 
 
 2025.2.16
-[Range Tracking] Increase the attack range of the otter
-[Panel and Buttons] Because it is the Year of the Snake, the otter style icon is added
-[Spawn Command] This function is set to be visible only in developer mode to prevent newbies from misoperating
+【Scroll·Spring】
+【Range Tracking】Increase the attack range of the otter
+【Panels and Buttons】Because it's the Year of the Snake, the style of the otter has been added
+【Remote Command】This function is set to be visible only in developer mode to prevent newbies from making mistakes
+
+【Scroll·Autumn】
+【Behavior Queue Theory】Now it will not be affected by screen cutting
+【Behavior Queue Theory】Fix the problem that the beaver form of Wendi cannot cut trees
+【Behavior Queue Theory】Fix the operation of picking up things when other declarations are enabled at the same time
 
 
 2025.2.11

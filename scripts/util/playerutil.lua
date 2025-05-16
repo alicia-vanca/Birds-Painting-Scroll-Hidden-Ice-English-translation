@@ -130,7 +130,7 @@ function i_util:GetMouseActionSoft(code_list, target)
     return act, false
 end
 -- Common acquisition
-local act_codes_default = {"RUMMAGE", "ACTIVATE", "STORE", "PICKUP", "JUMPIN"}
+local act_codes_default = {"RUMMAGE", "ACTIVATE", "STORE", "PICKUP", "JUMPIN", "FEED"}
 function i_util:GetMouseActionClick(ent, act_codes)
     local act, right = i_util:GetMouseActionSoft(act_codes or act_codes_default, ent)
     if act then

@@ -1,4 +1,4 @@
-local save_id, map_str = "map_animal", "More creature icons"
+local save_id, map_str = "map_animal", "Creature icons"
 local default_data = {
     sw = true,
     range_merge = 8,
@@ -54,12 +54,15 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
             },
         }
         t_util:Pairs(prefabs_map, function(prefab, icon)
-            local xml, tex, name = h_util:GetPrefabAsset(icon)
+			-- 250517 VanCa: Handle "Unknown" name & repeative options (mooseegg)
+            -- local xml, tex, name = h_util:GetPrefabAsset(icon)
+            local xml, tex, name = h_util:GetPrefabAsset(prefab)
+			name = name == "Unknown" and prefab or name
             if xml then
                 table.insert(screen_data, {
                     id = icon,
                     label = name,
-                    hover = "Whether to display "..name.. " The icon icon \ncon the setting settings after the game needs to be restarted to take effect!",
+                    hover = "Whether to display " ..name.. " (" ..prefab.. ") icons on the map\nThe game needs to be restarted to take effect!",
                     fn = fn_save(icon),
                     default = function()
                         return c_util:NilIsTrue(save_data[icon])
@@ -70,7 +73,7 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
         return screen_data
     end
     -- Icon registration
-    saver:RegHMap(save_id, map_str, "Whether to display "..map_str.." Icon", function()return save_data.sw end, fn_save("sw"), {
+    saver:RegHMap(save_id, map_str, "Whether to display "..map_str.." icon", function()return save_data.sw end, fn_save("sw"), {
             screen_data = MapMoreScreenDataFn,
         }
     )

@@ -8,7 +8,7 @@ local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local way_default = m_util:IsTurnOn("pos_say")
 
 i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
-    saver:RegStat(stat_name, boss_str, "Monster warning advanced settings", function()return save_data.sw end, fn_save("sw"), {
+    saver:RegStat(stat_name, boss_str, "Monster warning - Advanced settings", function()return save_data.sw end, fn_save("sw"), {
         periodic = function(data, id, worldtime)
             local time = data.value - worldtime
             return time > 0 and {}
@@ -22,23 +22,23 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
         screen_data = {
             {
                 id = "way",
-                label = "Warning type:",
-                hover = "The position prompting when the monster comes",
+                label = "Type:",
+                hover = "The location of the warning message when the monster attacks",
                 default = fn_get,
                 fn = fn_save("way"),
                 type = "radio",
                 data = {
-                    {data = "idea", description = "Follow the system"},
+                    {data = "idea", description = "Default"},
                     {data = "ann", description = "Annoucement"},
-                    {data = "head", description = "Top of the player"},
-                    {data = "self", description = "Your own chat bar"},
+                    {data = "head", description = "My head"},
+                    {data = "self", description = "My chat"},
                     {data = "null", description = "Off"},
                 }
             },
             {
                 id = "color",
-                label = "Warn color:",
-                hover = "The color prompted when the monster comes",
+                label = "Color:",
+                hover = "The color of the warning message when the monster attacks",
                 default = fn_get,
                 fn = fn_save("color"),
                 type = "radio",

@@ -1,26 +1,26 @@
 -- Bird without feet, spread your wings and fly high!
-name = "Birds Painting Scroll · Hidden Ice 󰀜"
-version = "4.84_00"
+name = "Birds Painting Scroll · Spring 󰀜"
+version = "5.61_01"
 
 
 description =
-	" 󰀃 current version: Hidden Ice Chapter " .. version .. "󰀃\n\n" ..
+	" 󰀃 Spring Rain Awakens the Season\nCurrent version: " .. version .. " 󰀃\n\n" ..
 	[[
 
 
-	Hidden Ice Chapter is the first part of the scroll, which contains the basic runtime library.
+	Spring Rain Awakens the Season is the first part of the scroll, which contains the basic runtime library.
 	Other mods in the scroll series must also have this to run.
 
 
 
 
 	󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚
-	󰀒：If you encounter any problems, please read the settings carefully
-	󰀬：QQ group Q&A: 941438122
+	󰀒：QQ group has been disbanded
+	󰀬：If you encounter any problems, please attach the log and send an email to hanhuxi@qq.com
 																					󰀍
 ]]
 
-author = "呼吸"
+author = "呼吸 | Translated by VanCa"
 forumthread = ""
 api_version = 10
 -- Mod icon
@@ -224,7 +224,7 @@ configuration_options =
 	{
 		name = "sw_nightsight",
 		label = "Smart night vision",
-		hover = "Charlie still attack you if you have no other light source (right click to open adv. settings)",
+		hover = "Charlie still attack you if you have no other light source",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -293,8 +293,8 @@ configuration_options =
 	},
 	{
 		name = "sw__keytweak",
-		label = "Key hints",
-		hover = "Tips Key",
+		label = "On-screen keyboard",
+		hover = "Show keyboard activity on screen",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -320,9 +320,23 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
+		name = "sw_craft",
+		label = "Crafting panel information",
+		hover = "The crafting panel adds extra information display",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
 		name = "sw_cane",
 		label = "Auto tools switch",
 		hover = "Oh? Go to the panel and activate it manually",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_space",
+		label = "Space filter",
+		hover = "Pressing space bar does not trigger actions for some items",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -365,8 +379,8 @@ configuration_options =
 	},
 	{
 		name = "sw_winch",
-		label = "Salvage positioning",
-		hover = "Correct position highlight clamp capstan",
+		label = "Pinchin' Winch highlight",
+		hover = "Highlight Pinchin' Winch when it's in the correct position",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -456,7 +470,7 @@ configuration_options =
 	{
 		name = "huxi_pos",
 		label = "Current coordinates",
-		hover = "Display the current coordinates [this function needs to be set activated]",
+		hover = "Display current coordinates [This function needs to be activated in settings]",
 		options = tof,
 		default = true,
 	},
@@ -470,7 +484,7 @@ configuration_options =
 	{
 		name = "huxi_rain",
 		label = "Rain/snow countdown",
-		hover = "Countdown countdown",
+		hover = "Rainfall time countdown",
 		options = tof,
 		default = true,
 	},
@@ -493,7 +507,7 @@ configuration_options =
 	{
 		name = "sw_map",
 		label = "Functional settings",
-		hover = "Set the function of the map icon quickly",
+		hover = "Quickly set the map icon function",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -603,7 +617,7 @@ configuration_options =
 	{
 		name = "sw_mapseed",
 		label = "Map seed",
-		hover = "The location of the creation of the world will prompt map seeds",
+		hover = "Show the map seeds while hosting a world",
 		options = tof,
 		default = true,
 	},
@@ -653,14 +667,17 @@ configuration_options =
 		default = true,
 	},
 	{
-		name = "sw_info",
-		label = "Production bar information",
-		hover = "Add additional information display in the production bar",
-		options = {
-			{description = "On", data = true, hover = "If the fenghua chapter is enabled, there will be more display"},
-			{description = "No item code", data = "code", hover = "The production bar will not display the item code"},
-			{description = "Off", data = false},
-		},
+		name = "sw_skinpreset",
+		label = "Skin preset sets",
+		hover = "When viewing the character skin page, you can directly wear the suit",
+		options = tof,
+		default = true,
+	},
+	{
+		name = "sw_suggest",
+		label = "Skin Purchase Suggestions",
+		hover = "Provide suggestions in simple language when buying skins in the mall",
+		options = tof,
 		default = true,
 	},
 	{

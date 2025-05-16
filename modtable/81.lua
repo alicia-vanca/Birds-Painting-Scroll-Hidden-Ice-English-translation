@@ -102,9 +102,7 @@ local screen_data = {
         label = "Special thanks!",
         fn = function()
             h_util:CreatePopupWithClose("󰀍"..str_show.." · Special thanks󰀍",
-                "This function is specially customized by 猫头军师 (Cathead Military Advisor)\n\nMessage: Meow meow meow, meow meow meow, meow meow!!", {{
-                    text = h_util.ok
-                }})
+                "This function is specially customized by 猫头军师 (Cathead Military Advisor)\n\nMessage: Meow meow meow, meow meow meow, meow meow!!")
         end,
         hover = "Special thanks",
         default = true

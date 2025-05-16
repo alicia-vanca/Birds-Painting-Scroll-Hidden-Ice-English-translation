@@ -131,15 +131,20 @@ local function PressAttack()
         end
     end
 end
-local not_cane_prefabs = {"thurible", "bootleg", "bugnet", "thulecitebugnet"}
+-- 250428 VanCa: Add some items with switch cooldown
+local not_cane_prefabs = {"thurible", "bootleg", "bugnet", "thulecitebugnet", "magicalbroom", "spear_wathgrithr_lightning", "spear_wathgrithr_lightning_charged", "wathgrithr_shield"}
+local switch_cane_prefabs = {"voidcloth_scythe", "wortox_nabbag", "elderwand", "shadowscythe"}
 local function PressWalk()
     if not (save_data.sw=="on" and save_data.ui_walk) then return end
     local hand = p_util:GetEquip("hands")
-    if hand then
-        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod"}) 
+    -- 250428 VanCa: Compatible with some Casino host's items
+    if hand and table.contains(not_cane_prefabs, hand.prefab) then
+        return
+    end
+    if hand and not table.contains(switch_cane_prefabs, hand.prefab) then
+        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod", "tool"}) 
         or e_util:HasOneOfComps(hand, {"farmtiller", "wateryprotection", "terraformer", "oar"})
         or e_util:IsLightSourceEquip(hand) 
-        or table.contains(not_cane_prefabs, hand.prefab) 
         then
             return
         end

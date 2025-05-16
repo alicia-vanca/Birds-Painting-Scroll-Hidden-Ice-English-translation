@@ -85,16 +85,6 @@ function t_util:EasyCopy(t1, t2)
     end)
 end
 
-function t_util:GetChild(parent, childname)
-    if type(parent) == "table" and type(parent.children) == "table" then
-        for w in pairs(parent.children)do
-            if tostring(w) == childname then
-                return w
-            end
-        end
-    end
-end
-
 
 function t_util:GetNextLoopKey(t, key, reverse)
     local _t = self:PairToIPair(t, function(k)
@@ -223,8 +213,11 @@ function t_util:IPairFilter(t, func)
 end
 
 function t_util:BuildNumInsert(first, last, skip, func)
+    if type(skip) == "function" and not func then
+       func = skip
+       skip = 1 
+    end
     local t = {}
-    skip = skip or 1
     for i = first, last, skip do
         local ret = func(i)
         if ret then
@@ -234,11 +227,15 @@ function t_util:BuildNumInsert(first, last, skip, func)
     return t
 end
 
-function t_util:Add(t, element)
+function t_util:Add(t, element, first)
     if not self:GetElement(t, function(_, ele)
         return ele == element
     end) then
-        table.insert(t, element)
+        if first then
+            table.insert(t, 1, element)
+        else
+            table.insert(t, element)
+        end
     end
 end
 function t_util:Sub(t, element)
@@ -342,9 +339,23 @@ function t_util:NumThreshold(num, tolds)
 end
 
 
--- Provide to developers
+-----------------------------------Deprecated interfaces-----------------------------------
+-- h_util:GetChild or c_util:LoopGet is recommended
+function t_util:GetChild(parent, childname)
+    if type(parent) == "table" and type(parent.children) == "table" then
+        for w in pairs(parent.children)do
+            if tostring(w) == childname then
+                return w
+            end
+        end
+    end
+end
+
+
+
+-----------------------------------For Modder-----------------------------------
 function t_util:JoinDebug(t, id)
-    t_util[id] = t
+    t_util[id or "ent"] = t
 end
 
 
