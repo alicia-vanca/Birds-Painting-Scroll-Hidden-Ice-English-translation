@@ -2,6 +2,7 @@ local Screen = require "widgets/screen"
 local TEMPLATES = require "widgets/redux/templates"
 local t_util = require "util/tableutil"
 local h_util = require "util/hudutil"
+local c_util = require "util/calcutil"
 
 
 -- cb, text,
@@ -25,7 +26,7 @@ local ScreenScreen = Class(Screen, function(self, title, info_btn)
     end)
 
     self.window = self.proot:AddChild(TEMPLATES.CurlyWindow(400, 100, title, btns))
-    if self.window.body then -- Not very trusting of Kurei
+    if self.window.body then -- Not very trusting of Klei
         self.window.body:SetColour({1, 1, 1, 1})
     end
     self.editbox = self.window:AddChild(h_util:CreateTextEdit({hover = "", prompt = "", pos = {0, 32}, fn = function()

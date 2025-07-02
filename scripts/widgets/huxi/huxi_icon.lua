@@ -6,7 +6,7 @@ local h_util, m_util, t_util, s_mana, c_util = require "util/hudutil", require "
     require "util/settingmanager", require "util/calcutil"
 -- Mainboard mainboard
 local save_id, str_title = "mainboard", "Icon or panel settings"
-local size_default, cate_default = 55, "icon"
+local size_default, cate_default = m_util:IsHuxi() and 35 or 55, "icon"
 local default_data = {} -- Set in huxiwindow
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 
@@ -85,11 +85,12 @@ function Icon:SetRandomIcon(default)
         end
     else
         local xml, tex = h_util:GetRandomSkin(default)
+        if icon.SetTexture then 
         icon:SetTexture(xml, tex)
         s_mana:SaveSettingLine(save_id, save_data, {
             xml = xml,
             tex = tex
-        })
+        }) end
     end
 end
 
@@ -179,7 +180,7 @@ function Icon:GetSettingFn()
     }, {
         id = "size",
         label = "Icon size:",
-        hover = "Set the size of the small icon\nDefault is 80px",
+        hover = "Set the size of the small icon\nDefault is 55px",
         default = fn_get,
         type = "radio",
         fn = function(size)

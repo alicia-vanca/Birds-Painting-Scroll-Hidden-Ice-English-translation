@@ -105,6 +105,7 @@ function ScreenScreen:PaintIcon()
     if self.icons then self.icons:Kill() end
     self.icons = self.root:AddChild(Widget("icons"))
     local icons = c_util:FormatDefault(self.screen_data.icon, "table")
+    icons = icons.id and {icons} or icons       -- Fool-proof and idiot-proof
     local num_icons = #icons
     local size_default = sizes_default[num_icons] or 60
 
@@ -124,9 +125,8 @@ function ScreenScreen:PaintIcon()
         if not (info.id and type(num) == "number") then return end
         info.size = info.size or size_default
         local pos_default = btn_pos_data["right"..num_icons..num] or btn_pos_data.right11
-        if type(info.pos) == "string" and btn_pos_data[info.pos] or not info.pos then
-            info.pos = pos_default
-        end
+        local pos_info = type(info.pos) == "string" and btn_pos_data[info.pos]
+        info.pos = pos_info or info.pos or pos_default
         self.icons[info.id] = self.icons:AddChild(h_util:CreateImageButton(info, self.icons))
     end)
 end
@@ -317,6 +317,7 @@ function ScreenScreen:Make_ten()
         local tp = b_data.type or "box"
         local ui_made = self["Ten_"..tp]
         local widget = type(ui_made) == "function" and ui_made(self, b_data)
+        if not widget then return end
         self.lines[b_data.id] = self.lines:AddChild(widget)
         widget:SetHoverText(b_data.hover, { font = NEWFONT_OUTLINE, offset_y = 90 })
         widget:SetPosition((i - 1) % 2 * (self.w / 2 - 60), -math.floor((i - 1) / 2) * 70)
@@ -370,6 +371,7 @@ function ScreenScreen:Ten_imgstr(b_data)
     end)
     btn:SetPosition(200, 0)
 
+    -- TODO:h_util:CretePrefabButton(info)
     local xml, tex = b_data.xml, b_data.tex
     if h_util:GetPrefabAsset(b_data.prefab) then
         xml, tex = h_util:GetPrefabAsset(b_data.prefab)

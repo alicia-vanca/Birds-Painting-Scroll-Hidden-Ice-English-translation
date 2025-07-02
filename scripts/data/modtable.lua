@@ -14,57 +14,57 @@ local m_table = {}
 m_table.load = {
     {
         {"sw_cave"},
-        {"Cave clock", "Cave Clock"},
+        {"洞穴时钟", "Cave Clock"},
         1,
     },
     {
         "sw_mainboard",
-        "Function panel",
+        "功能面板",
         2
     },{
         {"sw_beauti", },
-        {"Filter", "Picture quality rendering","Color regulation"},
+        {"滤镜", "画质渲染","色彩调节"},
         3,
     },{
         {"sw_shutup", },
-        {"Mute noise", "Noise", "noise"},
+        {"去除噪音", "噪音", "noise"},
         4
     },
     {
         {"sw_unlock",},
-        "Developer",
+        "本地指令",
         5
     },
     {
         "sw_error",
-        {"Log location", "Collapse","Wrong tracking"},
+        {"日志位置", "崩溃处理","错误追踪"},
         6
     },
     {
         "sw_mapseed",
-        {"Map seed"},
+        {"地图种子"},
         7,
     },
     {
         {"sw_cookbook",},
-        {"Culinary guide", "Cookbook",},
+        {"烹饪指南", "Cookbook",},
         8,
     },
     {
         {"sw_C"},
-        {"Perspective change", "Ob perspective","Observer Camera",},
+        {"视角变换", "OB视角","Observer Camera",},
         9,
     },{
         "range_board",
-        "Scope tracking",
+        "范围追踪",
         10,
     },{
         "ex_board",
-        "Item manager",
+        "物品管理器",
         11
     },{
         {"sw_autosort", "ex_board"},
-        {"Merging", "Automatic classification", "autosort"},
+        {"物品整理", "自动分类", "autosort"},
         16
     },{    
         -- Vanca: Preserve the [Night vision] function
@@ -74,356 +74,356 @@ m_table.load = {
     },
     {
         {"sw_autorow", },
-        {"Automatic rowing", "lazy control", "rowing"},
+        {"自动划船", "lazy control", "rowing"},
         13,
     },
     {
         {"sw_toggle",},
-        {"Switch delay compensation","Delay compensation","compensation"},
+        {"切换延迟补偿","延迟补偿","compensation"},
         14,
     },
     {
         "sw_multiscreen",
-        "Wallpaper mode",
+        "壁纸模式",
         15,
     },
     {
         {"sw_autoreel",},
-        "Automatic fishing",
+        "自动钓鱼",
         17,
     },
     {
         {"sw_wagstaff",},
-        "Storm mission",
+        "风暴任务",
         18,
     },
     {
         {"sw_wildfires",},
-        {"Wildfire warning","Spontaneous warning"},
+        {"野火警告","自燃警告"},
         19,
     },
     {
         {"sw_fishname",},
-        {"Sea fishing assistant","Automatic sea fishing","Sea fishing master","Auto fishing","Names of fish", "Fish group display"},
+        {"海钓助手","自动海钓","海钓大师","Auto fishing","鱼群名字", "鱼群显示"},
         20,
     },
     {
         {"sw_shadowheart"},
-        {"Statue production", "Last statue","Black -hearted factory"},
+        {"雕像制作", "上个雕像","黑心工厂"},
         21,
     },
     {
         {"sw_DAG"},
-        {"Automatically do archive mission", "Archive task", "ArchiveTask","Archive","Archive"},
+        {"自动做档案馆任务", "档案馆任务", "ArchiveTask","档案馆标记","档案馆标记"},
         {22,},
     },
     {
         {"sw_hideshell"},
-        {"Hidden shell"},
+        {"隐藏贝壳"},
         {23},
     },
     {
         {"sw_skinHistory"},
-        {"Gift record","Turn on the skin in the bureau","Skins extender","Automatic gift","Hanging to open the skin","super AFK"},
+        {"礼物记录","局内开启皮肤","Skins extender","自动开礼物","挂机开皮肤","super AFK"},
         {
             24,
         },
     },
     {
         {"sw_skinQueue"},
-        {"Duplicate skin decomposition","Duplicate skin", "SkinQueue"},
+        {"重复皮肤分解","重复皮肤", "SkinQueue"},
         25,
     },
     {
         {"sw_rescue"},
-        {"One-click rescue"},
+        {"一键Rescue"},
         26,
     },
     -- {
     --     {"sw_wendy"},
-    --     {"Wendy assist", "Abigail Keybinds","Abigail shortcut keys"},
+    --     {"温蒂辅助", "Abigail Keybinds","比盖尔快捷键"},
     --     27,
     -- },
     {
         {"sw_wanda"},
-        {"Wanda shortcut keys", "wanda keybinds"},
+        {"旺达快捷键", "wanda keybinds"},
         29,
     },
     {
         {"rt_take", "sw_right"},
-        {"Recipe take", "Right click take", "Right click strengthen", "Memory"},
+        {"配方拿取", "右键拿取", "右键加强", "记忆力"},
         30,
     },
 	{
         {"sw_autoread"},
-        {"Auto reading","Wickerbottom assist","Old grandma assist", "book reader"},
+        {"自动读书","薇克巴顿辅助","老奶奶辅助", "book reader"},
         31,
     },
     {
         "sw_roll",
-        {"Precise pick up", "Quick access", "Quick pick up", "Item Scroller"},
+        {"精确拿取", "快速拿取", "快捷拿取", "Item Scroller"},
         33,
     },
     {
         "sw_log",
-        {"Changelog"},
+        {"更新日志"},
         34,
     },
     -- {
     --     "sw_wath",
-    --     {"Wigfrid assist","Valkyrie assist"},
+    --     {"女武神辅助","薇格弗德辅助"},
     --     35,
     -- },
     -- {
     --     "sw_wax",
-    --     {"Maxwell assist", "Old man assist", "Old man shortcut keys"},
+    --     {"麦斯威尔辅助", "老麦辅助", "老麦快捷键"},
     --     36,
     -- },
     {
         "sw_space",
-        {"Space bar filter","Space bar filter", "pickup filter"},
+        {"空格过滤器","空格筛选器", "pickup filter"},
         37,
     },
     {
         {"sw_mySeedTex"},
-        {"Seed sticker restore", "Seed map", "Item icon", "High-definition icon"},
+        {"种子贴图还原", "种子贴图", "Item icon", "高清图标"},
         38,
     },
     {
         "sw_planthant",
-        {"Plowing illustration", "Pioneer","Gardening cap","Gardeneer Hat"},
+        {"耕种图鉴", "耕作先驱","园艺帽","Gardeneer Hat"},
         39,
     },
     {
         "sw_nutrients",
-        {"Pioneer", "Gardening cap","Gardeneer Hat"},
+        {"耕作先驱", "园艺帽","Gardeneer Hat"},
         40,
     },
     {
         "sw_stat",
-        {"State change", "Stat Change Display"},
+        {"状态变化", "Stat Change Display"},
         41,
     },
     {
         "sw_wall",
-        {"Don't hit the wall", "No wall attack", "Hit the wall", "Advanced control", "Advanced Attack", "Advanced Controls"},
+        {"不要打墙", "No wall attack", "打墙", "高级控制", "Advanced Attack", "Advanced Controls"},
         42,
     },
     {
         "sw_tele",
-        "Transmit",
+        "传送标记",
         43,
     },
     {
-        {},-- To enable this function, take the info tray as part of the basic library after the scroll
-        {"Info tray"},
+        {},-- Force this feature to be enabled, and the scroll will treat the info bar as part of the base library.
+        {"呼吸栏"},
         44,
     },
     {
         "sw_folder",
-        {"Mod directory","Show Mod Folder",},
+        {"模组目录","Show Mod Folder",},
         45,
     },
     {
         "sw_nickname",
-        {"Nickname display", "nickname"},
+        {"昵称显示", "nickname"},
         46,
     },
     {
         "sw_peopleNum",
-        {"Increase the number of people", "Maximum number of people"},
+        {"增加人数上限", "人数上限"},
         47,
     },
     {
         "sw_hidecrown",
-        {"Bone helmet disable shadow monster", "Bone helmet: remove the shadow monster","Bone Helm","Bone helmet"},
+        {"骨盔禁用影怪", "骨盔：去除影怪","Bone Helm","骨头头盔"},
         48,
     },
     {
         "sw_double",
-        {"Double-click", "Double-click quickly", "Double-click to transfer", "Double-click to discard", "lazy control",},
+        {"队列双击", "快速双击", "双击转移", "双击丢弃", "lazy control",},
         49,
     },
     {
         {"sw_castspell", "sw_right"},
-        {"Accurate casting", "Cancellation of casting restrictions", "Right-click to enhance", "lazy control",},
+        {"精准施法", "取消施法限制", "右键加强", "lazy control",},
         50,
     },
     {
         {"sw_cane"},
-        {"Automatic cut cane", "Cut a cane"},
+        {"自动切手杖", "切个手杖"},
         51,
     },
     {
         {"sw_lantern",},
-        {"Button to drop items"},
+        {"按键丢物品"},
         52,
     },
     {
         "sw_craft",
-        {"Crafting bar information","More Crafting Details"},
+        {"制作栏信息","More Crafting Details"},
         27,
     },
     {
         {"sw_server",},
-        {"Simulation heavy company", "Corporation"},
+        {"模拟重连", "快速重连"},
         55,
     },
     {
-        {},-- To enable this function, the memory is used as part of the basic library after painting
-        {"Memory+", "Memory"},
+        {},-- Force this feature to be enabled, and the scroll will use memory as part of the base library in the future
+        {"记忆力+", "记忆力"},
         53,
     },
     {
         "mid_search",
-        {"Mid-key enhancement", "Memory"},
+        {"中键加强", "记忆力"},
         56,
     },
     {
         "sw_autocook",
-        {"Automatic cooking", "auto cooking","Crockpot Repeater", "Automatically cook","Memory"},
+        {"自动烹饪", "auto cooking","Crockpot Repeater", "自动做饭","记忆力"},
         57,
     },
     {
         {"huxi_buff","sw_timer"},
-        {"Buff countdown", "Memory"},
+        {"BUFF 倒计时", "记忆力"},
         58,
     },
     {
         {"huxi_nightmare","sw_timer"},
-        {"Nightmare phase", "Nightmare countdown", "Riot clock", "nightmare phase indicator"},
+        {"暴动倒计时", "梦魇 倒计时", "暴动时钟", "nightmare phase indicator"},
         59,
     },
     {
         {"huxi_rain", "sw_timer"},
-        {"Rainfall", "Weather forecast", "Rain Predict"},
+        {"降雨倒计时", "天气预报", "Rain Predict"},
         60,
     },
     {
         {"huxi_boss","sw_timer"},
-        {"Boss countdown", "Memory"},
+        {"BOSS 倒计时", "记忆力"},
         61,
     },
     {
         {"huxi_warn","sw_timer"},
-        {"Monster warning", "Monster warning", "Advanced Warning"},
+        {"怪物预警", "怪物警告", "Advanced Warning"},
         62,
     },
     {
-        {},-- Forced to enable this function, as the basic library of painting volume
-        {"Map icon+",},
+        {},-- This feature is mandatory to enable as the basic library of the Painting Scroll 
+        {"地图图标+",},
         63,
     },
     {
         {"map_animal","sw_map"},
-        {"More creature icons", "Map icon",},
+        {"更多生物图标", "地图图标",},
         64,
     },
     {
         {"huxi_clock","sw_timer"},
-        {"Current time", "Real clock",},
+        {"当前时间", "现实时钟",},
         65,
     },
     {
         {"huxi_pos","sw_timer"},
-        {"Current coordinates", "Reality coordinates",},
+        {"当前坐标", "现实坐标",},
         66,
     },
     {
         {"map_wormhole", "sw_map"},
-        {"Wormhole mark", "Map icon"},
+        {"虫洞标记", "地图图标"},
         67,
     },
     {
         {"map_gogo", "sw_map"},
-        {"Automatic way", "Map icon"},
+        {"自动寻路", "地图图标"},
         68,
     },
     {
         {"map_alter", "sw_map"},
-        {"Positioning celestial body", "Map icon"},
+        {"定位天体", "地图图标"},
         69,
     },
     {
         {"map_preview","sw_map"},
-        {"Terrain preview", "Map scan", "Terrain scan"},
+        {"地形预览", "地图扫描", "地形扫描"},
         32,
     },
     {
         {"sw_right"},
-        {"Right-click to enhance"},
+        {"右键加强"},
         70,
     },
     {
         {"rt_dirtpile", "sw_right", "sw_timer"},
-        {"Automatically turn footprint", "Right-click to enhance", "lazy control", "Animal Tracker"},
+        {"自动翻脚印", "右键加强", "lazy control", "Animal Tracker"},
         71,
     },
     {
         {"rt_double", "sw_right"},
-        {"Double-click transmission"},
+        {"双击传送"},
         72,
     },
     {
         {"sw_modplayer", "sw_right"},
-        {"Mod character icon", "Character archive icon", "Show Character Portrait"},
+        {"模组角色图标", "角色存档图标", "Show Character Portrait"},
         73,
     },
     {
         "sw_starfish",
-        {"Ruin anenemy", "Moonnight's customized feature"},
+        {"海星清远古", "Moonnight 定制功能"},
         75,
     },
     {
         "sw_mynote",
-        {"My notes", "呼吸's customized feature"},
+        {"我的笔记", "呼吸 定制功能"},
         76,
     },
     -- {
     --     {"sw_tolock",},
-    --     "Spawn",
+    --     "远程指令",
     --     77
     -- },
     {
         {"sw_autopush",},
-        {"Auto push", "Keep following", "Auto follow", "Follow like a shadow", "keep following",},
+        {"自动推挤", "保持跟随", "自动跟随", "如影随形", "keep following",},
         78
     },
     {
         {"sw_winch",},
-        {"Salvage positioning", "Ynou's customized feature",},
+        {"打捞定位", "Ynou 定制功能",},
         79
     },
     {
         {"sw_indicator",},
-        {"Directions", "虾远山's customized feature",},
+        {"方向指示", "虾远山 定制功能",},
         80
     },
     {
         {"sw_compass",},
-        {"Compass", "猫头军师's customized feature",},
+        {"指南针", "猫头军师 定制功能",},
         81
     },
     {
         {"sw__keytweak"},
-        {"Key prompts"},
+        {"键位提示"},
         28,
     },
     {
         {"sw_suggest"},
-        {"Gift pack purchase advice", "Look at the spool", "Cost-effectiveness"},
+        {"礼包购买建议", "看线轴", "性价比"},
         54,
     },
     {
         {"sw_skinpreset"},
-        {"Skin Preset Pack",},
+        {"皮肤预设套装",},
         74,
     },
 }
 
 -- Conflict collection
-m_table.ban = {"Cocktail-forever god", "Survival auxiliary", "Xiaobai client", "Super client", "Keeth client",
-"Cheating device", "One -click client", "Pusheen", "Fraud", "Collection-client", "Mushroom mousse"}
+m_table.ban = {"鸡尾酒-永远的神", "生存辅助", "小白客户端", "超级客户端", "Keeth客户端",
+"作弊器", "一键客户端", "Pusheen", "欺诈客户端", "合集-客户端", "蘑菇慕斯"}
 -- Automatic shutdown function
 m_table.close = {}
 -- Conflicting function

@@ -8,18 +8,22 @@ AddClassPostConstruct("screens/redux/purchasepackscreen", function(self)
     self.speech_bubble = self.side_panel:AddChild(UIAnim())
     self.speech_bubble:GetAnimState():SetBank("textbox")
     self.speech_bubble:GetAnimState():SetBuild("textbox")
-    self.speech_bubble:SetScale(-.6, 1.3, .6)
+    self.speech_bubble:SetScale(-.6, 1.1, .6)
     self.speech_bubble:GetAnimState():PlayAnimation("open", false)
     self.speech_bubble:Show()
     self.filter_container:SetPosition(0, -150, 0)
-    self.speech_bubble:SetPosition(-11, 115, 0)
+    self.speech_bubble:SetPosition(-11, 155, 0)
     -- Text
     self.text = self.side_panel:AddChild(Text(BUTTONFONT, 35, "", WHITE))
     -- self.text:SetRegionSize( 250, 180)
     self.text:SetVAlign(ANCHOR_MIDDLE)
     self.text:EnableWordWrap(true)
-    self.text:SetPosition(-11, 115, 0)
+    self.text:SetPosition(-11, 155, 0)
     self.text:SetString("")
+    
+    if self.sales_btn then
+        self.sales_btn:SetPosition(0, -80)
+    end
 end)
 
 
@@ -119,26 +123,29 @@ local function fn_tip(w)
             str = str.."This is the best package for getting spools！\n"
             str = "It can be unraveled to get "..info.sell_own.." spools ("..info_best.value_per_currency..").\n"
         else
-            str = str.."This package can be unraveled to get "..info.sell_own.." spools ("..info.value_per_currency..")\n"
-            str = str.."If you want to get spools, it's more recommended to buy【"..info_best.title.."】("..info_best.value_per_currency..").\n"
+            str = str.."This package can be unraveled to get "..info.sell_own.." spools"
+            if info.sell_own ~= 0 then
+                str = str.. " ("..info.value_per_currency..")"
+            end
+            str = str..".\nIf you want to get spools,【"..info_best.title.."】is more recommended ("..info_best.value_per_currency..").\n"
         end
     else
         str = "Weave all un-owned items need "..info.buy_own.." spools.\n"
         str = str.."Unravel all duplicates after buying can get "..info.sell_own.." spools.\n"
         local bount = info.buy_own+info.sell_own
-        str = str.."So, it's like spending "..info.money..info.currency.." to buy "..bount.." spools.\n"
+        str = str.."It's like spending "..info.money..info.currency.." to buy "..bount.." spools.\n"
         if info.itp == info_best.itp then
             str = str.."This is the best package for getting spools right now, "
             str = str.."completely unravel can get "..info.sell_all.." spools ("..info.value_per_currency..").\n" 
         else
-            str = str.."The best package for unraveling right now is【"..info_best.title.."】("..info_best.value_per_currency..")，"
+            str = str.."【"..info_best.title.."】 is the best package for unraveling right now ("..info_best.value_per_currency..")，"
             local bount_best = info.money*info_best.value
             -- 250516 VanCa: floor bount_best since value is a float value
             str = str..info.money..info.currency.." can get ~".. math.floor(bount_best).." spools with that package. "
             local str_add, money_best
             if bount > bount_best then
-                str_add = "buying【"..info.title.."】directly is more cost-effective"
-                -- money_best = bount - bount_best
+                -- str_add = "buying【"..info.title.."】directly is more cost-effective"
+                str_add = "buying this package directly is more cost-effective"
             else
                 money_best = bount_best - bount
                 -- 250516 VanCa: Change saving amount to percent
@@ -147,7 +154,7 @@ local function fn_tip(w)
                 str_add = "buying【"..info_best.title.."】and then unravel spools to weave is more cost-effective, saving "..money_best
             end
 
-            str = str.."So, "..str_add..".\n"
+            str = str.."\nSo, "..str_add..".\n"
         end
     end
     

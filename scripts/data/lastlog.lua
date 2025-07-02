@@ -1,6 +1,48 @@
 return 
 [=[
 --------------------------start logging here----------------------------
+2025.6.23 v5.81
+[Winter Scroll]
+Since Klei added a shortcut key to open the Skill Wheel, the related function has been removed from Scroll.
+Affected Characters:
+Willow, Maxwell, Winona, Wendy, Walter
+[Spring Scroll]
+Fixed abnormal display behavior with a certain mod.
+
+
+2023.6.13 v5.8
+[Skin Pack] Fixed abnormal data issues with the Wes character skin set
+[Purchase Advice] Fixed misaligned discount promotion display
+
+
+2025.6.3 v5.7
+[Spring Scroll]
+[Mod Directory] Now additionally displays mod version numbers (Workshop mod versions included)
+
+
+
+2025.5.27 v5.65
+[Scroll: Flight] Custom chapter
+[Auto Combat: Shadow Creatures] Press middle mouse button to auto-kite and attack shadow creatures
+[Auto Combat: Spiders] Press middle mouse button to auto-kite and attack spiders
+[Spring Scroll]
+Adjusted default positions of some buttons
+Fixed occasional crash when resetting icons
+Pop-up windows and panels can now remain open when closed
+
+
+2025.5.27 v5.64
+[Spring Scroll]
+Fixed several bugs and optimized various interfaces
+
+2025.5.25 v5.63
+[Popup Panel] Fixed issue where specified button positions sometimes didn't take effect
+
+
+2025.5.19 v5.62
+[Manual Input] Fixed crash issue in non-developer mode
+
+
 2025.5.17 v5.61
 【Spring Scroll】
 【Skin Preset Outfit】Now even Pferulox can change skin outfits

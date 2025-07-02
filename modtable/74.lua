@@ -7,7 +7,14 @@ local function GetSkinSetForPrefab(prefab)
     if not table.contains(DST_CHARACTERLIST, prefab) then return end
     local suits = t_util:IPairFilter(TheItems:GetIAPDefs(), function(iap)
         local itp = iap.item_type
-        local pack = itp and itp:find(prefab) and MISC_ITEMS[itp]
+        local pattern1 = "_"..prefab.."_"
+        local pattern2 = "_"..prefab.."$"
+        local pattern3 = "^"..prefab.."_"
+        local pack = itp and (
+            itp:find(pattern1, 1, true)
+            or itp:find(pattern2)
+            or itp:find(pattern3)
+        ) and MISC_ITEMS[itp]
         if pack then
             local otp = pack.output_items
             local psb = PREFAB_SKINS[prefab]
