@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Spring 󰀜"
-version = "5.61_01"
+version = "5.81_01"
 
 
 description =

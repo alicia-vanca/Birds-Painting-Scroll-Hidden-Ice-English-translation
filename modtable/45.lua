@@ -25,3 +25,33 @@ TE.ModListItem = function(...)
     end
     return opt
 end
+
+local ModsTab = require "widgets/redux/modstab"
+local _ShowModDetails = ModsTab.ShowModDetails
+ModsTab.ShowModDetails = function(self, widget_idx, client_mod)
+    local ret = _ShowModDetails(self, widget_idx, client_mod)
+    if self.detailauthor then
+        local items_table = client_mod and self.optionwidgets_client or self.optionwidgets_server
+        local modnames_versions = client_mod and self.modnames_client or self.modnames_server
+        local idx = items_table[widget_idx] and items_table[widget_idx].index
+        local modname = idx and modnames_versions[idx] and modnames_versions[idx].modname
+        if modname then
+            local modinfo = KnownModIndex:GetModInfo(modname) or {}
+            local version_m = type(modinfo.version)=="string" and modinfo.version
+            -- 250702 VanCa: Hide mod version when "Use Main Menu In Game" is active to prevent duplicate info
+            if version_m and not m_util:IsInBan("Use Main Menu In Game") then
+                local author_m = self.detailauthor:GetString()
+                self.detailauthor:SetString(author_m.."  "..STRINGS.UI.MAINSCREEN.DST_UPDATENAME.."："..version_m)
+                local w, h = self.detailauthor:GetRegionSize()
+                local align = self.detailauthor._align
+                self.detailauthor:SetPosition((w or 0)/2 - align.x, align.y)
+            end
+            local version_w = version_m and IsWorkshopMod(modname) and TheSim:GetWorkshopVersion(modname)
+            if version_w and version_w ~= version_m and self.detailwarning then
+                self.detailwarning:SetString(STRINGS.UI.MODSSCREEN.WORKSHOP_FILTER.." "..STRINGS.UI.MAINSCREEN.DST_UPDATENAME.."："..version_w)
+                self.detailwarning:SetColour(PLAYERCOLOURS.RED)
+            end
+        end
+    end
+    return ret
+end

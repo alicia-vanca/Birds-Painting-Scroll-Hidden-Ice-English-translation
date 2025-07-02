@@ -826,6 +826,7 @@ function p_util:SetBindEvent(eventname, func)
 end
 
 -- Is the player dead?
+-- The official one is inst:HasTag("playerghost")
 function p_util:IsDead()
     return ThePlayer.player_classified.isghostmode:value()
 end

@@ -107,7 +107,8 @@ function ECTRL:UI_Build(meta)
         -- h_util:ActivateBtnScale(btn.img, self.img_size)
         btn:SetPosition((i-1)*self.img_a_space, 0)
         local ui_data = self.Data.data_slots[ui_slot]
-        btn:SetHoverText(ui_data.hover..hover_add, {offset_y = 1.5*self.img_size})
+        local hover_text = ui_data.hover..(ui_data.hover_set and "\n"..ui_data.hover_set or hover_add)
+        btn:SetHoverText(hover_text, {offset_y = 1.5*self.img_size})
         function btn:install(item)
             local xml, tex = e_util:GetAtlasAndImage(item)
             if not (xml and tex) and type(item)=="string" then
@@ -138,18 +139,28 @@ function ECTRL:UI_Build(meta)
         end
         h_util:BindMouseClick(btn, {
             [MOUSEBUTTON_LEFT] = function()
-                local prefab = meta[item_slot]
-                if prefab then
-                    btn:install()
-                    prefab = false
+                if ui_data.ui_left then
+                    ui_data.ui_left()
                 else
-                    local item = p_util:GetItemFromAll(nil, nil, ui_data.filter, {"equip", "body", "backpack", "container", "mouse"})
-                    btn:install(item)
-                    prefab = item and item.prefab
+                    local prefab = meta[item_slot]
+                    if prefab then
+                        btn:install()
+                        prefab = false
+                    else
+                        local item = p_util:GetItemFromAll(nil, nil, ui_data.filter, {"equip", "body", "backpack", "container", "mouse"})
+                        btn:install(item)
+                        prefab = item and item.prefab
+                    end
+                    self.Func.SaveData(item_slot)(prefab)
                 end
-                self.Func.SaveData(item_slot)(prefab)
             end,
-            [MOUSEBUTTON_RIGHT] = InstallNext(),
+            [MOUSEBUTTON_RIGHT] = function()
+                if ui_data.ui_right then
+                    ui_data.ui_right()
+                else
+                    InstallNext()
+                end
+            end,
             [MOUSEBUTTON_SCROLLDOWN] = InstallNext(),
             [MOUSEBUTTON_SCROLLUP] = InstallNext(true),
         })

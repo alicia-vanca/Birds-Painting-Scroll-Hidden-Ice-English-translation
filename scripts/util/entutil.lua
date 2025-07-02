@@ -369,7 +369,7 @@ local function GetStrPrefab(prefab)
     return STRINGS.NAMES[prefab:upper()]
 end
 function EntUtil:GetPrefabName(prefab, ent)
-    if not prefab then
+    if type(prefab) ~= "string" then
         return self.NullName
     end
     local pdata = PrefabNames[prefab]

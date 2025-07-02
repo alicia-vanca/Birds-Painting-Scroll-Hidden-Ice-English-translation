@@ -231,13 +231,13 @@ function h_util:CretePrefabButton(info)
         w.cell_root:Disable()
     end
     w.cell_root:SetNormalScale(info.scale or 1, info.scale or 1)
-    w.prefab_img = w.cell_root.image:AddChild(self:CreateFoodImage())
+    w.prefab_img = w.cell_root.image:AddChild(self:CreateFoodImage(info))
     w.SetPrefabIcon = w.prefab_img.SetPrefabIcon
     return w
 end
 
 -- Create a food image {prefab, scale}
-function h_util:CreateFoodImage()
+function h_util:CreateFoodImage(info)
     local img = Image(xml_quag, "cookbook_missing.tex")
     img.img_hover = img:AddChild(Image(xml_quag, "cookbook_hover.tex"))
     img.img_hover:Hide()
@@ -267,6 +267,9 @@ function h_util:CreateFoodImage()
         else
             img.img_hover:Hide()
         end
+    end
+    if info then
+        img:SetPrefabIcon(info)
     end
     return img
 end
@@ -370,7 +373,7 @@ function h_util:CreatePopupWithClose(title, bodytext, btns, meta)
             if type(btn.cb) == "function" then
                 btn.cb()
             end
-            PopFunc()
+            if not btn.dontpop then PopFunc() end
         end}
     end)
     title = title or Mod_ShroomMilk.Mod["春"].name
