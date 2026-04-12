@@ -1,134 +1,195 @@
--- Icon and Code Search
--- This is a developer mod feature!
-local save_id, str_show = "sw_imgsearch", "Icon Library"
-local TEMPLATES = require "widgets/redux/templates"
 
-
+local save_id, str_auto, img_show = "sw_watering", "Auto Watering", "wateringcan"
+local default_data = {
+    
+    towater = true,
+    
+    tofill = true,
+    
+    tosay = true,
+    
+    
+    perwater = 90,
+    perfill = 90,
+    
+    range = 40,
+}
+local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
+local function Say(str)
+    if str and save_data.tosay then
+        u_util:Say(str_auto, str, "head", "LightSkyBlue", true)
+    end
+    return true
+end
+local prefabs_inv = {"wateringcan", "premiumwateringcan"}
+local function GetMoisture(nut)
+    local wet = nut and nut.AnimState and nut.AnimState:GetCurrentAnimationTime() or 1
+    return wet < 0 and 0 or (wet > 1 and 1 or wet)
+end
 local function fn_left()
-    local function fn_setprefab(prefab, ui)
-        if not (h_util:IsValid(ui) and ui.detail) then return end
-        if ui.grid then ui.grid:RefreshView() end
-        if type(prefab)=="string" and prefab~="" then
-            ui.detail.icon_show.SetPrefabIcon({prefab = prefab})
-            local name = e_util:GetPrefabName(prefab)
-            name = name == e_util.NullName and "" or name
-            ui.detail.text_show:SetString(name.."\n"..prefab)
-            ui.detail.btn_ann:SetOnClick(function()
-                print(prefab, name)
-                local str = name == "" and "Icon code: " or name.."'s icon code: "
-                u_util:Say(STRINGS.LMB.." "..str..prefab, nil, "net")
+    local pusher = m_util:GetPusher()
+    if not pusher then return end
+    if pusher:GetNowTask() then
+        return pusher:StopNowTask()
+    end
+    local flag = save_data.towater and "Watering mode" or "Refill mode"
+
+    pusher:RegNowTask(function(player, pc)
+        if save_data.towater and flag == "Watering mode" then
+            local nuts = e_util:FindEnts(nil, "nutrients_overlay", save_data.range, nil, {})
+            if not nuts[1] and not save_data.tofill then
+                return Say("No farmland nearby")
+            end
+            local nut = t_util:IGetElement(nuts, function(nut)
+                return GetMoisture(nut)*100 < save_data.perwater and nut
             end)
-            ui.detail.btn_ann:Enable()
-        else
-            ui.detail.icon_show.SetPrefabIcon({prefab = "cookbook_missing"})
-            ui.detail.text_show:SetString("")
-            ui.detail.btn_ann:Disable()
-        end
-    end
-    local function GetPrefabsData(prefabs)
-        if not prefabs then
-            prefabs = t_util:PairToIPair(_G.Prefabs or {}, function(prefab)
-                return prefab
-            end)
-        end
-        table.sort(prefabs, function(a, b)
-            return a < b
-        end)
-        return t_util:IPairFilter(prefabs, function(prefab)
-            local xml, tex, name = h_util:GetPrefabAsset(prefab)
-            return xml and {
-                xml = xml,
-                tex = tex,
-                name = name,
-                prefab = prefab,
-                hover = name == e_util.NullName and prefab or name.."\n"..prefab
-            }
-        end)
-    end
-    local context_grid = {prefab = t_util:GetRecur(t_util, "ent.prefab")}
-    local function fn_loadui(ui)
-        ui.editline:SetPosition(-220, 165)
-        ui.detail:SetPosition(305, 75)
-        ui.detail:SetScale(1.1)
-        ui.detail.btn_ann.image:SetTint(.4, 1, .4, 1) -- 1, 1, .5, 1
-        ui.detail.btn_ann:SetPosition(0, -260)
-        ui.grid:SetItemsData(GetPrefabsData())
-        fn_setprefab(context_grid.prefab, ui)
-    end
-    local function fn_edited()
-        local ui = h_util:GetLines()
-        local textedit = t_util:GetRecur(ui, "editline.textedit.textbox")
-        if not textedit then return end
-        local text = c_util:TrimString(textedit:GetString())
-        local p_data = GetPrefabsData()
-        if text == "" then
-            ui.grid:SetItemsData(p_data)
-        else
-            ui.grid:SetItemsData(t_util:IPairFilter(p_data, function(data)
-                if data.prefab:find(text) then
-                    return data
+            if nut then
+                local tool = p_util:GetItemFromAll(prefabs_inv, nil, function(item)
+                    return e_util:GetPercent(item) > 1
+                end, {"equip", "body", "backpack", "container"})
+                if tool then
+                    
+                    if p_util:GetEquip("hands") == tool then
+                        local pos = nut:GetPosition()
+                        local act = p_util:GetAction("pos", "POUR_WATER_GROUNDTILE", true, tool, nil, pos)
+                        if act then
+                            p_util:DoAction(act, RPC.RightClick, act.action.code, pos.x, pos.z, act.target, act.rotation, true, nil, nil, act.action.mod_name)
+                        end
+                    else
+                        p_util:Equip(tool)
+                    end
                 else
-                    if data.name ~= e_util.NullName and data.name:find(text) then
-                        return data
+                    tool = p_util:GetItemFromAll(prefabs_inv, nil, nil, {"equip", "body", "backpack", "container"})
+                    if tool then
+                        
+                        if save_data.tofill then
+                            flag = "Refill mode"
+                            Say(flag)
+                            return
+                        else
+                            return Say("The watering can is empty")
+                        end
+                    else
+                        return Say("No watering can found")
                     end
                 end
-            end))
-        end
-    end
-    local function fn_clear()
-        local ui = h_util:GetLines()
-        local textedit = t_util:GetRecur(ui, "editline.textedit.textbox")
-        if textedit then
-            textedit:SetString("")
-            ui.grid:SetItemsData(GetPrefabsData())
-        end
-    end
-    local function fn_btn_clear()
-        return h_util:CreateImageButton({prefab = "delete", hover = "Clear Results", hover_meta = {offset_y = 50}, pos = {245}, size = 70, fn = fn_clear})
-    end
-    m_util:AddBindShowScreen({
-        title = str_show,
-        id = save_id,
-        data = {},
-        type = "player",
-        data_create = {
-            {
-                id = "grid",
-                name = "BuildGrid_PrefabButton",
-                meta = {
-                    context = context_grid,
-                    fn_sel = fn_setprefab,
-                }
-            },{
-                id = "editline",
-            },{
-                id = "textedit",
-                pid = "editline",
-                fn = function()
-                    return h_util:CreateTextEdit({width = 380, height = 80, hover = "Enter the item's name or code", fn = fn_edited})
+            elseif save_data.tofill then
+                
+                local tool = p_util:GetItemFromAll(prefabs_inv, nil, function(item)
+                    return e_util:GetPercent(item) < save_data.perfill
+                end, {"equip", "body", "backpack", "container"})
+                if tool then
+                    flag = "Refill mode"
+                    Say(flag)
+                    return
                 end
-            },{
-                id = "btn_clear",
-                pid = "editline",
-                fn = fn_btn_clear,
-            },{
-                id = "btn_filter", -- A button that doesn't do much, as the input result can automatically search
-                pid = "editline",
-                fn = function()
-                    return h_util:CreateImageButton({xml = HUD_ATLAS, tex = "magnifying_glass_off.tex", hover = "Click to Search", hover_meta = {offset_y = 50}, pos = {320}, size = 70, fn = fn_edited})
-                end,
-            },{
-                id = "detail",
-                name = "BuildGrid_PrefabDetail",
-            },{
-                id = "btn_ann",
-                pid = "detail",
-                fn = function()
-                    return TEMPLATES.StandardButton(nil, "Click to Announce", {250, 80})
+            end
+        elseif save_data.tofill and flag == "Refill mode" then
+            local tool = p_util:GetItemFromAll(prefabs_inv, nil, function(item)
+                return e_util:GetPercent(item) < save_data.perfill
+            end, {"equip", "body", "backpack", "container"})
+            if tool then
+                if p_util:GetEquip("hands") == tool then
+                    local act
+                    local pond = e_util:FindEnt(nil, nil, save_data.range, nil, nil, nil, nil, function(ent)
+                        act = p_util:GetAction("equip", "FILL", true, tool, ent)
+                        return act
+                    end)
+                    if pond then
+                        local pos = pond:GetPosition()
+                        p_util:DoAction(act, RPC.RightClick, act.action.code, pos.x, pos.z, pond, act.rotation, nil, nil, true, act.action.mod_name)
+                    else
+                        m_util:print("No pond found")
+                    end
+                else
+                    p_util:Equip(tool)
                 end
-            },
-        },
-        fn_line = fn_loadui,
-    })()
+            else
+                flag = "Watering mode"
+                Say(flag)
+                return
+            end
+        else
+            return Say("No task")
+        end
+        m_util:print(flag)
+        d_util:Wait(.5)
+    end, function()
+        u_util:Say(str_auto, "Finish")
+    end)
 end
-m_util:AddBindIcon(str_show, "yellowmooneye", STRINGS.LMB .. "View Icon Code", true, fn_left, nil, 9989)
+
+
+local r_data = require("data/valuetable")
+local fn_right = m_util:AddBindShowScreen{
+    title="Auto Watering Advanced Settings",
+    id=save_id,
+    data = {
+        {
+            id = "towater",
+            label = "Water farmland",
+            fn = fn_save("towater"),
+            hover = "Whether to automatically water farmland",
+            default = fn_get,
+        },
+        {
+            id = "perwater",
+            label = "Moisture:",
+            fn = fn_save("perwater"),
+            hover = "Stop watering when farmland moisture reaches this value",
+            type = "radio",
+            data = t_util:BuildNumInsert(5, 95, 5, function(i)
+                return {data = i, description = i .. "%"}
+            end),
+            default = fn_get,
+        },
+        {
+            id = "tofill",
+            label = "Refill watering can",
+            fn = fn_save("tofill"),
+            hover = "Whether to automatically refill the watering can",
+            default = fn_get,
+        },
+        {
+            id = "perfill",
+            label = "Reserve:",
+            fn = fn_save("perfill"),
+            hover = "When idle, the watering can should stay above this threshold",
+            type = "radio",
+            data = t_util:BuildNumInsert(5, 95, 5, function(i)
+                return {data = i, description = i .. "%"}
+            end),
+            default = fn_get,
+        },
+        {
+            id = "tosay",
+            label = "Text prompts",
+            fn = fn_save("tosay"),
+            hover = "Whether to display text prompts over the character",
+            default = fn_get,
+        },
+        {
+            id = "range",
+            label = "Range:",
+            fn = fn_save("range"),
+            type = "radio",
+            hover = "Range to search for farmland or ponds",
+            default = fn_get,
+            data = t_util:BuildNumInsert(4, 60, 4, function(i)
+                return {data = i, description = i .. " wall points"}
+            end),
+        },
+    },
+    icon = {{
+        id = "thanks",
+        prefab = "abigail_flower_handmedown",
+        hover = "Special thanks",
+        fn = function()
+            h_util:CreatePopupWithClose("󰀍 Special Thanks 󰀍", 'The auto watering feature was commissioned by player "Xiaoyu".\n\nMessage: "Pure worlds only, small servers don’t count"', {{text = "󰀍"}})
+        end,
+    }}
+}
+
+
+m_util:AddBindConf(save_id, fn_left, fn_left, {str_auto, img_show , STRINGS.LMB .. 'Start/Stop ' .. STRINGS.RMB .. 'Advanced Settings'
+, true, fn_left, fn_right, 5999})

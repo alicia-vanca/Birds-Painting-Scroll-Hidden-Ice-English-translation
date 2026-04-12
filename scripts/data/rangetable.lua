@@ -137,7 +137,7 @@ local attack_range = {
 	-- Emperor crab: emmmm, you need to write an additional function, let's not show it for the time being 
 	{
 		prefabs = {"dirtpile"},
-		rotary = {[2] = "Thistle color"},
+		rotary = {[2] = "Thistle"},
 		always = true,
 	},
 	-- "shadowthrall_hands","shadowthrall_horns","shadowthrall_wings",
@@ -262,6 +262,44 @@ local attack_range = {
 		rotary = {TUNING.CRABKING_CLAW_ATTACKRANGE},
 	}, 
 	
+	{
+		prefabs = {"medal_spike"},
+		rotary = {1.1},
+		quick = true,
+	},
+	{
+		prefabs = {"medal_guard"},
+		rotary = {1.5},
+	},
+	{
+		prefabs = {"medal_origin_flowertrap"},
+		rotary = {2.75},
+		quick = true,
+	},{
+		prefabs = {"medal_naughty_krampus", "medal_rage_krampus",},
+		rotary = {3},
+	},
+	{
+		prefabs = {"medal_beequeen"},
+		rotary = {4},
+	},
+	{
+		prefabs = {"medal_gestalt", "medal_origin_beetle"},
+		rotary = {5},
+	},{
+		prefabs = {"medal_origin_mushgnome"},
+		rotary = {3, 15},
+	},{
+		prefabs = {"medal_origin_spider"},
+		rotary = {6},
+	},{
+		prefabs = {"medal_origin_tree_guard_vine_end", "medal_origin_tree_root"},
+		rotary = {3},
+		quick = true,
+	},{
+		prefabs = {"medal_shadowthrall_screamer"},
+		rotary = {8,12},
+	},
 }
 local attack_auto = {
 	"TALLBIRD", "BUZZARD", "TEENBIRD", "SQUID","SLURTLE",
@@ -305,10 +343,10 @@ local target_range = {
 		rotary = {10},
 	},{
 		prefabs = {"wasphive"},
-		rotary = {[10] = "Brown"},
+		rotary = {[10] = "Auburn"},
 	},{
 		prefabs = {"pigtorch"},
-		rotary = {[8] = "Brown"},
+		rotary = {[8] = "Auburn"},
 	},
 	-- BOSS
 	{
@@ -351,7 +389,7 @@ local target_range = {
 		rotary = {4.25},
 	}, {
 		prefabs = {"bigshadowtentacle"},
-		rotary = {[4]= "Breathing yellow"},				-- The 4 here is the actual attack distance, but the writing is the hate distance here (there is a deep meaning here)
+		rotary = {[4]= "BrushedGold"},				-- The 4 here is the actual attack distance, but the writing is the hate distance here (there is a deep meaning here)
 		quick = true,
 		always = true,
 	},{
@@ -367,7 +405,7 @@ local target_range = {
 		rotary = {5.5},		-- Aoe frozen range, the range of hatred is not written
 	},
 
-	-- 呼吸: November 2024 supplement
+	-- Breath: November 2024 supplement
 	{
 		prefabs = {"daywalker2"},
 		rotary = {TUNING.DAYWALKER2_TACKLE_RANGE},
@@ -375,10 +413,14 @@ local target_range = {
 		prefabs = {"rabbitking_aggressive"},
 		rotary = {TUNING.RABBITKING_ABILITY_DROPKICK_SPEED * TUNING.RABBITKING_ABILITY_DROPKICK_MAXAIRTIME},
 	},
-	-- {
-	-- 	prefabs = {"trap_starfish"},
-	-- 	rotary = {TUNING.STARFISH_TRAP_RADIUS},
-	-- },
+	
+	
+	
+	
+	{
+		prefabs = {"medal_origin_cactus"},
+		rotary = {[5] = 'Auburn'},
+	},
 }
 local target_auto = {
 	"WALRUS", "KNIGHT", "BISHOP", "ROOK", "SLURTLE",
@@ -404,26 +446,26 @@ end)
 local track = {
 	klaus_sack = "Red",
 	malbatross = "Red",
-	beequeenhivegrown = "Golden",
+	beequeenhivegrown = "Goldenrod",
 	antlion = "Red",
 	greengem = "Green",
-	yellowgem = "Golden",
-	livingtree = "Brown",
-	livingtree_halloween = "Brown",
+	yellowgem = "Goldenrod",
+	livingtree = "Auburn",
+	livingtree_halloween = "Auburn",
 	terrariumchest = "Purple",
 
 	-- Island adventure
 	ia_messagebottle = "Red",
 	coral_brain_rock = "Red",
 	whale_bubbles = "Red",
-	dubloon = "Golden",
+	dubloon = "Goldenrod",
 	
 	-- musha
 	musha_treasure2 = "Purple",
 
 	-- 2023.6.6 supplement
 	rock_moon_shell = "Blue",
-	mushgnome = "Brown",
+	mushgnome = "Auburn",
 
 	-- Seed indicator
 	seeds = "Green",
@@ -466,6 +508,8 @@ local hover = {
 	lighter = 2.5,
 
 	spider_whistle = TUNING.SPIDER_WHISTLE_RANGE,
+	storage_robot = TUNING.STORAGE_ROBOT_WORK_RADIUS,
+	winona_storage_robot = TUNING.WINONA_STORAGE_ROBOT_WORK_RADIUS,
 }
 
 local click = {
@@ -506,6 +550,8 @@ local click = {
 
 	scarecrow = TUNING.BIRD_CANARY_LURE_DISTANCE,
 	trap_starfish = 4,
+	storage_robot = TUNING.STORAGE_ROBOT_WORK_RADIUS,
+	winona_storage_robot = TUNING.WINONA_STORAGE_ROBOT_WORK_RADIUS,
 }
 -- Placement
 local placer = {

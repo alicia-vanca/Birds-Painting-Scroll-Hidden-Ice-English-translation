@@ -13,7 +13,7 @@ local function GetIcon(num)
     return iscave and "tentacle_pillar_"..num or "wormhole_"..num
 end
 
-local Colors = { "Red", "Breathing orange", "Golden", "Green", "Breathing blue", "Bright blue", "Breathing purple","Blue", "Breathing"}
+local Colors = { "Red", "Orange", "Goldenrod", "Green", "Capri", "NeonBlue", "VioletBlue","Blue", "Breathing"}
 local function ChanWormhole(inst)
     local id = e_util:GetPosID(inst)
     if not id then return end

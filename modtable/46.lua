@@ -28,7 +28,16 @@ local V_data = require("data/valuetable")
 local colors = V_data.RGB_datatable
 m_util:AddBindShowScreen(save_id, string_name, "punchingbag_lunar", STRINGS.LMB .. "Advanced settings", {
     id = save_id,
-    title = "Show my nickname",
+    title = "Nickname Display",
+            icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Colorful nickname",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet. Please stay tuned.")
+        end,
+    }},
     data = {
         {
             id = "mine",
@@ -55,7 +64,7 @@ m_util:AddBindShowScreen(save_id, string_name, "punchingbag_lunar", STRINGS.LMB 
                     end
                 end)
             end,
-            hover = "The font size of the nickname",
+            hover = "The font size of nicknames",
             default = fn_get,
             type = "radio",
             data = t_util:BuildNumInsert(1, 40, 1, function(i)
@@ -73,7 +82,7 @@ m_util:AddBindShowScreen(save_id, string_name, "punchingbag_lunar", STRINGS.LMB 
                     end
                 end)
             end,
-            hover = "The nickname is relatively high inside",
+            hover = "The relative height of the nickname",
             default = fn_get,
             type = "radio",
             data = t_util:BuildNumInsert(0.1, 4, 0.1, function(i)

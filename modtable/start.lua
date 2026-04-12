@@ -86,9 +86,11 @@ AddComponentPostInit("playercontroller", function(self, player)
             not (self.placer_recipe and self.placer) and not self:IsAOETargeting() then
             local act_left = self:GetLeftMouseAction()
             local ent_mouse = TheInput:GetWorldEntityUnderMouse()
-            t_util:IPairs(i_util.leftclick_func, function(func)
-                func(self, player, down, act_left, ent_mouse)
-            end)
+            if t_util:IGetElement(i_util.leftclick_func, function(func)
+                return func(self, player, down, act_left, ent_mouse)
+            end) then
+                return
+            end
         end
         return _OnLeftClick(self, down, ...)
     end
@@ -126,6 +128,37 @@ AddClassPostConstruct("widgets/hoverer", function(self, player)
             hoverer_func_out[id] = nil
         end)
         return _Hide(...)
+    end
+
+    if not self.secondarytext then return end
+    local _SetString2 = self.secondarytext.SetString
+    local _Hide2 = self.secondarytext.Hide
+    local hoverer_func_out2 = {}
+    
+    self.secondarytext.SetString = function(Text, str, ...)
+        t_util:IPairs(i_util.hoverer_func_in2, function(func)
+            if not str then
+                return
+            end
+            local item_inv = t_util:GetRecur(TheInput:GetHUDEntityUnderMouse() or {}, "widget.parent.item")
+            local item_world = TheInput:GetWorldEntityUnderMouse()
+            local ret_str, ret_func = func(str, player, item_inv, item_world)
+            if ret_func and not hoverer_func_out2[str] then
+                hoverer_func_out2[str] = ret_func
+            end
+            str = ret_str or str
+        end)
+        return _SetString2(Text, str, ...)
+    end
+
+    self.secondarytext.Hide = function(...)
+        t_util:Pairs(hoverer_func_out2, function(id, func)
+            if type(func) == "function" then
+                func()
+            end
+            hoverer_func_out2[id] = nil
+        end)
+        return _Hide2(...)
     end
 end)
 

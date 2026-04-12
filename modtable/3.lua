@@ -1,10 +1,9 @@
-if m_util:IsServer() then return end
 local save_id = "gamefiler"
 local save_data = s_mana:GetSettingLine(save_id, true)
 local save__id = "colorfilter"
 local save__data = s_mana:GetSettingLine(save__id, true)
 
--- Now: current filter style bright: brightness
+
 
 local cube_default, bright_default, bright_start, bright_end = "bright", 1.3, 0.1, 4 -- Default filter style
 local screen_data = {}
@@ -48,12 +47,6 @@ end)
 
 
 i_util:AddWorldActivatedFunc(function(world)
-    local mapfuncs = getmetatable(world.Map).__index
-    local _SetOverlayLerp = mapfuncs.SetOverlayLerp
-    mapfuncs.SetOverlayLerp = function(map, level, ...)
-        return _SetOverlayLerp(map, save_data.snowtile and level or 0, ...)
-    end
-
     local pcrfuncs = getmetatable(PostProcessor).__index
     local _SetColourCubeLerp = pcrfuncs.SetColourCubeLerp
     pcrfuncs.SetColourCubeLerp = function(u_data, mode, value, ...)
@@ -153,20 +146,7 @@ i_util:AddWorldActivatedFunc(function(world)
     end
 
     
-    local _SetColourModifier = pcrfuncs.SetColourModifier
-    pcrfuncs.SetColourModifier = function (u_data, value, ...)
-        value_bright = value
-        if save__data.bright==1 then
-            return _SetColourModifier(u_data, value, ...)
-        end
-    end
 
-
-    local function ChangeBright(i)
-        i = type(i)=="nil" and bright_default or i
-        _SetColourModifier(PostProcessor, i==1 and value_bright or i)
-    end
-    ChangeBright(save__data.bright)
     local function ChangeDusk(state)
         local fn = t_util:GetRecur(world, "components.ambientlighting.GetVisualAmbientValue")
         if not fn then return end
@@ -184,10 +164,6 @@ i_util:AddWorldActivatedFunc(function(world)
     if type(save__data.dusk)=="nil" or save__data.dusk then
         ChangeDusk(true)
     end
-    local function fn_bright(i)
-        ChangeBright(i)
-        s_mana:SaveSettingLine(save__id, save__data, {bright = i})
-    end
 
     local function fn_dusk(state)
         ChangeDusk(state)
@@ -198,7 +174,7 @@ i_util:AddWorldActivatedFunc(function(world)
         local filter_data = t_util:PairToIPair(data_cube, function(id, data)
             return {
                 id = id,
-                label = data.label.."Filter",
+                label = data.label.." filter",
                 fn = function(_, btns)
                     fn_cube(btns, id)
                 end,
@@ -209,28 +185,10 @@ i_util:AddWorldActivatedFunc(function(world)
             }
         end)
         local radiodata = {}
-        for i = bright_start, bright_end,0.1 do
-            table.insert(radiodata, {
-                description = string.format("%d%%", i*100),
-                data = i
-            })
-        end
-        table.insert(filter_data, {
-            id = "bright",
-            label = "Brightness:",
-            type = "radio",
-            data = radiodata,
-            default = function ()
-                return type(save__data.bright)=="nil" and bright_default or save__data.bright
-            end,
-            hover = "The game defaults to 100%\nThis mod defaults to 130%",
-            priority = 200,
-            fn = fn_bright,
-        })
         table.insert(filter_data, {
             id = "dusk",
-            label = "Dusk",
-            hover = "[Note: This feature will only take effect when you enter the next stage]\nEnabling this will change the dusk brightness to daytime brightness",
+            label = "Disable Dusk color shift",
+            hover = "[Note: Only take effect when you enter the next Dusk]\nEnabling this will change the dusk's color to daytime",
             default = function ()
                 return type(save__data.dusk) == "nil" and true or save__data.dusk
             end,
@@ -259,258 +217,28 @@ i_util:AddWorldActivatedFunc(function(world)
 end)
 
 
-table.insert(screen_data,
-    {
-        id = "snowtile",
-        label = "Snow ground",
-        fn = function(show)
-            SaveFunction({snowtile = show})
-        end,
-        hover = "Do you want to display the snow on the ground?"
-    })
---------------------Waterlogged-------------------------
-local leafcanopy
-local function LeafcanopyFn(show)
-    local lc_hud = h_util:GetHUD().leafcanopy
-    if not lc_hud then return end
-    if show then
-        if type(leafcanopy) == "function" then
-            lc_hud.OnUpdate = leafcanopy
-        end
-        lc_hud:Show()
-    else
-        lc_hud.OnUpdate = NullFunction
-        lc_hud:Hide()
-    end
-end
-
-AddClassPostConstruct("widgets/leafcanopy", function(self)
-    if not save_data.leafcanopy then
-        self:Hide()
-    end
-    leafcanopy = self.OnUpdate
-end)
-
-table.insert(screen_data, {
-    id = "leafcanopy",
-    label = "Waterlogged - Giant tree canopy",
-    fn = function (show)
-        LeafcanopyFn(show)
-        SaveFunction({leafcanopy = show})
-    end,
-    hover = "The clear light shines through the water and trees,\nripples through the windows."
-})
-
-AddPrefabPostInit("lightrays_canopy", function(inst)
-    if not save_data.light_rays then
-        inst:Hide()
-        inst.AnimState:SetBuild("oceantree_short")
-        inst:CancelAllPendingTasks()
-        if inst.components.distancefade then
-            inst:RemoveComponent("distancefade")
-        end
-    end
-end)
-local function LightRaysFn(show)
-    local light_rays = e_util:FindEnts(nil, "lightrays_canopy", nil, { "lightrays", "exposure" }, {})
-    if show then
-        save_data.light_rays = true
-        t_util:Pairs(light_rays, function(_, light_ray)
-            light_ray:Show()
-        end)
-    else
-        save_data.light_rays = false
-        t_util:Pairs(light_rays, function(_, inst)
-            inst:Hide()
-            inst:CancelAllPendingTasks()
-            if inst.components.distancefade then
-                inst:RemoveComponent("distancefade")
-            end
-        end)
-    end
-end
-table.insert(screen_data, {
-    id = "light_rays",
-    label = "Waterlogged - Light rays",
-    fn = function (show)
-        LightRaysFn(show)
-        SaveFunction({light_rays = show})
-    end,
-    hover = "The courtyard is as clear as accumulated water,\nwith algae and water plants intertwined in the water,\nreflecting the shadows of bamboo and cypress."
-})
-
-AddPrefabPostInit("oceanvine_deco", function(inst)
-    if not save_data.oceanvine_deco then
-        inst:Hide()
-    end
-end)
-local function OceanvineDecoFn(show)
-    local decos = e_util:FindEnts(nil, "oceanvine_deco", nil, { "flying" }, {})
-    if show then
-        t_util:Pairs(decos, function(_, deco) deco:Show() end)
-    else
-        t_util:Pairs(decos, function(_, deco) deco:Hide() end)
-    end
-end
-
-table.insert(screen_data, {
-    id = "oceanvine_deco",
-    label = "Waterlogged - Vine decoration",
-    fn = function (show)
-        OceanvineDecoFn(show)
-        SaveFunction({oceanvine_deco = show})
-    end,
-    hover = "Wisteria hangs on the cloud-reaching trees, its flowers and vines thrive in the spring sun.\nHidden among the dense leaves, birds sing, and the fragrant breeze lingers, enchanting the beauty"
-})
-
--------------------Halo and pause--------------------
-
-local gfilter_data = require "data/gamefilter"
-local fns = {}
-t_util:Pairs(gfilter_data, function (id, data)
-    fns[id] = function (state)
-        t_util:Pairs(data.shelter, function(sls, info)
-            h_util:VisibleUI(t_util:GetRecur(h_util:GetHUD(), sls), state, info)
-        end)
-    end
-    table.insert(screen_data, {
-        id = id,
-        label = data.label,
-        fn = function (show)
-            fns[id](show)
-            SaveFunction({[id] = show})
-        end,
-        hover = data.hover,
-        default = type(save_data[id]) == "nil" and data.default or save_data[id]
-    })
-end)
-
-AddClassPostConstruct("screens/playerhud", function(self)
-    local _CreateOverlays = self.CreateOverlays
-    self.CreateOverlays = function(self, ...)
-        local result = _CreateOverlays(self, ...)
-        t_util:Pairs(fns, function (id, fn)
-            fn(save_data[id])
-        end)
-        LeafcanopyFn(save_data.leafcanopy)
-        return result
-    end
-end)
 
 
---------------------- Woodie -------------------------
-local function WoodieFn()
-    h_util:VisibleUI(h_util:GetHUD().beaverOL, save_data.woodieover)
-end
-
-i_util:AddPlayerActivatedFunc(function(player, world)
-    if not player:HasTag("werehuman") then
-        return
-    end
-    player:ListenForEvent("weremodedirty", WoodieFn)
-    WoodieFn()
-end)
-
-table.insert(screen_data, {
-    id = "woodieover",
-    label = "Woodie transformed",
-    fn = function (show)
-        SaveFunction({woodieover = show})
-        WoodieFn()
-    end,
-    hover = "Does it show the yellow depth of field\nafter Woodie's transformation?"
-})
--------------------------- Map ----------------------
-AddClassPostConstruct("widgets/mapwidget", function(self)
-    if save_data.map_bg then
-        self.bg:Hide()
-    end
-end)
 
 
----------------------- Hiding berries near Terraria ------------------
-
-local prefab = "terrariumchest"
-AddPrefabPostInit(prefab, function(inst)
-    inst:DoPeriodicTask(2, function()
-        if e_util:FindEnt(inst, prefab .. "_fx", 0.1, { "fx" }, {}) then
-            e_util:FindEnts(inst, nil, 3, { "bush", "plant" }, { 'FX', 'DECOR', 'NOCLICK', 'player', 'INLIMBO' }, nil, nil, function(bush)
-                if save_data.terr_berry then
-                    bush:Show()
-                else
-                    bush:Hide()
-                end
-            end)
-        end
-    end)
-end)
-table.insert(screen_data, {
-    id = "terr_berry",
-    label = "Highlight Terraria",
-    fn = function(show)
-        SaveFunction({terr_berry = show})
-    end,
-    hover = "Should berry bushes near Terraria chests be displayed?"
-})
-table.insert(screen_data, {
-    id = "map_bg",
-    label = "Map transparency",
-    fn = function(show)
-        SaveFunction({map_bg = show})
-    end,
-    hover = "Enable map transparency?"
-})
-local mapbtns = {"pauseBtn", "minimapBtn", "rotleft", "rotright"} 
-local function HideMapBtn(screen)
-    screen = screen or h_util:GetControls().mapcontrols
-    if not screen then return end
-    if save_data.mapbtn_hide then
-        if screen.pauseBtn then
-            t_util:IPairs(mapbtns, function(mapbtn)
-                screen[mapbtn]:Hide()
-            end)
-        end
-    else
-        t_util:IPairs(mapbtns, function(mapbtn)
-            screen[mapbtn]:Show()
-        end)
-    end
-end
-table.insert(screen_data, {
-    id = "mapbtn_hide",
-    label = "Hide Map Button",
-    fn = function(show)
-        SaveFunction({mapbtn_hide = show})
-        HideMapBtn()
-    end,
-    hover = "Whether to hide the map button"
-})
 
 
-AddClassPostConstruct("widgets/mapcontrols", function(self)
-    t_util:IPairs(mapbtns, function(mapbtn)
-        local btn = self[mapbtn]
-        if btn and btn.Show then
-            local _Show = btn.Show
-            btn.Show = function(...)
-                if save_data.mapbtn_hide then
-                    return
-                end
-                return _Show(...)
-            end
-        end
-    end)
-    HideMapBtn(self)
-end)
--------------------------Load-------------------
-m_util:AddBindShowScreen("sw_beauti", "Game filters", "butter", "Modify various filters in the game in real time", {
-    title = "Game filters",
+m_util:AddBindShowScreen("sw_beauti", "Color filters", "butter", "Modify various in-game filters in real time", {
+    title = "Game Color Filters",
     id = save_id,
     data = screen_data,
     default = function (id)
         return save_data[id] and true or false
-    end
+    end,
+    icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "More filters",
+        fn = function()
+            h_util:CreatePopupWithClose("Notice", "This feature is being rewritten, stay tuned!")
+        end,
+    }}
 }, nil, 9995)
 
--- getupvalue, setfenv, 
--- sethook, setlocal, setmetatable, setupvalue, traceback
+

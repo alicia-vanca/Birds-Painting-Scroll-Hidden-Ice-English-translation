@@ -1,5 +1,5 @@
 local default_data = {
-    sw = m_util:IsHuxi(),
+    sw = false,
     scale = 0.7,
     font = HEADERFONT,
     keytweak = {
@@ -13,7 +13,7 @@ local default_data = {
     init_x = -20,
     init_y = 25,
 }
-local save_id, str_show = "sw__keytweak", "Keyboard"
+local save_id, str_show = "sw__keytweak", "Key Prompt+"
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local KT = require "widgets/huxi/hx__keytweak"
 local k_util = require "util/keybind"
@@ -111,7 +111,7 @@ local function fn_left()
     u_util:Say(str_show, sw)
     ReMakeKT()
 end
-local str_default_add, str_default_remove = "Click to enter key position", "No key position entered yet"
+local str_default_add, str_default_remove = "Click to enter key binding", "No key binding entered yet"
 local function fn_text_all(id)
     local function printtext(i)
         local str = ""
@@ -145,23 +145,23 @@ local function fn_bind(id)
     local _num = tonumber(id:sub(-1))
     local num = _num and #save_data.keytweak - _num + 1
     return num and function(text, ui, screen_data)
-        local popup = PopupDialogScreen(str_show, "Please press the keyboard key to add a key for this line!", {{text = "Cancel", cb = PopFunc}})
+        local popup = PopupDialogScreen(str_show, "Please press a keyboard key to bind this line!", {{text = "Cancel", cb = PopFunc}})
         popup.OnRawKey = function(_, keycode, down)
             if down then return end
             local keystr = k_util:GetKeyStr(keycode)
             if keystr then
-                -- Can't bind two of the same keys
+                
                 if t_util:IGetElement(save_data.keytweak, function(line)
                     return t_util:IGetElement(line, function(_keystr)
                         return _keystr == keystr
                     end)
                 end) then
-                    popup.dialog.body:SetString("The key "..keystr.." has been bound, change to another key.")
+                    popup.dialog.body:SetString("The key "..keystr.." is already bound, please choose another.")
                 else
-                    -- Enter
+                    
                     table.insert(save_data.keytweak[num], keystr)
                     fn_save()
-                    -- Update display
+                    
                     ReMakeKT()
                     ui["add_".._num].uiSwitch(fn_text_all("add_".._num))
                     ui["remove_".._num].uiSwitch(fn_text_last("remove_".._num))
@@ -170,7 +170,7 @@ local function fn_bind(id)
                     return
                 end
             else
-                popup.dialog.body:SetString("This key is not working, change to another key.")
+                popup.dialog.body:SetString("This key is not valid, please choose another.")
                 m_util:print(keycode)
             end
             h_util:PlaySound("click_negative")
@@ -184,7 +184,7 @@ local function fn_remove(id)
     local _num = tonumber(id:sub(-1))
     local num = _num and #save_data.keytweak - _num + 1
     return num and function(text, ui, screen_data)
-        local body_text = "Are you sure you want to remove the key ".. text .. " ?"
+        local body_text = "Are you sure you want to remove the key ".. text .. "?"
         local btns = {
             {text = h_util.no},
             {text = h_util.yes, cb = function()
@@ -196,7 +196,7 @@ local function fn_remove(id)
             end}
         }
         if text == str_default_remove then
-            body_text = "There are no keys to remove!"
+            body_text = "There are no key bindings to remove!"
             btns = {{ text = h_util.ok }}
         end
         h_util:CreatePopupWithClose(str_show, body_text, btns)
@@ -204,7 +204,7 @@ local function fn_remove(id)
 end
 
 local function fn_reset()
-    h_util:CreatePopupWithClose(str_show, "Are you sure you want to restore the default key positions?", {
+    h_util:CreatePopupWithClose(str_show, "Are you sure you want to restore default key bindings?", {
         {text = h_util.no},
         {text = h_util.yes, cb = function()
             h_util:PlaySound("learn_map")
@@ -231,7 +231,7 @@ local screen_data = {
     },
     {
         id = "remove_1",
-        label = "Remove:",
+        label = "1st line remove:",
         hover = "Click to remove the last button",
         default = fn_text_last,
         fn = fn_remove("remove_1"),
@@ -247,7 +247,7 @@ local screen_data = {
     },
     {
         id = "remove_2",
-        label = "Remove:",
+        label = "2nd line remove:",
         hover = "Click to remove the last button",
         default = fn_text_last,
         fn = fn_remove("remove_2"),
@@ -263,7 +263,7 @@ local screen_data = {
     },
     {
         id = "remove_3",
-        label = "Remove:",
+        label = "3rd line remove:",
         hover = "Click to remove the last button",
         default = fn_text_last,
         fn = fn_remove("remove_3"),
@@ -272,7 +272,7 @@ local screen_data = {
     {
         id = "sw",
         label = "Keyboard display",
-        hover = "Turn the keyboard display on or off",
+        hover = "Turn keyboard display on or off",
         default = fn_get,
         fn = function(value)
             fn_save("sw")(value)
@@ -281,8 +281,8 @@ local screen_data = {
     },
     {
         id = "reset",
-        label = "Restore position",
-        hover = "Click to restore default key position",
+        label = "Restore default keys",
+        hover = "Click to restore default key bindings",
         default = true,
         fn = fn_reset,
     },{
@@ -305,24 +305,24 @@ local screen_data = {
         fn = fn_set("font"),
     },{
         id = "color1",
-        label = "Idle border:",
-        hover = "The border color displayed when button is not pressed",
+        label = "Released color:",
+        hover = "The color displayed when the key is released",
         default = fn_get,
         type = "radio",
         fn = fn_set("color1"),
         data = V_data.RGB_datatable,
     },{
         id = "color2",
-        label = "Pressed border:",
-        hover = "The border color displayed after pressing the button and the color after overlaying with yellow\nThis is color overlay, not setting the corresponding color",
+        label = "Pressed color:",
+        hover = "The color displayed after pressing the key, overlaid with yellow\nThis is color overlay, not setting the corresponding color",
         default = fn_get,
         type = "radio",
         fn = fn_set("color2"),
         data = V_data.RGB_datatable,
     },{
         id = "init_x",
-        label = "X:",
-        hover = "Default horizontal coordinate:"..default_data.init_x.. " pixels",
+        label = "Relative X coordinate:",
+        hover = "Default "..default_data.init_x.. " pixels",
         default = fn_get,
         type = "radio",
         fn = fn_set("init_x"),
@@ -331,8 +331,8 @@ local screen_data = {
         end),
     },{
         id = "init_y",
-        label = "Y:",
-        hover = "Default vertical coordinate: "..default_data.init_y.. " pixels",
+        label = "Relative Y coordinate:",
+        hover = "Default "..default_data.init_y.. " pixels",
         default = fn_get,
         type = "radio",
         fn = fn_set("init_y"),

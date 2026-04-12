@@ -17,6 +17,9 @@ function FileHandle:FuckDataFromJsonList(t)
     for _,line_data in pairs(t or {})do
         local long_id = tostring(line_data[uid])
         if long_id then
+            line_data[uid] = nil
+            
+            
             local start = string.sub(long_id, 1, 2)
             local finish = string.sub(long_id, 3)
             if finish ~= "" then
@@ -28,12 +31,10 @@ function FileHandle:FuckDataFromJsonList(t)
                     if key then
                         data[long_id][key] = t_util:MergeMap(line_data)
                         data[long_id][key][id] = nil
-                        data[long_id][key][uid] = nil
                     end
                 elseif start == List_ID_PREFIX then
                     table.insert(data[long_id], line_data)
                 elseif start == Line_ID_PREFIX then
-                    line_data[uid] = nil
                     data[long_id] = line_data
                 end
             end
@@ -51,21 +52,17 @@ function FileHandle:FuckTableToDataFile(path, t)
             if start == MAP_ID_PREFIX then
                 for key, l in pairs(uid_data)do
                     if type(l) == "table" then
-                        l[id] = key
-                        l[uid] = long_id
-                        table.insert(data, l)
+                        table.insert(data, t_util:EasyCopy({[id]=key, [uid]=long_id}, l))
                     end
                 end
             elseif start == List_ID_PREFIX then
                 for _, l in pairs(uid_data)do
                     if type(l) == "table" then
-                        l[uid] = long_id
-                        table.insert(data, l)
+                        table.insert(data, t_util:EasyCopy({[uid]=long_id}, l))
                     end
                 end
             elseif start == Line_ID_PREFIX then
-                uid_data[uid] = long_id
-                table.insert(data, uid_data)
+                table.insert(data, t_util:EasyCopy({[uid]=long_id}, uid_data))
             end
         end
     end

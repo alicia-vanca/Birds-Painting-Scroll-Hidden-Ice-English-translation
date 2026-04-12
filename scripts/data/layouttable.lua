@@ -277,7 +277,7 @@ local forest_node ={
         all = "Squeltch:BG_",
         icon = "tentacle",
     },
--- Marsh:沼泽？但BGMarsh不是
+-- Marsh: means swamp? But BGMarsh is not.
 }
 
 local cave_node = {

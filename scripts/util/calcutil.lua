@@ -23,7 +23,7 @@ function c_util:GetAngle(source, target)
     return math.deg(self:GetRadian(source, target))
 end
 
--- Angle取模
+-- Angle modulo
 function c_util:GetAbsAngle(angle)
     return math.ceil(angle)%360         -- Accuracy problem, ceil cannot be changed
 end
@@ -56,16 +56,16 @@ function c_util:GetScaleValue(scale, scale_min, scale_max, num_min, num_max)
     end
 end
 
--- Get the intersection of the connection between the round heart and the circle outside the circle
--- center圆心, radius半径, pot圆外一点
+-- Get the intersection of the line between the circle center and an external point with the circle
+-- center is the circle center, radius is the radius, pot is a point outside the circle
 function c_util:GetIntersectPotRadiusPot(center, radius, pot)
     local dx,dz = pot.x - center.x, pot.z - center.z
     local d = math.sqrt(dx * dx + dz * dz)
     -- Two intersection points, this is the point closer to the pot. If you want to find the farther point, change the two + to -
     return d == 0 and center or Vector3(center.x + radius * dx / d, 0, center.z + radius * dz / d)
 end
--- Get the intersection point of the line through the center of the circle and the circle
--- center圆心, radius半径, angle直线角度
+-- Get the intersection point of a line through the circle center with the circle
+-- center is the circle center, radius is the radius, angle is the line angle
 function c_util:GetIntersectPotAnglePot(center, radius, angle)
     local rad = math.rad(angle)
     local dx, dz = math.cos(rad), math.sin(rad)
@@ -78,7 +78,7 @@ end
 function c_util:GetPerpendicularPot(center, angle, pot)
     local k1 = math.tan(math.rad(angle)) -- Slope 
     local k2 = -1/k1
-    local c1, c2 = center.z-k1*center.x, pot.z-k2*pot.x -- 求C
+    local c1, c2 = center.z-k1*center.x, pot.z-k2*pot.x -- Solve C
     local x3 = (c2-c1)/(k1-k2)
     local z3 = k2*x3 + c2
     return Vector3(x3, 0, z3)
@@ -437,6 +437,55 @@ function c_util:LoopGet(value, fn_check, fn_result, fn_next, num)
         return fn_get(fn_next(v), num-1)
     end
     return fn_get(value, num or 10)
+end
+
+local function hsv_to_rgb(h, s, v)
+    local c = v * s
+    local x = c * (1 - math.abs((h / 60) % 2 - 1))
+    local m = v - c
+
+    local r, g, b
+    if h < 60 then
+        r, g, b = c, x, 0
+    elseif h < 120 then
+        r, g, b = x, c, 0
+    elseif h < 180 then
+        r, g, b = 0, c, x
+    elseif h < 240 then
+        r, g, b = 0, x, c
+    elseif h < 300 then
+        r, g, b = x, 0, c
+    else
+        r, g, b = c, 0, x
+    end
+
+    return math.floor((r + m) * 255 + 0.5),
+           math.floor((g + m) * 255 + 0.5),
+           math.floor((b + m) * 255 + 0.5)
+end
+
+
+function c_util:SplitHueRing(n)
+    local result = {}
+    local step = 360 / n
+    for i = 0, n - 1 do
+        
+        local hue_mid = (i * step) % 360
+        local r, g, b = hsv_to_rgb(hue_mid, 1, 1)
+        table.insert(result, {r/255, g/255, b/255})
+    end
+    return result
+end
+
+
+function c_util:GetCirclePoints(pot, radius, count)
+    local ps = {}
+    local angleStep = 2 * math.pi / count
+    for i = 0, count - 1 do
+        local angle = i * angleStep
+        table.insert(ps, Vector3(pot.x + radius * math.cos(angle), 0, pot.z + radius * math.sin(angle)))
+    end
+    return ps
 end
 
 return c_util

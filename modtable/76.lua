@@ -116,7 +116,7 @@ m_util:AddNoteData("hermit_crab", "Hermit Crab Tasks", 700, 800, [[
 4. Plant 10 Flowers: Butterfly*10
 5. Fish Trash: Boards*2, Cutstone*1, Rope*2 Empty Bottle*1
 6. Clear Lureplants: After first Spring
-7. Dry 6 Foods: Kelp or Raw Meat*6
+7. Dry 6 Foods: Raw Meat*6 (Kelp is no longer usable)
 8. Plant 8 Berry Bushes and Fertilizes
 9. Place Chair: other chairs are needed, 
 the ruins chair is only used to unlock the Sawhorse

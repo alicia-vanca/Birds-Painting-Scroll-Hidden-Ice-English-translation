@@ -15,5 +15,6 @@ return {
     "krampus","mandrake_planted",
     "terrariumchest", "terrarium",
     "smallghost",
-    "wobysmall", "wobybig"
+    "wobysmall", "wobybig",
+    "moonstorm_static_roamer",
 }

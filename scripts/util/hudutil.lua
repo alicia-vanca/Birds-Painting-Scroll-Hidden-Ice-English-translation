@@ -2,46 +2,96 @@ local t_util = require "util/tableutil"
 local c_util = require "util/calcutil"
 local r_data = require "data/redirectdata"
 local e_util = require "util/entutil"
-local TEMPLATES = require "widgets/redux/templates"
+local i_util = require "util/inpututil"
 local Widget = require "widgets/widget"
-local PopupDialogScreen = require "screens/redux/popupdialog"
+local TEMPLATES = require "widgets/redux/templates"
+local Text = require "widgets/text"
 local Image = require "widgets/image"
+local PopupDialogScreen = require "screens/redux/popupdialog"
 local Label = require "widgets/huxi/hx_label"
 local ImageButton = require "widgets/imagebutton"
 local xml_quag = "images/quagmire_recipebook.xml"
 local xml_ui = "images/ui.xml"
-
+local xml_hud = "images/hud.xml"
+local xml_hx = "images/hx_ui.xml"
+local TwoLines = require "widgets/hx_cb/panel/twolines"
 
 local h_util = {
     doubleclicktime = 0.3,
-    xml_path = {
-        "hx_icons1.xml",
-        "hx_icons2.xml",
-        "button_icons.xml",
-        "button_icons2.xml",
-        "serverplaystyles.xml",
-        "quagmire_recipebook.xml",
-        "skilltree.xml",
-        "global_redux.xml",
-        -- "crafting_menu.xml", -s not recommended, please use resolvefilepath (crafting_atlas)
+    xml_path = {"hx_icons1.xml", "hx_icons2.xml", "button_icons.xml", "button_icons2.xml", "serverplaystyles.xml",
+                "quagmire_recipebook.xml", "skilltree.xml", "global_redux.xml","crafting_menu_icons.xml" 
     },
-    minimap_path = {
-        "minimap/minimap_data.xml",
-        "minimap/minimap_data1.xml",
-        "minimap/minimap_data2.xml",
-    },
-    ok = "I know",
-    cancel = "Off",
+    minimap_path = {"minimap/minimap_data.xml", "minimap/minimap_data1.xml", "minimap/minimap_data2.xml"},
+    ok = "Got it",
+    cancel = "Close",
     error = "Error!",
-    yes = "Sure!",
+    yes = STRINGS.UI.OPTIONS.OK,
     no = STRINGS.UI.CONTROLSSCREEN.CANCEL,
     screen_x = RESOLUTION_X,
     screen_y = RESOLUTION_Y,
+    prefab_size = 70,
+    style = {
+        
+        
+        imgbtn = {
+            
+            default = {xml_quag, "cookbook_known.tex", "cookbook_known_selected.tex"},
+            quag = {xml_quag, "cookbook_known.tex", "cookbook_known_selected.tex"},
+            
+            ui = {xml_ui, "in-window_button_tile_hl.tex", "in-window_button_tile_hl_noshadow.tex"},
+            
+            craft = {xml_hx, "cb_cate_bg.tex", "cb_cate_bg_focus.tex", "cb_cate_bg_sel_focus.tex", nil, "cb_cate_bg_sel.tex"},
+            
+            inv = {xml_hx, "inv_bg.tex", "inv_bg_focus.tex"}
+        },
+        scrollbar = {
+            default = {
+                atlas = xml_quag,
+                up = "quagmire_recipe_scroll_arrow_hover.tex",
+                down = "quagmire_recipe_scroll_arrow_hover.tex",
+                bar = "quagmire_recipe_scroll_bar.tex",
+                handle = "quagmire_recipe_scroll_handle.tex",
+            },
+            light = {
+                atlas = xml_hx,
+                up = "scrollbar_arrow_up_hl.tex",
+                down = "scrollbar_arrow_down_hl.tex",
+                bar = "scrollbar_bar.tex",
+                handle = "scrollbar_handle.tex",
+            },
+            black = {
+                atlas = xml_ui,
+                up = "arrow_scrollbar_up.tex",
+                down = "arrow_scrollbar_down.tex",
+                bar = "scrollbarline.tex",
+                handle = "scrollbarbox.tex",
+                scale = 1.0
+            },
+            gold = {
+                atlas = "images/global_redux.xml",
+                up = "scrollbar_arrow_up.tex",
+                down = "scrollbar_arrow_down.tex",
+                bar = "scrollbar_bar.tex",
+                handle = "scrollbar_handle.tex",
+                scale = 0.3
+            },
+        },
+        border = {
+            default = {xml_quag, "quagmire_recipe_line.tex"},
+            light = {"images/hx_ui.xml", "quagmire_recipe_line.tex"},
+        }
+    }
 }
 h_util.screen_w, h_util.screen_h = TheSim:GetScreenSize()
 
-local rate_w, rate_h = h_util.screen_w/1920, h_util.screen_h/1080
+local rate_w, rate_h = h_util.screen_w / 1920, h_util.screen_h / 1080
 h_util.btn_size = 50 * rate_w
+
+
+local function checkAtlas(xml, tex)
+    xml = xml and resolvefilepath_soft(xml) or xml
+    return xml and TheSim:AtlasContains(xml, tex) and xml
+end
 
 function h_util:ToRate(x)
     return x * rate_w
@@ -49,13 +99,17 @@ end
 function h_util:ToSize(x, y)
     return x * rate_w, y * rate_h
 end
+function h_util:ToPos(a, b)
+    local w, h = TheSim:GetScreenSize()
+    return a * w, b * h
+end
 
 function h_util:AddXmlPath(path)
     t_util:Add(h_util.xml_path, path)
 end
--- Make the UI with parent object draggable, func_stop is used to execute the event of the end position of dragging
--- When UI_follow exists, UI_follow is the dragged entity, but it will make the UI move with it
--- When there is no parent object and you want to use this method, use h_util:AddAnonUI to add an anonymous parent object
+
+
+
 function h_util:ActivateUIDraggable(UI, func_stop, UI_follow)
     local pos_last = UI:GetPosition()
 
@@ -97,7 +151,7 @@ function h_util:ActivateUIDraggable(UI, func_stop, UI_follow)
     end
 end
 
--- Anonymous Parent Object
+
 function h_util:AddAnonUI(ui)
     local sc = self:GetActiveScreen()
     sc:AddChild(ui)
@@ -105,7 +159,6 @@ function h_util:AddAnonUI(ui)
 end
 
 
--- Button zoom
 function h_util:ActivateBtnScale(UI, size)
     local tp = h_util:GetType(UI)
     size = size or self.btn_size
@@ -130,25 +183,39 @@ function h_util:ActivateBtnScale(UI, size)
     end
 end
 
+
 local scrolls = {MOUSEBUTTON_SCROLLUP, MOUSEBUTTON_SCROLLDOWN}
--- Binding click to operate
-function h_util:BindMouseClick(UI, data)
+
+function h_util:BindMouseClick(UI, data, meta)
     local time_press = 0
+    local meta = meta or {}
     local _OnMouseButton = UI.OnMouseButton
     UI.OnMouseButton = function(UI, btn, down, ...)
         if not table.contains(scrolls, btn) then
             if down then
-                time_press = GetStaticTime()
+                time_press = os.clock()
                 if btn == MOUSEBUTTON_LEFT then
-                    h_util:PlaySound("click_object")
+                    
+                    if meta.sound ~= "mute" then
+                        h_util:PlaySound("click_object")
+                    end
+                elseif btn == MOUSEBUTTON_RIGHT then
+                    
+                    if meta.sound == "double" then
+                        h_util:PlaySound("click_object")
+                    end
                 end
             else
-                if GetStaticTime() - time_press < h_util.doubleclicktime and type(data[btn]) == "function" then
-                    data[btn]()
+                if os.clock() - time_press < h_util.doubleclicktime and type(data[btn]) == "function" then
+                    if data[btn](UI) then
+                        return true
+                    end
                 end
             end
         elseif type(data[btn]) == "function" then
-            data[btn]()
+            if data[btn](UI) then
+                return true
+            end
         end
         return _OnMouseButton(UI, btn, down, ...)
     end
@@ -156,23 +223,33 @@ function h_util:BindMouseClick(UI, data)
     if t_util:GetElement(data, function(btn)
         return table.contains(scrolls, btn)
     end) and TheCamera then
-        -- There is a disadvantage in this way, and the focus will take over the window control. i just wanted to control the window to become bigger and smaller. now the rotating screen has failed.
-        -- Todo: there is also a way to write to control zoomin/zoomout
-        local _CanControl = TheCamera.CanControl
-        TheCamera.CanControl = function(...)
-            return _CanControl(...) and not (UI and UI.focus) 
-        end
+        self:DisableZoom(UI)
     end
 end
 
--- Create label
+
+
+function h_util:DisableZoom(UI)
+    local _ZoomIn = TheCamera.ZoomIn
+    TheCamera.ZoomIn = function(...)
+        return self:IsValid(UI) and UI.focus or _ZoomIn(...)
+    end
+    local _ZoomOut = TheCamera.ZoomOut
+    TheCamera.ZoomOut = function(...)
+        return self:IsValid(UI) and UI.focus or _ZoomOut(...)
+    end
+end
+
+
 function h_util:CreateLabel(target, text, offset, font, size, colour)
     return ThePlayer and ThePlayer.HUD and ThePlayer.HUD:AddChild(Label(target, text, offset, font, size, colour))
 end
--- The original label (using the original label cannot get the above font, and it may report an error for small creatures, recommend the above label)
+
 function h_util:AddText(ent, text, offset_y, font, size, color)
     local valid = type(ent) == "table" and ent.entity and ent.prefab and ent:IsValid() and ent.Transform
-    if not valid then return end
+    if not valid then
+        return
+    end
     local label = ent.entity:AddLabel()
     label:SetFont(font or CHATFONT_OUTLINE)
     label:SetFontSize(size or 35)
@@ -181,166 +258,218 @@ function h_util:AddText(ent, text, offset_y, font, size, color)
     label:SetColour(unpack(self:GetRGB(color)))
     label:Enable(text and true or false)
 end
--- Set UI position
+
 function h_util:SetUIPosition(ui, pos)
     if type(pos) == "table" and (pos[1] or pos.x) then
         ui:SetPosition(Vector3(pos[1] or pos.x, pos[2] or pos.y or 0))
     end
 end
 
--- Create a button with an image, make sure it can be a prefab/xml/tex
--- {prefab, size, pos, fn, hover, hover_meta}
--- ForceImageSize
+
+
+
 function h_util:CreateImageButton(info)
-    -- Set the icon
+    
     local xml, tex = info.xml, info.tex
-    if h_util:GetPrefabAsset(info.prefab) then
-        xml, tex = h_util:GetPrefabAsset(info.prefab)
+    if self:GetPrefabAsset(info.prefab) then
+        xml, tex = self:GetPrefabAsset(info.prefab)
     end
-    -- Set the size
-    local sizes = (type(info.size)=="table" and info.size) or (type(info.size)=="number" and {info.size, info.size}) or {80,80}
+    
+    local sizes =
+        (type(info.size) == "table" and info.size) or (type(info.size) == "number" and {info.size, info.size}) or
+            {60, 60}
     local btn = TEMPLATES.StandardButton(nil, nil, sizes, {xml, tex})
-    -- Set the hover
+    
     if info.hover then
-        btn:SetHoverText(info.hover, info.hover_meta and info.hover_meta or {offset_y = -sizes[1]})
+        btn:SetHoverText(info.hover, info.hover_meta and info.hover_meta or {
+            offset_y = -sizes[1]
+        })
     end
-    -- Set the position
+    
     self:SetUIPosition(btn, info.pos)
-    -- Set the function
+    
     if info.fn then
-    btn:SetOnClick(function()
-        info.fn(btn)
-    end)
+        btn:SetOnClick(function()
+            info.fn(btn)
+        end)
     end
     return btn
 end
 
--- Create a single image button {id, scale, bg, noclick}
--- CreateFoodImage
--- SetPrefabIcon
-local bgs_prefab = {
-    quag = {xml_quag, "cookbook_known.tex", "cookbook_known_selected.tex"},
-    ui = {xml_ui, "in-window_button_tile_hl.tex", "in-window_button_tile_hl_noshadow.tex"}
-}
-function h_util:CretePrefabButton(info)
-    local w = Widget(info.id or "btn_prefab")
-    local tp_bg = info.bg or "quag"
-    local bg_prefab = bgs_prefab[tp_bg] or bgs_prefab.quag
-    w.cell_root = w:AddChild(ImageButton(unpack(bg_prefab)))
-    if info.noclick then
-        w.cell_root:Disable()
+
+function h_util:GetSpiceHover(prefab)
+    local spice_start = prefab:find("_spice_")
+    local xml_hover, tex_hover
+    if spice_start then
+        local prefab_spice = prefab:sub(spice_start+1, -1).."_over"
+        xml_hover, tex_hover = self:GetPrefabAsset(prefab_spice)
+        if xml_hover then
+            return xml_hover, tex_hover
+        else
+            
+            local xml_spice = t_util:IGetElement(t_util:GetRecur(Prefabs, prefab..".assets") or {},function(asset)
+                return asset.type == "ATLAS" and asset.file
+            end)
+            local prefab_spice = xml_spice and xml_spice:match("images/(.-)%.xml")
+            local tex_spice = prefab_spice and prefab_spice..".tex"
+            if tex_spice and checkAtlas(xml_spice, tex_spice) then
+                return xml_spice, tex_spice
+            end
+        end
+    elseif prefab:sub(-7) == "spawner" then
+        return "images/hx_icons1.xml", "spawner_over.tex"
+    else
+        local set_data = r_data.spice_set[prefab]
+        if set_data then
+            return set_data[1], set_data[2]
+        end
     end
-    w.cell_root:SetNormalScale(info.scale or 1, info.scale or 1)
-    w.prefab_img = w.cell_root.image:AddChild(self:CreateFoodImage(info))
-    w.SetPrefabIcon = w.prefab_img.SetPrefabIcon
+        
+end
+
+
+
+
+
+
+function h_util:CreatePrefabButton(info)
+    info = info or {}
+    local bg_data = self.style.imgbtn[info.style_imgbtn or ""] or self.style.imgbtn.default
+    local w = ImageButton(unpack(bg_data))
+    if info.noclick then
+        w:Disable()
+    end
+    local btn_size = info.size or self.prefab_size
+    w:ForceImageSize(btn_size, btn_size)
+    w.scale_on_focus = false
+
+    
+    w.SetPrefabIcon = function(meta)
+        
+        t_util:IPairs({"img_main", "text_main", "img_hover"}, function(k)
+            if self:IsValid(w[k]) then
+                w[k]:Kill()
+            end
+        end)
+        
+        meta = meta or {}
+        local xml, tex = meta.xml, meta.tex
+        if not xml then
+            xml, tex = self:GetPrefabAsset(meta.prefab)
+        end
+        local size_set = meta.size or info.size or self.prefab_size
+        if xml then
+            
+            
+            local rate = xml:find("scrapbook_icons") and .9 or (meta.scale or .6)
+            size_set = size_set * rate
+            w.img_main = w:AddChild(Image(xml, tex))
+            w.img_main:ScaleToSize(size_set, size_set)
+            
+            local xml_hover, tex_hover = self:GetSpiceHover(meta.prefab)
+            
+            if xml_hover then
+                w.img_hover = w:AddChild(Image(xml_hover, tex_hover))
+                w.img_hover:ScaleToSize(btn_size, btn_size)
+            end
+        elseif type(meta.name)=="string" then
+            
+            w.text_main = w:AddChild(Text(BODYTEXTFONT, size_set*.5, ""))
+            
+            
+            
+            w.text_main:SetMultilineTruncatedString(meta.name, 2, size_set*.8, 8, "..")
+        end
+    end
     return w
 end
 
--- Create a food image {prefab, scale}
-function h_util:CreateFoodImage(info)
-    local img = Image(xml_quag, "cookbook_missing.tex")
-    img.img_hover = img:AddChild(Image(xml_quag, "cookbook_hover.tex"))
-    img.img_hover:Hide()
-    img.SetPrefabIcon = function(info)
-        local xml, tex = self:GetPrefabAsset(info.prefab)
-        if not xml then return end
-        local spice_start = tex:find("spice_") and info.prefab:find("_spice_")
-        local xml_hover, tex_hover
-        if spice_start then
-            local baseprefab = info.prefab:sub(1, spice_start - 1)
-            xml_hover, tex_hover = self:GetPrefabAsset(baseprefab)
-            if xml_hover then
-                xml_hover, tex_hover, xml, tex = xml, tex, xml_hover, tex_hover
-            end
-        end
-        img:SetTexture(xml, tex)
-        local size = img:GetParent():GetScaledSize()*(info.scale or 0.9)
-        if img.atlas:find("scrapbook_icons") then
-            img:ScaleToSize(size*1.45, size*1.45)
-        else
-            img:ScaleToSize(size, size)
-        end
-        if xml_hover then
-            img.img_hover:SetTexture(xml_hover, tex_hover)
-            img.img_hover:SetScale(1.3)
-            img.img_hover:Show()
-        else
-            img.img_hover:Hide()
-        end
-    end
-    if info then
-        img:SetPrefabIcon(info)
-    end
-    return img
-end
 
--- Create a single line text entry
--- {hover, prompt, width, height, font_size, fn, pos}
+
+
+
 function h_util:CreateTextEdit(info)
-    local searchbox = Widget("search")
     info = info or {}
     local text_hover = info.hover or STRINGS.UI.SERVERCREATIONSCREEN.SEARCH
     local text_prompt = info.prompt or STRINGS.UI.SERVERCREATIONSCREEN.SEARCH
     local box_width, box_height = info.width or 430, info.height or 60
     local font_size = info.font_size or 50
+    local w = TEMPLATES.StandardSingleLineTextEntry(nil, box_width, box_height, nil,
+        font_size, text_prompt)
 
-	searchbox:SetHoverText(text_hover, {offset_y = font_size})
-    searchbox.textbox_root = searchbox:AddChild(TEMPLATES.StandardSingleLineTextEntry(nil, box_width, box_height, nil, font_size))
-    searchbox.textbox = searchbox.textbox_root.textbox
-    -- searchbox.textbox:SetForceEdit(true)
-    searchbox.textbox:EnableWordWrap(false)
-    searchbox.textbox:EnableScrollEditWindow(true)
-    searchbox.textbox:SetTextPrompt(text_prompt, UICOLOURS.GREY)
-    searchbox.textbox.prompt:SetHAlign(ANCHOR_MIDDLE)
-    searchbox.textbox.OnTextInputted = info.fn and function(down)
+    w:SetHoverText(text_hover, {
+        offset_y = box_height
+    })
+    local tb = w.textbox
+    
+    tb:EnableWordWrap(false)
+    tb:EnableScrollEditWindow(true)
+    tb.prompt:SetHAlign(ANCHOR_MIDDLE)
+    tb.OnTextInputted = info.fn and function(down)
         if down then
             info.fn()
         end
     end or nil
-     -- If searchbox ends up focused, highlight the textbox so we can tell something is focused.
-    searchbox:SetOnGainFocus( function() searchbox.textbox:OnGainFocus() end )
-    searchbox:SetOnLoseFocus( function() searchbox.textbox:OnLoseFocus() end )
-    searchbox.focus_forward = searchbox.textbox
-    self:SetUIPosition(searchbox, info.pos)
-    return searchbox
+    
+    
+    tb.OnTextEntered = info.fn_enter and function(str)
+        info.fn_enter(str)
+    end or nil
+
+    w.focus_forward = tb
+    self:SetUIPosition(w, info.pos)
+    w.SetString = function(ui, ...)
+        return tb:SetString(...)
+    end
+    w.GetString = function(ui, ...)
+        return tb:GetString(...)
+    end
+    return w
 end
 
 local function PopFunc()
     TheFrontEnd:PopScreen()
 end
 
--- Key to identify screen
+
 function h_util:CreatePressScreen(title, currentkey, defaultkey, allowmid, options, fn_modsave)
-    local format_string = "[%s] need to bind to a keyboard buttons!\n \nCurrent: [%s] Default: [%s]"
+    local format_string = "[%s] needs a keyboard binding! \n\n Current: [%s]  Default: [%s]"
     local body_text = format_string:format(title, currentkey, defaultkey)
 
-    local btns = {
-        { text = STRINGS.UI.CONTROLSSCREEN.CANCEL, cb = PopFunc },
-        { text = "Bind default ["..defaultkey.."]", cb = function ()
-            fn_modsave(nil, "Default:"..defaultkey)
+    local btns = {{
+        text = STRINGS.UI.CONTROLSSCREEN.CANCEL,
+        cb = PopFunc
+    }, {
+        text = "Bind Default [" .. defaultkey .. "]",
+        cb = function()
+            fn_modsave(nil, "Default: " .. defaultkey)
             PopFunc()
-        end },
-        {
-            text = STRINGS.UI.CONTROLSSCREEN.UNBIND,
-            cb = function()
-                local popup_in = PopupDialogScreen("󰀐: warning", "If you unbind, this operation will be written into the mod settings.\nAfter restarting the game, you will need to manually enable it from the mod settings next time.", {
-                    { text = STRINGS.UI.CONTROLSSCREEN.CANCEL, cb = PopFunc },
-                    { text = "I'm sure. "..STRINGS.UI.CONTROLSSCREEN.UNBIND, cb = function ()
+        end
+    }, {
+        text = STRINGS.UI.CONTROLSSCREEN.UNBIND,
+        cb = function()
+            local popup_in = PopupDialogScreen("󰀐: Warning",
+                "Unbinding will write this setting to the mod options.\nAfter restarting the game, you will need to enable it manually from the mod settings next time.",
+                {{
+                    text = STRINGS.UI.CONTROLSSCREEN.CANCEL,
+                    cb = PopFunc
+                }, {
+                    text = "I Confirm " .. STRINGS.UI.CONTROLSSCREEN.UNBIND,
+                    cb = function()
                         fn_modsave(false, "Disabled")
                         PopFunc()
                         PopFunc()
-                    end },
-                })
-                TheFrontEnd:PushScreen(popup_in)
-            end
-        },
-    }
+                    end
+                }})
+            TheFrontEnd:PushScreen(popup_in)
+        end
+    }}
 
     if allowmid then
         table.insert(btns, {
-            text = "Bind to the function panel",
-            cb = function() 
-                fn_modsave("biubiu", "Function panel")
+            text = "Bind to Function Panel",
+            cb = function()
+                fn_modsave("biubiu", "Function Panel")
                 PopFunc()
             end
         })
@@ -348,11 +477,13 @@ function h_util:CreatePressScreen(title, currentkey, defaultkey, allowmid, optio
     local popup = PopupDialogScreen(title, body_text, btns)
 
     popup.OnRawKey = function(_, key, down)
-        if down then return end
+        if down then
+            return
+        end
         local pressdata = t_util:IGetElement(options, function(opt)
             return opt.data == key and {
                 data = opt.data,
-                description = opt.description,
+                description = opt.description
             }
         end)
         if pressdata then
@@ -366,15 +497,22 @@ function h_util:CreatePressScreen(title, currentkey, defaultkey, allowmid, optio
     TheFrontEnd:PushScreen(popup)
 end
 
--- btns:{text, cb(autopop)}  {spacing, longness, style}
+
 function h_util:CreatePopupWithClose(title, bodytext, btns, meta)
-    local btns = t_util:IPairFilter(btns or {{text = h_util.ok}}, function (btn)
-        return type(btn.text)=="string" and {text = btn.text, cb = function ()
-            if type(btn.cb) == "function" then
-                btn.cb()
+    local btns = t_util:IPairFilter(btns or {{
+        text = h_util.ok
+    }}, function(btn)
+        return type(btn.text) == "string" and {
+            text = btn.text,
+            cb = function()
+                if type(btn.cb) == "function" then
+                    btn.cb()
+                end
+                if not btn.dontpop then
+                    PopFunc()
+                end
             end
-            if not btn.dontpop then PopFunc() end
-        end}
+        }
     end)
     title = title or Mod_ShroomMilk.Mod["春"].name
     meta = c_util:FormatDefault(meta, "table")
@@ -382,7 +520,7 @@ function h_util:CreatePopupWithClose(title, bodytext, btns, meta)
     TheFrontEnd:PushScreen(popup)
 end
 
--- info:{text, cb(prefab)}
+
 function h_util:CreateWriteWithClose(title, info)
     local w_screen = require "screens/huxi/writescreen"
     local screen = w_screen(title, info)
@@ -390,24 +528,92 @@ function h_util:CreateWriteWithClose(title, info)
     return screen
 end
 
-local function checkAtlas(xml, tex)
-    xml = xml and resolvefilepath_soft(xml) or xml
-    return xml and TheSim:AtlasContains(xml, tex) and xml
+
+
+
+local ImageData = {}
+local AvatarData = {}
+
+
+function h_util:RegisterIcon_MODCHARACTERLIST(prefab, modname)
+    local avatar_name = "modavatar_"..modname..prefab
+    if not AvatarData[avatar_name] then
+        
+        
+        local path1 = MODS_ROOT .. modname .. "/images/saveslot_portraits/" .. prefab .. ".xml"
+        
+        local path2 = MODS_ROOT .. modname .. "/images/avatars/avatar_" .. prefab .. ".xml"
+        local xml, tex
+        
+        
+        
+        
+        if kleifileexists(path1) then
+            xml = path1
+            tex = prefab..".tex"
+        elseif kleifileexists(path2) then
+            xml = path2
+            tex = "avatar_" .. prefab..".tex"
+        end
+        if xml then
+            local pref = Prefab(avatar_name, nil, {Asset("ATLAS", xml)}, nil, true)
+            RegisterSinglePrefab(pref)
+            TheSim:LoadPrefabs({pref.name})
+        end
+        AvatarData[avatar_name] = {xml = xml, tex = tex}
+    end
+    return AvatarData[avatar_name].xml, AvatarData[avatar_name].tex
+end
+
+local AtlasData
+function h_util:RegisterIcon_ModAtlas()
+    if not AtlasData then
+        AtlasData = {}
+        t_util:IPairs(i_util:GetModsToLoad(), function(modname)
+            local mod = ModManager:GetMod(modname) or {}
+            local modinfo = mod.modinfo or {}
+            local name = modinfo.name or modname
+            local xml, tex = modinfo.icon_atlas, modinfo.icon
+            if not AtlasData[modname] then
+                AtlasData[modname] = {name = name}
+            end
+            if type(xml)=="string" and type(tex)=="string" then
+                local avatar_name = "modatlas_"..modname
+                local pref = Prefab(avatar_name, nil, {Asset("ATLAS", xml)}, nil, true)
+                RegisterSinglePrefab(pref)
+                TheSim:LoadPrefabs({pref.name})
+                AtlasData[modname].xml = xml
+                AtlasData[modname].tex = tex
+            end
+        end)
+    end
+    return AtlasData
+end
+
+function h_util:GetModAsset(modname)
+    return modname and self:RegisterIcon_ModAtlas()[modname] or {}
 end
 
 
-local function GetImageAsset(prefab)
+function h_util:GetImageAsset(prefab)
     local tex = prefab .. ".tex"
-    local name = e_util:GetPrefabName(prefab)
     local xml = GetInventoryItemAtlas(tex)
     local atlas = checkAtlas(xml, tex)
     if atlas then
-        return atlas, tex, name
+        return atlas, tex
+    end
+    local rtex = t_util:GetRecur(AllRecipes, prefab..".image")
+    if rtex then
+        xml = t_util:GetRecur(AllRecipes, prefab..".atlas") or GetInventoryItemAtlas(rtex)
+        atlas = checkAtlas(xml, rtex)
+        if atlas then
+            return atlas, rtex
+        end
     end
     for _, path in ipairs(h_util.xml_path) do
         atlas = checkAtlas("images/" .. path, tex)
         if atlas then
-            return atlas, tex, name
+            return atlas, tex
         end
     end
 
@@ -415,13 +621,31 @@ local function GetImageAsset(prefab)
     for _, path in ipairs(h_util.minimap_path) do
         atlas = checkAtlas(path, png)
         if atlas then
-            return atlas, png, name
+            return atlas, png
         end
     end
 
-
     local p_data = Prefabs[prefab]
     if p_data then
+        
+        if table.contains(MODCHARACTERLIST or {}, prefab) then
+            for _, modname in ipairs(i_util:GetModsToLoad()) do
+                local alt, img = self:RegisterIcon_MODCHARACTERLIST(prefab, modname)
+                if alt then
+                    return alt, img
+                end
+            end
+        end
+        
+        local spice_start = prefab:find("_spice_")
+        if spice_start then
+            local baseprefab = prefab:sub(1, spice_start - 1)
+            if baseprefab then
+                return self:GetImageAsset(baseprefab)
+            end
+        end
+
+        
         local p_assets = p_data.assets
         for _, asset in ipairs(p_assets) do
             local alt, img = xml, tex
@@ -439,44 +663,52 @@ local function GetImageAsset(prefab)
             end
             atlas = checkAtlas(alt, img)
             if atlas then
-                return atlas, img, name
+                return atlas, img
             elseif asset.type == "INV_IMAGE" then
                 img = 'quagmire_' .. asset.file .. '.tex'
                 alt = GetInventoryItemAtlas(img)
                 atlas = checkAtlas(alt, img)
                 if atlas then
-                    return atlas, img, name
+                    return atlas, img
                 end
             end
         end
     end
 
-
     atlas = checkAtlas(GetScrapbookIconAtlas(tex), tex)
-    return atlas, atlas and tex, name
+    return atlas, atlas and tex
 end
 
-local ImageData = {}
-local function GetPrefabAsset(prefab)
-    if not prefab then return end
+
+function h_util:GetPrefabAsset(prefab, default)
+    if not prefab then
+        return
+    end
     prefab = prefab:gsub("%.tex$", ""):gsub("%.png$", "")
-    if not ImageData[prefab] then
+    local ret = ImageData[prefab]
+    if not ret then
         local _prefab = r_data.prefab_image[prefab] or prefab
-        local xml, tex, name = GetImageAsset(_prefab)
-        name = r_data.prefab_name[prefab] or name
-        ImageData[prefab] = xml and {xml = xml, tex = tex, name = name} or {}
+        if _prefab == prefab then
+            if prefab:sub(-7) == "_sketch" then
+                _prefab = "sketch"
+            elseif prefab:sub(-8) == "_spawner" then
+                _prefab = prefab:sub(1, prefab:len()-8)
+            elseif prefab:sub(-7) == "spawner" then
+                _prefab = prefab:sub(1, prefab:len()-7)
+            end
+        end
+        local xml, tex = self:GetImageAsset(_prefab)
+        ret = xml and {
+            xml = xml,
+            tex = tex,
+            name = e_util:GetPrefabName(prefab)
+        } or {}
+        ImageData[prefab] = ret
     end
-    return ImageData[prefab]
-end
-
-
--- Todo: display seasoning dishes
--- print(h_util:GetPrefabAsset("junk_pile_big"))
-function h_util:GetPrefabAsset(prefab)
-    local ret = GetPrefabAsset(prefab)
-    if ret then
-        return ret.xml, ret.tex, ret.name
+    if not ret.xml and default then
+        return self:GetRandomSkin(true)
     end
+    return ret.xml, ret.tex, ret.name
 end
 
 local Sounds = {
@@ -487,16 +719,18 @@ local Sounds = {
     click_negative = "dontstarve/HUD/click_negative",
     respec = "wilson_rework/ui/respec",
     research_unlock = "dontstarve/HUD/research_unlock",
+    collect_item = "dontstarve/HUD/collect_newitem",
+    unweave = "dontstarve/HUD/Together_HUD/collectionscreen/unweave",
 }
 
--- Play sound
+
 function h_util:PlaySound(sound)
     sound = Sounds[sound] or sound
     TheFrontEnd:GetSound():PlaySound(sound)
-    -- TheFrontEnd.gameinterface.SoundEmitter:PlaySound
+    
 end
 
--- Get random skin
+
 function h_util:GetRandomSkin(default)
     if type(PREFAB_SKINS) ~= "table" or default then
         return resolvefilepath_soft("modicon.xml"), "modicon.tex"
@@ -514,24 +748,23 @@ function h_util:GetRandomSkin(default)
     return xml, tex
 end
 
--- Get ui category screen pos ent image uianim button
+
+local widgets_name = {"TextEdit", "UIAnimButton", "ImageButton", "TextButton", "UIAnim", "Text", "Button", "Image", "Screen", "Widget"}
 function h_util:GetType(UI)
     local tp = type(UI)
-    if tp ~= "table" then
+    if tp ~= "table" or not UI.is_a then
         return tp
     end
-    local name = UI and UI.inst and UI.inst.widget and type(UI.name) == "string" and UI.name
-    name = name and h_util:GetType(UI.parent) == "screenroot" and "Screen" or name
-    name = name or (UI and UI.x and UI.y and UI.z and "Pos")
-    name = name or (UI and UI.entity and UI.prefab and UI:IsValid() and "Ent")
-    return name
+    return t_util:IGetElement(widgets_name, function(ui_name)
+        return UI.is_a(UI, require("widgets/"..ui_name:lower())) and ui_name
+    end) or UI
 end
 
--- Control ui visible
+
 function h_util:VisibleUI(UI, show, meta)
     local tp = h_util:GetType(UI)
     if not tp then
-        -- Do nothing
+        
         return
     elseif tp == "UIAnim" then
         local anim = UI:GetAnimState()
@@ -550,7 +783,7 @@ function h_util:VisibleUI(UI, show, meta)
     end
 end
 
--- Get color
+
 local colour_default = "White"
 local v_data = require("data/valuetable")
 
@@ -560,7 +793,6 @@ function h_util:GetRGB(color, default)
     return data_rgb[color] or data_rgb[colour_default]
 end
 
-
 local wcolour_default = "Blue"
 local data_wrgb = v_data.WRGB
 function h_util:GetWRGB(color, default)
@@ -568,9 +800,10 @@ function h_util:GetWRGB(color, default)
     return data_wrgb[color] or data_wrgb[wcolour_default]
 end
 
--- It should be placed in entutil, but i think it's good to put here
+
 function h_util.SetColor(UI, color)
     color = h_util:GetWRGB(color)
+    color = color or h_util:GetWRGB(nil)
     UI.AnimState:SetMultColour(unpack(color))
     UI.AnimState:SetAddColour(unpack(color))
     return UI
@@ -596,17 +829,16 @@ function h_util.SetVisable(UI, bool)
 end
 
 
--- Nothing, but i just want to add it here. when other mod copy this tool class, you can delete all the code after this
 function h_util:GetControls()
     return h_util:GetHUD().controls or {}
 end
 
--- Get the player hud
+
 function h_util:GetHUD()
     return ThePlayer and ThePlayer.HUD or {}
 end
 
--- Get the front desk screen
+
 function h_util:GetActiveScreen(name)
     local screens = TheFrontEnd.screenstack or {}
     if name then
@@ -616,45 +848,51 @@ function h_util:GetActiveScreen(name)
     end
     local count = #screens
     if count > 1 then
-        return tostring(screens[count]) == "ConsoleScreen" and screens[count-1] or screens[count]
+        return tostring(screens[count]) == "ConsoleScreen" and screens[count - 1] or screens[count]
     end
     return TheFrontEnd:GetActiveScreen() or {}
 end
 
--- Control function panel
+
 function h_util:CtrlBoard()
     local board = h_util:GetControls().mboard or h_util:GetActiveScreen().mboard
-    if not board then return end
+    if not board then
+        return
+    end
     if board:IsVisible() then
         board:Hide()
     else
         board:Show()
     end
 end
--- Get ShowScreen
+
 function h_util:GetShowScreen()
     return self:GetActiveScreen("ShowScreen")
 end
 
--- Get lines
+
 function h_util:GetLines()
     return (self:GetShowScreen() or {}).lines
 end
 
--- Get a small icon
+
 function h_util:GetHicon()
-    return h_util:GetControls().hicon or
-        t_util:IGetElement(TheFrontEnd.screenstack, function(screen) return screen.hicon end)
+    return h_util:GetControls().hicon or t_util:IGetElement(TheFrontEnd.screenstack, function(screen)
+        return screen.hicon
+    end)
 end
 
--- Get equipment master
+
 function h_util:GetECtrl()
     return t_util:GetRecur(h_util:GetControls(), "inv.ectrl")
 end
 
--- Get ShowScreen
 
--- Get the info tray
+function h_util:GetCB()
+    return self:GetHUD().hx_cb
+end
+
+
 function h_util:GetTimer()
     return t_util:GetRecur(ThePlayer, "HUD.controls.hx_timer")
 end
@@ -666,71 +904,77 @@ function h_util:GetHMaps()
     end)
 end
 
--- Get the transfer character
+
 function h_util:GetStringKeyBoardMouse(keycode)
     local inputs = t_util:GetRecur(STRINGS, "UI.CONTROLSSCREEN.INPUTS") or {}
     return inputs[1] and keycode and inputs[1][keycode]
 end
 
--- Compressed xml string
+
 local zipxmls, unzipxmls = {}, {}
 for i = 1, 3 do
-    zipxmls["images/inventoryimages"..i..".xml"] = i.."zip"
-    unzipxmls[i..'zip'] = "images/inventoryimages"..i..".xml"
+    zipxmls["images/inventoryimages" .. i .. ".xml"] = i .. "zip"
+    unzipxmls[i .. 'zip'] = "images/inventoryimages" .. i .. ".xml"
 end
 function h_util:ZipXml(xml, unzip)
     local xmls = unzip and unzipxmls or zipxmls
     return xml and xmls[xml] or xml
 end
 
--- Coordinate conversion
+
 local half_x, half_y = RESOLUTION_X / 2, RESOLUTION_Y / 2
-local reso_w, reso_h = h_util.screen_w/RESOLUTION_X, h_util.screen_h/RESOLUTION_Y
+local reso_w, reso_h = h_util.screen_w / RESOLUTION_X, h_util.screen_h / RESOLUTION_Y
 function h_util:WorldPosToMinimapPos(x, z)
-    -- world -> map
+    
     local map_x, map_y = TheWorld.minimap.MiniMap:WorldPosToMapPos(x, z, 0)
-    -- map -> screen
+    
     return ((map_x * half_x) + half_x) * reso_w, ((map_y * half_y) + half_y) * reso_h
 end
+
 function h_util:WorldPosToScreenPos(x, z)
     return TheSim:GetScreenPos(x, 0, z)
 end
 
--- Binding mouse 2458 10-14
+
+function h_util:ScreenPosToWorldPos(x, y)
+    return TheSim:ProjectScreenPos(x, y)
+end
+
+
 function h_util:SetMouseSecond()
     return {{
         data = MOUSEBUTTON_RIGHT,
-        description = "Right mouse button " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_RIGHT)
+        description = "Right Mouse Button " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_RIGHT)
     }, {
         data = MOUSEBUTTON_MIDDLE,
-        description = "Mouse key " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_MIDDLE)
+        description = "Middle Mouse Button " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_MIDDLE)
     }, {
         data = 1006,
-        description = "Side keys 1 " .. self:GetStringKeyBoardMouse(1006)
+        description = "Side Button 1 " .. self:GetStringKeyBoardMouse(1006)
     }, {
         data = 1005,
-        description = "Side keys 2 " .. self:GetStringKeyBoardMouse(1005)
+        description = "Side Button 2 " .. self:GetStringKeyBoardMouse(1005)
     }, {
         data = MOUSEBUTTON_SCROLLUP,
-        description = "Rolling wheel " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_SCROLLUP)
+        description = "Scroll Up " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_SCROLLUP)
     }, {
         data = MOUSEBUTTON_SCROLLDOWN,
-        description = "Lower roller wheel " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_SCROLLDOWN)
+        description = "Scroll Down " .. self:GetStringKeyBoardMouse(MOUSEBUTTON_SCROLLDOWN)
     }, {
         data = h_util.cancel,
-        description = "Cancel binding"
+        description = "Unbind"
     }}
 end
 
--- The original version of Don't Starve has no way to detect being killed
+
 function h_util:IsValid(ui)
-    return ui and ui.inst and ui.inst.widget -- .widget == self, So no need and ui
+    return ui and ui.inst and ui.inst.widget 
 end
 
 local xml_scrap = "images/scrapbook.xml"
--- Generate illustration background
+
 function h_util:SpawnScrapBookImage(width, height)
-    local ratio = width/height
+    local ratio = width / height
     local suffix = "_square"
     if ratio > 5 then
         suffix = "_thin"
@@ -740,26 +984,290 @@ function h_util:SpawnScrapBookImage(width, height)
         suffix = "_tall"
     end
 
-    local materials = {
-        "scrap",
-        "scrap2",
-    }
-    local tex = materials[math.ceil(rand()*#materials)]..suffix.. ".tex"
+    local materials = {"scrap", "scrap2"}
+    local tex = materials[math.ceil(math.random() * #materials)] .. suffix .. ".tex"
     local img = Image(xml_scrap, tex)
-    img:ScaleToSize(width,height)
+    img:ScaleToSize(width, height)
     return img
 end
 
 
 
 
------------------------------------For Modder-----------------------------------
+function h_util:BuildGrid_PrefabButton(c_tor)
+    local cell_size = c_tor.cell_size or 70 
+    local cell_spacing = c_tor.cell_spacing or .6 
+    local font_size = c_tor.font_size or 40 
+    local line, col = c_tor.line or 4, c_tor.col or 6
+    local boarder_scale = .8
+    local c_tor = c_util:FormatDefault(c_tor, "table")
+    local context = c_tor.context or {}
+    local grid
+
+    local function ScrollWidgetsCtor(_, index)
+        local w = self:CreatePrefabButton({
+            id = "grid_cell_" .. index,
+            size = cell_size,
+            style_imgbtn = c_tor.style_imgbtn,
+        })
+
+        local _OnMouseButton = w.OnMouseButton
+        w.OnMouseButton = function(ui, btn, down, ...)
+            
+            if btn == MOUSEBUTTON_RIGHT and not down then
+                local parent = grid and self:IsValid(grid:GetParent())
+                if parent and w.fn_rr then
+                    w.fn_rr(parent, grid, ...)
+                end
+            
+            elseif btn == MOUSEBUTTON_LEFT and down and w.fn_sel then
+                w.fn_sel()
+            elseif btn == MOUSEBUTTON_MIDDLE and down and w.fn_mid then
+                local parent = grid and self:IsValid(grid:GetParent())
+                if parent and w.fn_mid then
+                    w.fn_mid(parent, grid, ...)
+                end
+            end
+            return _OnMouseButton(ui, btn, down, ...)
+        end
+        return w
+    end
+    local function fn_sel(prefab, data)
+        return function()
+            if c_tor.fn_sel then
+                local parent = grid and self:IsValid(grid:GetParent())
+                if parent then
+                    c_tor.fn_sel(prefab, parent, grid, context, data)
+                end
+            else
+                context.prefab = prefab ~= context.prefab and prefab or nil
+                if grid then
+                    grid:RefreshView() 
+                end
+            end
+        end
+    end
+    local function ScrollWidgetSetData(context, w, data)
+        if data then
+            w.SetPrefabIcon(data)
+            if type(data.hover) == "string" then
+                w:SetHoverText(data.hover, {
+                    offset_y = data.hover:find("\n") and 2*cell_size or 1.5*cell_size
+                })
+            end
+            
+            if c_tor.ensel then
+                local bg_data = self.style.imgbtn[c_tor.style_imgbtn or ""] or self.style.imgbtn.default
+                local atlas, normal, focus, focus_sel, _, selected = unpack(bg_data)
+                if data.prefab == context.prefab then
+                    if selected and focus_sel then
+                        w:SetTextures(atlas, selected, focus_sel)
+                    end
+                else
+                    w:SetTextures(atlas, normal, focus)
+                end
+            end
+            
+            if not c_tor.nosale then
+                if w.tag_sale then
+                    w.tag_sale:Kill()
+                end
+                if data.prefab == context.prefab then
+                    w.tag_sale = w:AddChild(Image("images/global_redux.xml", "shop_sale_tag.tex"))
+                    w.tag_sale:ScaleToSize(cell_size*.8, cell_size*.8)
+                    w.tag_sale:SetPosition(cell_size*.2, cell_size*.2)
+                end
+            end
+            
+            w.fn_sel = fn_sel(data.prefab, data)
+            
+            w.fn_rr = c_tor.fn_rr and function(parent, grid, ...)
+                c_tor.fn_rr(data.prefab, parent, grid, context, data, ...)
+            end
+            w.fn_mid = c_tor.fn_mid and function(parent, grid, ...)
+                c_tor.fn_mid(data.prefab, parent, grid, context, data, ...)
+            end
+            w:Show()
+        else
+            w:Hide()
+        end
+    end
+    grid = TEMPLATES.ScrollingGrid({}, {
+        scroll_context = context,
+        widget_width = cell_size + cell_spacing, 
+        widget_height = cell_size + cell_spacing, 
+        num_visible_rows = line, 
+        num_columns = col, 
+        item_ctor_fn = ScrollWidgetsCtor, 
+        apply_fn = ScrollWidgetSetData, 
+        scrollbar_offset = c_tor.scrollbar_offset or 20, 
+        scrollbar_height_offset = c_tor.scrollbar_height_offset, 
+        force_peek = c_tor.force_peek,
+        peek_height = c_tor.peek_height,
+        peek_percent = c_tor.peek_percent,
+    })
+
+    
+    grid.SetScrollBarStyle = function(ui, style_name)
+        local function fn_style(style)
+            local function fn_settextures(img, xml, tex)
+                if xml and tex and img then
+                    if img.SetTextures then
+                        img:SetTextures(xml, tex)
+                    elseif img.SetTexture then
+                        img:SetTexture(xml, tex)
+                    end
+                end 
+            end
+            fn_settextures(ui.up_button, style.atlas, style.up)
+            fn_settextures(ui.down_button, style.atlas, style.down)
+            fn_settextures(ui.scroll_bar_line, style.atlas, style.bar)
+            fn_settextures(ui.position_marker, style.atlas, style.handle)
+            fn_settextures(ui.position_marker.image, style.atlas, style.handle)
+        end
+        local style = style_name and self.style.scrollbar[style_name]
+        if style then
+            fn_style(style)
+            if style_name == "light" then
+                ui.up_button:SetScale(.5)
+                ui.down_button:SetScale(.5)
+                ui.scroll_bar_line:SetTexture("images/hx_long.xml", "scrollbar_bar.tex")
+            end
+        else
+            fn_style(self.style.scrollbar.default)
+            ui.up_button:SetScale(0.5)
+            ui.down_button:SetScale(-0.5)
+            ui.scroll_bar_line:SetScale(.8)
+            ui.position_marker:SetScale(.6)
+        end
+    end
+    grid:SetScrollBarStyle(c_tor.style_scr)
+
+    
+    if c_tor.scroll_bar_show then
+        grid.CanScroll = function()
+            return true
+        end
+        
+        grid.scroll_bar_container:Show()
+    end
+
+    
+    local grid_w, grid_h = grid:GetScrollRegionSize()
+    local name_border = c_tor.style_border
+    local style_border = name_border and self.style.border[name_border] or self.style.border.default
+
+    if not c_tor.noborderup then
+        grid.gb_up = grid:AddChild(Image(unpack(style_border)))
+        grid.gb_up:SetScale(boarder_scale, boarder_scale)
+        grid.gb_up:SetPosition(-3, grid_h / 2)  
+    end
+    if not c_tor.noborderdown then
+        grid.gb_down = grid:AddChild(Image(unpack(style_border)))
+        grid.gb_down:SetScale(boarder_scale, -boarder_scale)
+        grid.gb_down:SetPosition(-3, -grid_h / 2 - 1)
+    end
+
+    local grid_text = grid:AddChild(Text(HEADERFONT, font_size, "", UICOLOURS.BROWN_DARK))
+    
+    local _SetItemsData = grid.SetItemsData
+    grid.SetItemsData = function(ui, ...)
+        _SetItemsData(ui, ...)
+
+        if #ui.items == 0 then
+            if type(c_tor.zero_show)=="string" then
+                grid_text:SetString(c_tor.zero_show)
+            else
+                grid_text:SetString("No results found")
+            end
+            if c_tor.zero_color then
+                grid_text:SetColour(c_tor.zero_color)
+            end
+        else
+            grid_text:SetString("")
+        end
+    end
+    
+    grid:SetPosition(-145, -70)
+
+    
+    grid.OnFocusMove = function() return false end
+    if c_tor.nozoom then
+        self:DisableZoom(grid)
+    end
+
+    return grid
+end
+
+
+function h_util:BuildGrid_PrefabDetail()
+    local w = Widget("grid_detail")
+    w.icon_show = w:AddChild(self:CreatePrefabButton({
+        style_imgbtn = "ui",
+        noclick = true,
+        size = 175
+    }))
+    w.text_show = w:AddChild(Text(NEWFONT, 40, "", UICOLOURS.BLACK))
+    w.text_show:SetPosition(0, -145)
+    return w
+end
+
+
+function h_util:BuildFrame(width, height)
+    local w = Widget("huxi_menu_frame")
+    local atlas = resolvefilepath(CRAFTING_ATLAS)
+    
+    w.fill = w:AddChild(Image(atlas, "backing.tex"))
+    w.fill:ScaleToSize(width + 10, height + 18)
+    w.fill:SetTint(1, 1, 1, 0.3)
+
+    
+    w.left = w:AddChild(Image(atlas, "side.tex"))
+    w.right = w:AddChild(Image(atlas, "side.tex"))
+    w.top = w:AddChild(Image(atlas, "top.tex"))
+    w.bottom = w:AddChild(Image(atlas, "bottom.tex"))
+
+    w.left:SetPosition(-width / 2 - 8, 1)
+    w.right:SetPosition(width / 2 + 8, 1)
+    w.top:SetPosition(0, height / 2 + 10)
+    w.bottom:SetPosition(0, -height / 2 - 8)
+
+    w.left:ScaleToSize(-26, -(height - 20))
+    w.right:ScaleToSize(26, height - 20)
+    w.top:ScaleToSize(width+33, 38)
+    w.bottom:ScaleToSize(width+33, 38)
+
+    return w
+end
+
+function h_util:IsInvXml(xml)
+    return xml and (xml:find("inventoryimages.xml") or xml:find("inventoryimages1.xml") or xml:find("inventoryimages2.xml") or xml:find("inventoryimages3.xml"))
+end
+
+function h_util:FocusTwoline(strline)
+    
+    local ui = self:GetCB()
+    if self:IsValid(ui) then
+        ui:Hide()
+    end
+    ThePlayer.HUD:Hide()
+    ThePlayer.HUD.under_root:Hide()
+    if not self:IsValid(ThePlayer.HUD.twolines) then
+        
+        ThePlayer.HUD.twolines = ThePlayer.HUD:AddChild(TwoLines(strline))
+        ThePlayer.HUD.twolines:SetPosition(0, self.screen_h * -.075)
+    end
+end
+
+
+
+
 function h_util:debug_pos(ui)
     if self:IsValid(ui) then
         self:ActivateUIDraggable(ui, function(pos)
             print("debug_pos", pos)
         end)
-        t_util:JoinDebug(ui)
+        t_util:JoinDebug(ui, "ui")
     end
 end
 

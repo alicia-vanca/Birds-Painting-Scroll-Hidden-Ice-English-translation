@@ -7,7 +7,14 @@ local function GetScreenData()
     local screen_data = {
         title = "Convenient " .. string_r,
         id = save_id,
-        data = {},
+        data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1h2CrB5E6f/", true)end
+    },},
     }
     local ui_data = screen_data.data
     t_util:IPairs(m_util:GetData("RIGHT"), function(data)

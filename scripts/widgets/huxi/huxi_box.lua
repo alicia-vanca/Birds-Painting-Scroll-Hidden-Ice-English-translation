@@ -42,7 +42,7 @@ function SBox:SetData(data, pos, isscreenpos)
             mx = pos.x - (self.col-1)*0.5*self.img_a_size
             my = pos.y < 1.5*half_h and pos.y + self.y_space + h or pos.y-self.img_a_size
         else
-            local x, y = h_util:WorldPosToScreenPos(pos.x, pos.z)
+            local x, y = TheSim:GetScreenPos(pos.x, 0, pos.z)
             mx = x - 0.5*w + 0.5*self.img_a_size
             my = y < half_h and h + y + self.y_space or y - self.y_space
         end

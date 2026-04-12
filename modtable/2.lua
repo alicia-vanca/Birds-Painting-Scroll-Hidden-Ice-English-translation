@@ -1,7 +1,7 @@
--- Mainboard mainboard
 
--- Note breathing
--- Because there is a problem with the underlying design, huxiwindow must first be at huxiicon require
+
+
+
 local HWindow = require "widgets/huxi/huxi_window"
 local HIcon = require "widgets/huxi/huxi_icon"
 
@@ -40,6 +40,13 @@ m_util:AddBindIcon("Hotkeys", "butterflymuffin", "Modify the binding settings of
     m_util:AddBindShowScreen({
         title = "Function binding",
         id = "funcsbind",
-        data = m_util:LoadReBindData()
+        data = t_util:MergeList({{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Video Tutorial",
+        hover = "Click to view video tutorial",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1BVCQBmEVd", true)end
+    },}, m_util:LoadReBindData())
     })()
 end, nil, 99998)

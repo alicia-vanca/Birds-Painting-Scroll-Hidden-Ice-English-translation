@@ -1,7 +1,10 @@
 local DataInv, id_inv = {}, "inv"
 local WorldSeed = "worldseed"
-local DataNet = {} -- This variable is not stored in memory, so no release
--- Get the location id of the current world
+local DataNet = {} 
+local DataRange, id_weapon_range = {}, "_hx_weapon_range"
+
+
+
 local function GetItemPosID(item)
     local id_pos = e_util:GetPosID(item)
     return id_pos and id_pos.."_"..WorldSeed
@@ -112,6 +115,8 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
     -- Data inlet loading
     WorldSeed = saver:GetSeed(true)
     DataInv = saver:GetMap(id_inv)
+    DataRange = saver:GetLine(id_weapon_range)
+    Mod_ShroomMilk.Data.WeaponRange = DataRange
 
     if MOD_RPC then
         m_util.enable_showme = MOD_RPC.showmeshint and MOD_RPC.showmeshint.hint
@@ -121,23 +126,62 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
 end)
 
 
-m_util:AddBindIcon("Mod FAQ", "penguin", "Engineers are repairing...", true, function()
-    h_util:CreatePopupWithClose(Mod_ShroomMilk.Mod["春"].name, "Please attach the log and send it to hanhuxi@qq.com", {
-        -- {text = "QQ Group", cb = function()
-        --     VisitURL("https://qm.qq.com/q/Hbhfb3fskw/")
-        -- end},
-        -- {text = "Bilibili", cb = function()
-        --     VisitURL("http://b23.tv/NzZKC5T/")
-        -- end},
-        -- {text = "Steam Message", cb = function()
-        --     VisitURL("https://steamcommunity.com/sharedfiles/filedetails/?id=3161117403/")
-        -- end},
+i_util:AddPlayerActivatedFunc(function(player, world, pusher, saver)
+    local function LoadRange(equip)
+        local range = p_util:GetAttackRange()
+        if range and DataRange[equip.prefab] ~= range and type(range)=="number" then
+            
+            DataRange[equip.prefab] = range
+        end
+    end
+    pusher:RegEquip(function (slot, equip)
+        if slot == "hands" then
+            e_util:SetBindEvent(equip, "itemget", LoadRange)
+            e_util:SetBindEvent(equip, "itemlose", LoadRange)
+            LoadRange(equip)
+        end
+    end)
+end)
+
+
+
+
+AddClassPostConstruct("components/inventory_replica", function(self)
+    self.TakeActiveItemFromCountOfSlot = function(self, ...)
+        if self.inst.components.inventory ~= nil then
+            self.inst.components.inventory:TakeActiveItemFromCountOfSlot(...)
+        elseif self.classified ~= nil then
+            self.classified:TakeActiveItemFromCountOfSlot(...)
+        end
+    end
+end)
+
+
+
+
+
+m_util:AddBindIcon("Mod Q&A", "penguin", "Support is under repair...", true, function()
+    h_util:CreatePopupWithClose(Mod_ShroomMilk.Mod["春"].name, "If you have questions or bug reports, please join QQ group 2155066095", {
+        
+        
+        
+        {text = "Bilibili", cb = function()
+            VisitURL("http://b23.tv/NzZKC5T/", true)
+        end},
+        {text = "Steam Comments", cb = function()
+            VisitURL("https://steamcommunity.com/sharedfiles/filedetails/?id=3161117403/")
+        end},
         {text = h_util.ok},
     })
 end, nil, -10000)
 
 
 
+
+i_util:AddWorldActivatedFunc(function()
+    if not m_util:HasModName("Colorful World") then return end
+    TheSim:ForceAbort()
+end)
 
 
 if not m_util:IsAdmin() then return end

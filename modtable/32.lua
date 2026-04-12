@@ -35,7 +35,7 @@ local function fn_get_node()
             local alls = type(lta.all) == "table" and lta.all or {lta.all}
             t_util:IPairs(alls, function(all)
                 t_util:Pairs(m_id, function(i, all_name)
-                    if all_name:find(all) then
+                    if all_name:rfind_plain(all) then
                         local node_data = m_node[i]
                         AddNode({x = node_data.x, z = node_data.y}, lta.icon)
                     end
@@ -45,7 +45,7 @@ local function fn_get_node()
             local tasks = type(lta.task) == "table" and lta.task or {lta.task}
             t_util:IPairs(tasks, function(task)
                 local pos_list = t_util:PairToIPair(m_id, function(id, task_name)
-                    return task_name:find(task) and m_node[id]
+                    return task_name:rfind_plain(task) and m_node[id]
                 end)
                 local pos
                 t_util:IPairs(pos_list, function(_pos)

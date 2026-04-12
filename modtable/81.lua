@@ -1,8 +1,8 @@
 local CPS = require "widgets/huxi/huxi_compass"
 local save_id, str_show = "sw_compass", "Compass"
 local default_data = {
-    -- posx, posy
-    scale = 1,
+    
+    scale = 2,
     offset = not m_util:IsHuxi(),
     text = true,
     shake = true,
@@ -60,10 +60,11 @@ local screen_data = {
             if cps then
                 cps:SetUIPos(true)
             else
-                u_util:Say(str_show, "You have not enabled this feature", "self", "红色", true)
+                u_util:Say(str_show, "You have not enabled this feature", "self", "Red", true)
             end
         end,
-        default = true,
+        prefab = "compass",
+        type = "imgstr",
     },
     {
         id = "scale",
@@ -111,7 +112,16 @@ local screen_data = {
 local fn_right = m_util:AddBindShowScreen({
     title = str_show,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+                icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Timer",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet, stay tuned.")
+        end,
+    }},
 })
 m_util:AddBindConf(save_id, fn_left, nil, {str_show, "compass",
                                            STRINGS.LMB .. 'On/Off' .. STRINGS.RMB .. 'Advanced settings', true,

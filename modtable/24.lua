@@ -117,7 +117,16 @@ end)
 local func_right = m_util:AddBindShowScreen({
     title = string_skin,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Info",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature's UI layout will be rewritten later; stay tuned...")
+        end,
+    }}
 })
 m_util:AddBindConf(save_id, fn, nil,
     {string_skin, "wardrobe_armoire", STRINGS.LMB .. "Gift records" .. STRINGS.RMB .. "Advanced settings", true, fn,

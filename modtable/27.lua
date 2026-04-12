@@ -133,6 +133,7 @@ m_util:AddGameData(id_craft, "modfancy", {
     priority = -100,
 })
 
+-- VanCa: Change wiki link to English wiki
 m_util:AddGameData(id_craft, "showcode", {
     id = "showcode",
     label = "Display Wiki Code",

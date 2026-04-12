@@ -249,9 +249,7 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
 
     -- Synchronous buff data
     saver:RegSaveFunc(function(now)
-        t_util:Pairs(save_buff, function(key)
-            save_buff[key] = nil
-        end)
+        t_util:Clear(save_buff)
         local data = saver:GetStatData(stat_name) or {}
         t_util:Pairs(data, function(buff_name, buff_data)
             save_buff[buff_name] = math.floor(buff_data.duration - (now - buff_data.time_start))

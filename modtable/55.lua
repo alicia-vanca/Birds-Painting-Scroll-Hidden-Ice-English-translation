@@ -176,6 +176,15 @@ local RightClick = m_util:AddBindShowScreen({
     title = string_quick,
     id = save_id,
     data = ui_data,
+    icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Custom",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "No custom feature has been added yet. Stay tuned.")
+        end,
+    }},
 })
 
 local function Fn()

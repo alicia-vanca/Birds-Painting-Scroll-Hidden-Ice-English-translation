@@ -12,7 +12,7 @@ noises.pets = {
     ["terraria1/mini_eyeofterror/"] = {"emote1", "emote2", "emote_cute", "emote_pet", "emote_combat", "interact_active", "eat_lp", "eat_loop", "eat_pst", "eat_pre", "distress", "emote_nuzzle", "sleep_pre", "sleep_pst",},
 }
 noises.only = {
-    ["Grom"] = {
+    ["Glommer"] = {
         "dontstarve_DLC001/creatures/glommer/sleep_voice",
         "dontstarve_DLC001/creatures/glommer/idle_voice",
         "dontstarve_DLC001/creatures/glommer/flap",
@@ -25,22 +25,22 @@ noises.only = {
         "farming/creatures/fruitfly/sleep",
         "farming/creatures/fruitfly/hit",
     },
-    ["Poop"] = "dontstarve/common/flies",
-    ["Mandra cao"] = "dontstarve/creatures/mandrake/walk",
-    ["Bird catcher"] = "dontstarve/common/birdtrap_rustle",
-    ["Wx78 overload"] = "dontstarve/characters/wx78/charged",
-    ["Snowball"] = {
+    ["Poop flies"] = "dontstarve/common/flies",
+    ["Mandrake"] = "dontstarve/creatures/mandrake/walk",
+    ["Birdtrap"] = "dontstarve/common/birdtrap_rustle",
+    ["WX78 overload"] = "dontstarve/characters/wx78/charged",
+    ["Ice Flingomatic"] = {
         "dontstarve_DLC001/common/firesupressor_idle",
         "dontstarve_DLC001/common/firesupressor_spin",
         "dontstarve_DLC001/common/firesupressor_chuff",
     },
-    ["Honeycomb"] = {
+    ["Bee box, Bee hive"] = {
         "dontstarve/bee/bee_box_LP",
         "dontstarve/bee/bee_hive_LP"
     },
-    ["Electric electrostatic"] = "moonstorm/common/static_ball_contained/idle_LP",
-    ["Waves"] = "hookline_2/amb/hermit_island",
-    ["Chest walk"] = "dontstarve/creatures/chester/boing",
+    ["Restrained Static"] = "moonstorm/common/static_ball_contained/idle_LP",
+    ["Hermit island waves"] = "hookline_2/amb/hermit_island",
+    ["Chester"] = "dontstarve/creatures/chester/boing",
     ["Some birds"] = {
         "dontstarve/creatures/smallbird/wings",
         "dontstarve/creatures/smallbird/chirp",
@@ -72,7 +72,7 @@ noises.only = {
         "dontstarve/characters/wendy/small_ghost/joy",
         "dontstarve/characters/wendy/small_ghost/wisp",
     },
-    ["Ax"] = "dontstarve/characters/woodie/lucytalk_LP",
+    ["Lucy axe"] = "dontstarve/characters/woodie/lucytalk_LP",
     ["Common equipment"] = {
         "dontstarve/movement/foley/krampuspack",
         "dontstarve_DLC001/common/morningstar",
@@ -80,21 +80,21 @@ noises.only = {
         "dontstarve/movement/foley/bone",
         "dontstarve/movement/foley/nightarmour",
     },
-    ["Alchemy"] = {
+    ["Alchemy Engine"] = {
         "dontstarve/common/researchmachine_lvl3_idle",
         "dontstarve/common/researchmachine_lvl3_idle_LP",
         "dontstarve/common/researchmachine_lvl2_idle_LP",
     },
-    ["Think tank"] = "turnoftides/common/together/seafaring_prototyper/LP",
-    ["Refrigerator"] = "dontstarve/common/ice_box_LP",
-    ["Grinder"] = "dontstarve/common/together/portable/blender/proximity_LP",
+    ["Think Tank"] = "turnoftides/common/together/seafaring_prototyper/LP",
+    ["Ice Box"] = "dontstarve/common/ice_box_LP",
+    ["Portable Grinding Mill"] = "dontstarve/common/together/portable/blender/proximity_LP",
     ['Winona generator'] = {
         "dontstarve/common/together/spot_light/electricity",
         "meta4/winona_battery/purebrillance_powered",
         "dontstarve/common/together/battery/on_LP",
         "meta4/winona_battery/purebrillance_overloaded_lp",
     },
-    ["Celestial port"] = {
+    ["Celestial Portal"] = {
         "dontstarve/common/together/spawn_vines/spawnportal_idle_LP",
         "dontstarve/common/together/spawn_vines/spawnportal_idle",
         "dontstarve/common/together/spawn_vines/spawnportal_scratch",
@@ -102,20 +102,20 @@ noises.only = {
         "dontstarve/common/together/spawn_vines/spawnportal_blink",
         "dontstarve/common/together/spawn_vines/vines",
     },
-    ["Dragon scale stove"] = {
+    ["Scaled Furnace"] = {
         "dontstarve/common/together/dragonfly_furnace/fire_LP",
         "dontstarve/common/together/dragonfly_furnace/light",
     },
-    ["Dwarf"] = "dontstarve/common/staff_star_LP",
-    ["Aurora"] = "dontstarve/common/staff_coldlight_LP",
-    ["Celestial treasure ball"] = {
+    ["Dwarf Star"] = "dontstarve/common/staff_star_LP",
+    ["Polar Light"] = "dontstarve/common/staff_coldlight_LP",
+    ["Celestial Orb"] = {
         "dontstarve/common/together/celestial_orb/idle_LP",
         "dontstarve/common/together/celestial_orb/idlesound"
     },
-    ["Transmission array"] = "dontstarve/common/telebase_hum",
-    ["Star detector"] = "grotto/common/archive_resonator/idle_LP",
-    ["Insect hole"] = "dontstarve/common/teleportworm/idle",
-    ["Turkey"] = {
+    ["Telelocator Focus"] = "dontstarve/common/telebase_hum",
+    ["Astral Detector"] = "grotto/common/archive_resonator/idle_LP",
+    ["Worm Hole"] = "dontstarve/common/teleportworm/idle",
+    ["Gobbler"] = {
         "dontstarve/creatures/perd/gobble",
         "dontstarve/creatures/perd/scream",
         "dontstarve/creatures/perd/run",
@@ -131,18 +131,23 @@ noises.only = {
         "dontstarve/frog/wake",
     },
     ["Mosquito"] = "dontstarve/creatures/mosquito/mosquito_fly_LP",
-    ["Spherical light"] = "grotto/creatures/light_bug/fly_LP",
-    ["Moonlight"] = "moonstorm/common/moonstorm/spark_LP",
-    ["Vulture"] = "dontstarve_DLC001/creatures/buzzard/hurt",
-    ["Low -minded"] = "dontstarve/sanity/sanity",
-    ["High enlightenment"] = "turnoftides/sanity/lunacy_LP",
+    ["Bulbous Lightbug"] = "grotto/creatures/light_bug/fly_LP",
+    ["Moonstorm"] = "moonstorm/common/moonstorm/spark_LP",
+    ["Buzzard"] = "dontstarve_DLC001/creatures/buzzard/hurt",
+    ["Low-sanity"] = "dontstarve/sanity/sanity",
+    ["Enlightenment"] = "turnoftides/sanity/lunacy_LP",
     ["Season white noise"] = {
         "dontstarve/AMB/waves",
         "dontstarve/AMB/waves_winter",
         "dontstarve/AMB/waves",
         "dontstarve_DLC001/AMB/waves_summer",
     },
-    ['Eyeball Turret'] = "dontstarve/creatures/eyeballturret/charge",
+    ['Houndius Shootius'] = "dontstarve/creatures/eyeballturret/charge",
+    ['Sawhorse'] = {
+        "rifts3/sawhorse/proximity_lp",
+        "rifts3/sawhorse/proximity_lp_pst",
+    },
+    ['Sawhorse in use'] = "rifts3/sawhorse/use",
 }
 
 

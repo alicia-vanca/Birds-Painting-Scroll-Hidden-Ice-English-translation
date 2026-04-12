@@ -44,7 +44,7 @@ local function BuildBadge(icon)
         if value then
             if value > 0 then
                 bd.str:SetString("↑ "..value)
-                bd.str:SetColour(h_util:GetRGB("Spring green"))
+                bd.str:SetColour(h_util:GetRGB("SpringGreen"))
             elseif value < 0 then
                 bd.str:SetString("↓ "..-value)
                 bd.str:SetColour(h_util:GetRGB("Red"))
@@ -56,7 +56,7 @@ local function BuildBadge(icon)
             bd.str:SetString("")
         end
         if bd._hx_id == "wateringcan" then
-            bd.str:SetColour(h_util:GetRGB("Cornflower blue"))
+            bd.str:SetColour(h_util:GetRGB("CornflowerBlue"))
         end
     end
 
@@ -78,7 +78,7 @@ local HuxiNut = Class(Widget, function(self, scale)
     self.f1 = self:AddChild(BuildBadge("soil_amender_fermented"))
     self.f1.anim:GetAnimState():SetMultColour(unpack(h_util:GetWRGB("Blue")))
     self.f2 = self:AddChild(BuildBadge("spoiled_food"))
-    self.f2.anim:GetAnimState():SetMultColour(unpack(h_util:GetWRGB("Golden")))
+    self.f2.anim:GetAnimState():SetMultColour(unpack(h_util:GetWRGB("Goldenrod")))
     self.f3 = self:AddChild(BuildBadge("poop"))
     self.f3.anim:GetAnimState():SetMultColour(unpack(h_util:GetWRGB("Tomato")))
     self:SetUIScale(scale)

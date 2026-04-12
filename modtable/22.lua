@@ -4,7 +4,7 @@ end
 local save_id, string_dag = "sw_DAG", "Archive task"
 local default_data = {
     size_font = 40,
-    color_small = "Spring green",
+    color_small = "SpringGreen",
     color_box = "Yellow",
 }
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
@@ -188,6 +188,13 @@ end
 local v_data = require("data/valuetable")
 local data_rgb, data_frame,data_range = v_data.RGB_datatable, v_data.frame_datatable, v_data.range_datatable
 local screen_data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view video tutorial or feature demonstration",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1aKCXB3EAJ", true)end
+    },{
     id = "color_small",
     label = "Task mark:",
     fn = function(c)
@@ -235,7 +242,16 @@ local screen_data = {{
 local func_right = m_util:AddBindShowScreen({
     title = string_dag,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Info",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature is planned for future rewrite; stay tuned...")
+        end,
+    }}
 })
 m_util:AddBindConf(save_id, fn, nil, {string_dag, "archive_lockbox",
                                       STRINGS.LMB .. "Start " .. STRINGS.RMB .. "Advanced settings", true, fn,

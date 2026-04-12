@@ -14,7 +14,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2021/08/31 水中木更新"
+        desc = "2021/08/31 Waterlogged update"
     },
     {
         anim = {"dst_menu_moonstorm_background", "dst_menu_moonstorm_wrench", "dst_menu_moonstorm_wagstaff", "dst_menu_moonstorm_foreground"},
@@ -41,7 +41,7 @@ return {
             local _, str_anim = t_util:GetRandomItem({"loop_w1","loop_w2", "loop_w3", "loop_w1_console"})
             anim_wagstaff:GetAnimState():PlayAnimation(str_anim, true)
             anim_wagstaff:SetScale(.667)
-            anim_wagstaff:GetAnimState():SetErosionParams(1, math.random(), -math.random()) -- 透明度在这里设置
+            anim_wagstaff:GetAnimState():SetErosionParams(1, math.random(), -math.random()) 
             anim_wagstaff:GetAnimState():SetMultColour(1, 1, 1, 0.9)
             table.insert(banner_root.need_kill, anim_wagstaff)
 
@@ -53,7 +53,7 @@ return {
             ShiftUI(anim_foreground)
             table.insert(banner_root.need_kill, anim_foreground)
         end,
-        desc = "2021/05/06 旧神归来系列：“风暴之眼”",
+        desc = "2021/05/06 Old Gods Return series: 'Eye of the Storm'",
     },{
         anim = "dst_menu_yotd",
         fn = function(self, banner_root, anim)
@@ -62,7 +62,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2024/02/09 龙蝇之年"
+        desc = "2024/02/09 Year of the Dragonfly"
     },{
         anim = "dst_menu_yot_catcoon",
         fn = function(self, banner_root, anim)
@@ -71,7 +71,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2022/01/28 浣猫之年来了！"
+        desc = "2022/01/28 Year of the Catcoon is here!"
     },{
         anim = "dst_menu_yotr",
         fn = function(self, banner_root, anim)
@@ -80,7 +80,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2023/01/20 兔人之年来啦"
+        desc = "2023/01/20 Year of the Bunnyman is here"
     },{
         anim = "dst_menu_halloween2",
         fn = function(self, banner_root, anim)
@@ -89,7 +89,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2021/10/22 万圣夜回归"
+        desc = "2021/10/22 Halloween Returns"
     },{
         anim = "dst_menu_carnival",
         fn = function(self, banner_root, anim)
@@ -98,7 +98,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2021/06/04 首个“科雷节”·盛夏鸦年华"
+        desc = "2021/06/04 First 'Crawfest' · Midsummer Crow Celebration"
     },{
         anim = {"dst_menu_webber", "dst_menu_webber_carnival",},
         fn = function(self, banner_root, anim)
@@ -107,18 +107,18 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2021/06/25 韦伯的角色更新"
+        desc = "2021/06/25 Webber character update"
     },
-    -- 当前接口暂不支持同名动画
-    -- {
-    --     anim = {"dst_menu_webber"},
-    --     fn = function(self, banner_root, anim)
-    --         anim:GetAnimState():SetBuild("dst_menu_webber")
-    --         anim:GetAnimState():SetBank("dst_menu_webber")
-    --         anim:SetScale(.667)
-    --         anim:GetAnimState():PlayAnimation("loop", true)
-    --     end,
-    -- },
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     {
         anim = "dst_menu_wes2",
         fn = function(self, banner_root, anim)
@@ -127,7 +127,7 @@ return {
             anim:SetScale(.667)
             anim:GetAnimState():PlayAnimation("loop", true)
         end,
-        desc = "2021/04/02 完全真实的韦斯人物更新"
+        desc = "2021/04/02 Fully authentic Wes character update"
     },{
         anim = "dst_menu_wanda",
         fn = function(self, banner_root, anim)
@@ -138,7 +138,7 @@ return {
             anim_bg:GetAnimState():PlayAnimation("loop_"..math.random(3), true)
             anim_bg:MoveToBack()
         end,
-        desc = "2021/09/10 新的冒险家：来见见旺达吧！"
+        desc = "2021/09/10 New adventurer: meet Wanda!"
     },{
         anim = "dst_menu_terraria",
         fn = function(self, banner_root, anim)
@@ -147,7 +147,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2021/11/19 以眼还眼 · 泰拉瑞亚联动",
+        desc = "2021/11/19 Eye for Eye · Terraria crossover",
     },{
         anim = "dst_menu_wolfgang",
         fn = function(self, banner_root, anim)
@@ -166,7 +166,7 @@ return {
             end
             anim:SetScale(.667)
         end,
-        desc = "2021/12/17 沃尔夫冈的人物重做",
+        desc = "2021/12/17 Wolfgang character rework",
     },{
         anim = "dst_menu_wx",
         fn = function(self, banner_root, anim)
@@ -175,7 +175,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2022/04/29 WX-78人物重做",
+        desc = "2022/04/29 WX-78 character rework",
     },{
         anim = "dst_menu_wickerbottom",
         fn = function(self, banner_root, anim)
@@ -184,7 +184,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2022/08/05 薇克巴顿人物重做",
+        desc = "2022/08/05 Wickerbottom character rework",
     },{
         anim = "dst_menu_pirates",
         fn = function(self, banner_root, anim)
@@ -193,7 +193,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2022/07/01 月亮码头的诅咒",
+        desc = "2022/07/01 Curse of the Moon Dock",
     },{
         anim = {"dst_menu_charlie2", "dst_menu_charlie"},
         fn = function(self, banner_root, anim)
@@ -210,7 +210,7 @@ return {
             anim:SetScale(0.667)
         end,
         pos = {0, 0},
-        desc = "2022/10/21 一出小戏 · 生活质量"
+        desc = "2022/10/21 A Little Play · Quality of Life"
     },{
         anim = {"dst_menu_charlie2", "dst_menu_charlie_halloween"},
         fn = function(self, banner_root, anim)
@@ -227,7 +227,7 @@ return {
             anim:SetScale(0.667)
         end,
         pos = {0, 0},
-        desc = "2022/10/21 一出小戏 · 万圣夜活动"
+        desc = "2022/10/21 A Little Play · Halloween Event"
     },{
         anim = "dst_menu_waxwell",
         fn = function(self, banner_root, anim)
@@ -236,7 +236,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2022/11/23  麦斯威尔的人物重做",
+        desc = "2022/11/23 Maxwell character rework",
     },{
         anim = "dst_menu_wilson",
         fn = function(self, banner_root, anim)
@@ -245,7 +245,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2023/03/17 威尔逊的人物重做",
+        desc = "2023/03/17 Wilson character rework",
     },{
         anim = "dst_menu_lunarrifts",
         fn = function(self, banner_root, anim)
@@ -254,7 +254,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2023/04/28 来自域外--生根",
+        desc = "2023/04/28 Rooted from Beyond",
     },{
         anim = "dst_menu_rift2",
         fn = function(self, banner_root, anim)
@@ -263,7 +263,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2023/06/16 新的恐惧",
+        desc = "2023/06/16 New Fear",
     },{
         anim = "dst_menu_meta2_cotl",
         fn = function(self, banner_root, anim)
@@ -272,7 +272,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2023/08/22 咩咩启示录联动 · 沃姆伍德、沃尔夫冈、伍迪 技能聚点"
+        desc = "2023/08/22 Sheep Revelation crossover · Wormwood, Wolfgang, Woody skill hub"
     },{
         anim = {"dst_menu_rift3_BG", "dst_menu_rift3"},
         fn = function(self, banner_root, anim)
@@ -290,7 +290,7 @@ return {
             anim_front:GetAnimState():Hide("HOLLOW")
             banner_root.need_kill = {anim_front}
         end,
-        desc = "2023/10/20 恐惧宿主",
+        desc = "2023/10/20 Fear Host",
     },{
         anim = "dst_menu_meta3",
         fn = function(self, banner_root, anim)
@@ -299,7 +299,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2023/12/20 薇格弗德和薇洛技能聚点"
+        desc = "2023/12/20 Wigfrid and Willow skill hub"
     },{
         anim = "dst_menu_riftsqol",
         fn = function(self, banner_root, anim)
@@ -308,7 +308,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2024/03/28 拾荒斗士"
+        desc = "2024/03/28 Scavenger Fighter"
     },{
         anim = {"dst_menu_rift3_BG", "dst_menu_rift3"},
         fn = function(self, banner_root, anim)
@@ -324,7 +324,7 @@ return {
             anim_front:SetScale(.667)
             banner_root.need_kill = {anim_front}
         end,
-        desc = "2023/10/27 恐惧宿主·万圣夜活动", 
+        desc = "2023/10/27 Fear Host · Halloween Event", 
     },{
         anim = {"dst_menu_winona_wurt", "dst_menu_winona_wurt_carnival_foreground"},
         fn = function(self, banner_root, anim)
@@ -340,7 +340,7 @@ return {
             anim_front:SetScale(.667)  
             banner_root.need_kill = {anim_front}
         end,
-        desc = "2024/06/28 保持不沉没"
+        desc = "2024/06/28 Stay Afloat"
     },{
         anim = {"dst_menu_rift4"},
         fn = function(self, banner_root, anim)
@@ -349,7 +349,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2024/09/13 高深莫测"
+        desc = "2024/09/13 Profound and Unfathomable"
     },{
         anim = {"dst_menu_halloween3"},
         fn = function(self, banner_root, anim)
@@ -358,7 +358,7 @@ return {
             anim:GetAnimState():PlayAnimation("loop", true)
             anim:SetScale(.667)
         end,
-        desc = "2024/10/25 万圣夜回归"
+        desc = "2024/10/25 Halloween Returns"
     },{
         anim = {"dst_menu_v2_bg", "dst_menu_v2"},
         fn = function(self, banner_root, anim)
@@ -393,13 +393,13 @@ return {
             local c2 = creatures[math.random(1,#creatures)]
             local c3 = creatures[math.random(1,#creatures)]
         
-            --could end up with dupes picked, that's okay, then we'll have only 1 or 2 chosen
+            
             anim:GetAnimState():Show(c1)
             anim:GetAnimState():Show(c2)
             anim:GetAnimState():Show(c3)
         end,
         pos = {-0.06, 0.18},
-        desc = "经典"
+        desc = "Classic"
     },{
         anim = {"dst_menu_carrat_bg", "dst_menu_carrat", "dst_menu_carrat_swaps"},
         fn = function(self, banner_root, anim)
@@ -425,7 +425,7 @@ return {
                 "yellow",
                 "green",
                 "white",
-                nil, -- normal?
+                nil, 
                 }
 
             local color = colors[math.random(1,#colors)]
@@ -438,7 +438,7 @@ return {
         end,
         pos = {0, 0.238},
         bg = true,
-        desc = "2020/01/22 胡萝卜鼠年登场"
+        desc = "2020/01/22 Year of the Carrot Rat Debut"
     },{
         anim = "dst_menu_wurt",
         fn = function(self, banner_root, anim)
@@ -639,7 +639,7 @@ return {
         end,
         pos = {-.06, -.06},
         bg = true,
-        desc = "熔炉S2"
+        desc = "Lava Arena S2"
     },{
         anim = "dst_menu_pigs",
         fn = function(self, banner_root, anim)
@@ -680,7 +680,7 @@ return {
         end,
         bg = true,
         pos = {0, 0.15},
-        desc = "2021/04/02 完全真实的韦斯人物更新"
+        desc = "2021/04/02 Fully authentic Wes character update"
     },{
         anim = "dst_menu_wendy",
         fn = function(self, banner_root, anim)
@@ -691,6 +691,6 @@ return {
         end,
         pos = {0, 0.2},
         bg = true,
-        desc = "2020/03/20 温蒂的人物重做"
+        desc = "2020/03/20 Wendy character rework"
     },
 }

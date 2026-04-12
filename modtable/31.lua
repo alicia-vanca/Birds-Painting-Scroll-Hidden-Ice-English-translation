@@ -72,7 +72,7 @@ end, fn_save("sw"), {
             default = fn_get
         },{
             id = "color",
-            label = "Prompt color:",
+            label = "Text color:",
             fn = fn_save("color"),
             hover = "Prompt text color",
             default = fn_get,
@@ -96,7 +96,7 @@ end, fn_save("sw"), {
 -- Change the right button display
 i_util:AddHoverOverFunc(function(str, player, item_inv, item_world)
     if e_util:IsValid(item_inv) and item_inv:HasTags(book_tags) and TheInput:IsKeyDown(KEY_CTRL) then
-        if type(str) == "string" and str:find(STRINGS.ACTIONS.READ) then
+        if type(str) == "string" and str:rfind_plain(STRINGS.ACTIONS.READ) then
             return save_data.sw and str:gsub(STRINGS.ACTIONS.READ, str_auto_read)
         end
     end

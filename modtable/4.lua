@@ -15,7 +15,7 @@ local function addfn(name, fn)
     table.insert(screen_data, {
         id = name,
         label = name,
-        hover = "Fork number: disable noise number: enable noise \nthis needs to restart the game to take effect!",
+        hover = "X: Disable noise  Check: Enable noise\nThis feature requires a game restart to take effect!",
         default = function ()
             return save_data[name]
         end,
@@ -46,11 +46,20 @@ end)
 
 
 
-m_util:AddBindShowScreen("sw_shutup", "Mute noise", "puppy_winter", "This feature takes effect after restarting the game!", {
-    title = "Mute noise",
+m_util:AddBindShowScreen("sw_shutup", "Mute Noise", "phonograph", "This feature requires a game restart to take effect!", {
+    title = "Mute Noise",
     id = save_id,
     data = screen_data,
     default = function (id)
         return save_data[id] and true or false
-    end
+    end,
+    icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Click to add an entity to remove its noise!",
+        fn = function()
+            h_util:CreatePopupWithClose("Mute Noise", "This feature is not customized yet; custom entity additions are not supported!")
+        end,
+    }}
 }, nil, -9998)

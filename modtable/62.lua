@@ -142,7 +142,15 @@ QuickAdd("bearger", 4, "bearger")
 QuickAdd("deerclops", 4, "deerclops")
 
 for i = 1,3 do
-    AddPrefabPostInit("sinkhole_warn_fx_"..i, AddWarn("antlion"))
+    AddPrefabPostInit("sinkhole_warn_fx_"..i, function(inst)
+        inst:DoTaskInTime(0, function()
+            
+            if not t_util:GetRecur(TheWorld, "state.issummer") or e_util:FindEnt(inst, {"um_scorpionhole", "um_scorpion"}, 4)then
+                return m_util:print("Uncompromising filter!")
+            end
+            AddWarn("antlion")()
+        end)
+    end)
 end
 AddPrefabPostInit("cavein_debris", AddWarn("cavein_boulder"))
 AddPrefabPostInit("piratewarningsound", AddWarn("polly_rogershat"))

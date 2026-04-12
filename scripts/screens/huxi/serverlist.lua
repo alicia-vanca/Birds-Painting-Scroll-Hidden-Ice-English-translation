@@ -178,7 +178,7 @@ local function widget_apply(context, w, data, index)
     w.widgets.skin:SetTexture(xml, tex)
     w.widgets.skin:SetSize(h_util.btn_size, h_util.btn_size)
     SetTruncatedLeftJustifiedString(w.widgets.skinname, data.name)
-    SetTruncatedLeftJustifiedString(w.widgets.time, "Last time played " .. os.date("%Y year %m month %d day %H: %M", data.time))
+    SetTruncatedLeftJustifiedString(w.widgets.time, "Last time played " .. os.date("%Y / %m / %d %H: %M", data.time))
     if not data.ip then return end
     w.widgets.info:SetOnClick(function()
         local str = "Address:".." "..data.ip..":"..data.port.."\n"

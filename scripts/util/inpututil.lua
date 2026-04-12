@@ -6,6 +6,7 @@ local i_util = {
     rightclick_func = {},
     midclick_func = {},
     hoverer_func_in = {},
+    hoverer_func_in2 = {},
     server_rpc_func = {},
     player_func_in = {},
     player_func_out = {},
@@ -15,6 +16,8 @@ local i_util = {
     listenuse_end = {},
     listenwith_pre = {},
     listenwith_end = {},
+    NullFunction = function()end,
+    names_loadmod = nil,
 }
 
 -- Execute remote instructions
@@ -22,8 +25,12 @@ function i_util:ExRemote(str)
     if not TheNet:GetIsServerAdmin() then
         return
     end
-    local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
-    TheNet:SendRemoteExecute(str, x, z)
+    if TheNet:GetIsClient() then
+        local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
+        TheNet:SendRemoteExecute(str, x, z)
+    else
+        ExecuteConsoleCommand(str)
+    end
 end
 
 -- Transmit to a certain place
@@ -67,7 +74,7 @@ end
 
 -- Delayed execution task (global)
 function i_util:DoTaskInTime(time, ...)
-    return TheGlobalInstance:DoTaskInTime(time, ...)
+    return TheGlobalInstance:DoStaticTaskInTime(time, ...)
 end
 -- Cycle execution task (global)
 -- Compared to the original, this task will be called once immediately
@@ -105,6 +112,11 @@ end
 function i_util:AddHoverOverFunc(func)
     if type(func) == "function" then
         table.insert(i_util.hoverer_func_in, func)
+    end
+end
+function i_util:AddHoverOverFunc2(func)
+    if type(func) == "function" then
+        table.insert(i_util.hoverer_func_in2, func)
     end
 end
 
@@ -227,8 +239,173 @@ function i_util:LoadLayout(path)
     end
 end
 
--- Development and testing
--- i_util:ShowPath("map/static_layouts/abandonedwarf")
+
+function i_util:GetModsToLoad()
+    if not self.names_loadmod then
+        self.names_loadmod = {}
+        self:ClosePrint()
+        t_util:IPairs(KnownModIndex:GetModsToLoad(), function(modname)
+            table.insert(self.names_loadmod, modname)
+        end)
+        self:OpenPrint()
+    end
+    return self.names_loadmod
+end
+
+function i_util:GetModsCS()
+    local mods_c, mods_s = {}, {}
+    self:ClosePrint()
+    t_util:IPairs(self:GetModsToLoad(), function(modname)
+        local mod = ModManager:GetMod(modname) or {}
+        local modinfo = mod.modinfo or {}
+        local name = modinfo.name or modname
+        if not name or name:find("风华") then return end
+
+        local config = KnownModIndex:LoadModConfigurationOptions(modname, modinfo.client_only_mod and true or false)
+        local settings = t_util:IPairFilter(config or {}, function(conf_data)
+            local name, value, default, label, des = conf_data.name, conf_data.saved, conf_data.default, conf_data.label, conf_data.description
+            return name and value~=nil and value ~= default and {
+                name = tostring(name),
+                value = tostring(value),
+                label = tostring(label),
+                
+            }
+        end)
+
+        table.insert(modinfo.client_only_mod and mods_c or mods_s, {
+            name = name:gsub("\n", ""),
+            version = modinfo.version or "unknown",
+            path = modname,
+            settings = settings,
+            author = tostring(modinfo.author),
+        })
+    end)
+    self:OpenPrint()
+    return mods_c, mods_s
+end
+
+function i_util:GetGameInfo()
+    local str = "\n[Game Info]\n"
+    str = str..os.date("Log generation time: %Y-%m-%d %H:%M:%S").."\n"
+    local time_active = math.floor(TheSim:GetRealTime()/1000)
+    str = str.."Game runtime: "..time_active.." seconds\n"
+    local num = TheSim:GetNumberOfEntities()
+    str = str.."Entity count: "..num.."\n"
+    local fps = math.ceil(TheSim:GetFPS())
+    str = str.."Game FPS: "..fps.."\n"
+    
+    if ThePlayer then
+        str = str.."\n\n[Player Info]\n"
+        str = str.."Player name: "..ThePlayer.name.."\n"
+        str = str.."Player ID: "..(ThePlayer.userid or "Unavailable").."\n"
+        str = str.."Current character: "..ThePlayer.prefab.."\n"
+    end
+
+    return str
+end
+
+function i_util:GetModsInfo()
+    local str = i_util:GetGameInfo()
+    local mods_c, mods_s = self:GetModsCS()
+    local function show(mod)
+        str = str..mod.name.."        Version: "..mod.version.."        Folder: "..mod.path.."\n"
+    end
+    str = str.."\n\n[Client Mods] "..#mods_c.."\n"
+    t_util:IPairs(mods_c, show)
+
+    str = str.."\n\n[Server Mods] "..#mods_s.."\n"
+    t_util:IPairs(mods_s, show)
+
+    str = str.."\n\n[Settings Changes]\n"
+    t_util:IPairs(t_util:MergeList(mods_c, mods_s), function(mod)
+        if t_util:GetSize(mod.settings) > 0 then
+            str = str.."["..mod.name.."]\n"
+            t_util:IPairs(mod.settings, function(setting)
+                str = str..setting.label.." "..setting.value.."\n"
+            end)
+        end
+    end)
+
+    return str
+end
+
+function i_util:GetEntsInfo()
+    local str = i_util:GetGameInfo()
+    local Widget = require "widgets/widget"
+    str = str.."\n\n\n[Top 50 Entities]\n"
+    local ps,pr = {NULL = 0, UI = 0}, {"NULL", "UI"} 
+    local e_util = require "util/entutil"
+    t_util:Pairs(Ents, function(_, ent) 
+        if type(ent)=="table" and ent.HasTags then
+            if ent:HasTags({"widget", "ui"}) then
+                ps.UI = ps.UI + 1
+                return
+            end
+            local prefab = (type(ent.prefab)=="string" and ent.prefab) or (type(ent.name)=="string" and ent.name) or "NULL"
+            if ps[prefab] then 
+                ps[prefab] = ps[prefab] + 1 
+            else 
+                ps[prefab] = 1 
+                table.insert(pr, prefab)
+            end 
+        end
+    end)
+    table.sort(pr, function(a, b) 
+        return ps[a] > ps[b] 
+    end) 
+    for i = 1, 50 do 
+        if pr[i] then
+            str = str..i..": "..e_util:GetPrefabName(pr[i]).."  "..pr[i].."  "..ps[pr[i]].."\n"
+        end
+    end
+    return str
+end
+
+function i_util:GetModsClash()
+    local mods = require "data/modtable"
+    local str = "[Automatically disabled features]\n"
+    for i, modname in pairs(mods.close) do
+        str = str..i..": "..modname.."\n"
+    end
+    str = str.."\n[Disabled due to mod feature duplication or conflict]\n"
+    for i, modname in pairs(mods.clash) do
+        str = str..i.."："..modname.."\n"
+    end
+    return str
+end
+
+
+local _print = print
+function i_util:ClosePrint()
+    print = self.NullFunction
+end
+function i_util:OpenPrint()
+    print = _print
+end
+function i_util:Print(...)
+    _print(...)
+end
+function i_util:ObsoletePrint()
+    _print("Birds Painting Scroll", "This interface is obsolete, please update as soon as possible!")
+end
+
+
+local function NullFunc()end
+function i_util:GetNullFunction()
+    return NullFunc
+end
+
+
+
+
+
+
+
+
+
+
+
+
 function i_util:ShowLData(ldata)
     local room_grounds, ground_types, room_layout = ldata.ground, ldata.ground_types, ldata.layout
     t_util:Pairs(room_grounds, function(_, room_line)

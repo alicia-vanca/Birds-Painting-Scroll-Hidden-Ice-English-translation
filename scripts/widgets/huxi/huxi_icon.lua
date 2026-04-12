@@ -223,7 +223,7 @@ function Icon:GetSettingFn()
         end,
         type = "radio",
         data = t_util:BuildNumInsert(1, 20, 1, function(i)
-            return {data = i, description = i.." column(s)"}
+            return {data = i, description = i.." items per row"}
         end)
     },{
         id = "text_size",
@@ -238,11 +238,20 @@ function Icon:GetSettingFn()
         data = t_util:BuildNumInsert(2, 40, 2, function(i)
             return {data = i, description = i.." Px"}
         end)
-    }, }
+    },{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Video Tutorial",
+        hover = "Click to view the video tutorial",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1BVCQBmEVd", true)end
+    },}
     return m_util:AddBindShowScreen({
         title = str_title,
         id = save_id,
-        data = screen_data
+        data = screen_data,
+        help = "If you have questions or bugs, please join QQ group 2155066095 for feedback.",
+        title_help = "Feedback",
     })
 end
 

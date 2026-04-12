@@ -26,7 +26,7 @@ _G.Mod_ShroomMilk = {
 }
 Mod_ShroomMilk.Func.WriteToMod("春", modname)
 
-c_util, e_util, h_util, i_util, m_util, p_util, t_util, s_mana, u_util, d_util = 
+c_util, e_util, h_util, i_util, m_util, p_util, t_util, s_mana, u_util, d_util, r_util = 
 require "util/calcutil", -- Manage Calculations
 require "util/entutil", -- Manage Entity States
 require "util/hudutil", -- Manage UI and HUD
@@ -36,7 +36,8 @@ require "util/playerutil", -- Manage Player Actions and Items
 require "util/tableutil",  -- Perform Operations on Tables, Various Iteration Methods
 require "util/settingmanager", -- Manage Data Storage
 require "util/userutil", -- Manage Player "Speech"
-require "util/threadutil" -- Automation Tools
+require "util/threadutil", -- Automation Tools
+require "util/roleutil" 
 
 local function import_mod_name(m_name)
     modimport("modtable/" .. m_name .. ".lua")
@@ -71,14 +72,16 @@ t_util:IPairs(mods.load, function(moddata)
 end)
 
 if m_util:IsHuxi() then
-    iMod({"modder", 77, 35, 36})
+    iMod({"modder", 35, })
 end
 if m_util:IsMilker() then
     iMod({"test_loop","test_temp"})
 end
 
 if os.date("%m%d") == "0401" then
-    iMod("foolsday")
+    iMod({"foolsday", "cctv"})
+elseif m_util:IsHuxi() then
+    iMod("cctv")
 end
 
 iMod({"thanks", "end"})

@@ -1,22 +1,22 @@
 local m_util, t_util, w_mana, h_util, c_util, e_util = require "util/modutil", require "util/tableutil",
     require "util/worldmanager", require "util/hudutil", require "util/calcutil", require "util/entutil"
 
----@class Watcher
----@field inst any
----@field anim_ceil number
----@field anims_ignore table<string, boolean>
----@field anims table<string, number>
----@field data table<number, table<string, any>>
----@field data_last table<number, table<string, any>>
----@field func table<string, function>
+
+
+
+
+
+
+
+
 local Watcher = Class(function(self, inst)
     self.inst = inst
-    -- {time, debugstring}
+    
     self:ResetData()
     self.anim_ceil = 500
     self.anims_ignore = {}
-    -- Close to start detection, stop the test
-    -- Although under the cave, the creature is still isvalid, but what i write is the pure client mod, and i should not continue to test
+    
+    
     local pusher = m_util:GetPusher()
     if pusher then
         pusher:RegNearStart(inst, function(x, z)
@@ -49,14 +49,14 @@ function Watcher:StopUpdate()
 end
 
 function Watcher:OnUpdate(dt)
-    -- local str = self.inst.entity:GetDebugString() or ""
-    -- local anim = str:match(" anim: (.-) anim/")
+    
+    
     local bank, anim, frame = self.inst.AnimState:GetHistoryData()
     if anim then
         local now = GetTime()
         if anim ~= self.anim and not self.anims_ignore[anim] then
             self.anim = anim
-            -- print(anim, str:match("Frame: (.-) Facing: "))
+            
             self.anims[anim] = now
             table.insert(self.data, {
                 time = now,
@@ -73,8 +73,8 @@ function Watcher:OnUpdate(dt)
     end
 end
 
---- interface
--- The occurrence of the appearance of this animation
+
+
 function Watcher:GetAnimTime(anim, min)
     local t
     if type(anim) == "table" then
@@ -94,7 +94,7 @@ function Watcher:GetAnimTime(anim, min)
     end
     return t
 end
--- Regardless of statistics on this animation
+
 function Watcher:IgnoreAnim(anim)
     if type(anim) == "table" then
         t_util:IPairs(anim, function(an)
@@ -107,12 +107,12 @@ end
 function Watcher:GetNowAnim()
     return self.anim
 end
--- Animation of obtaining inverted numbers -1 indicates the last one, -2 countdown second one
+
 function Watcher:GetLastData(num)
     local id = num + 1 + #self.data
     return self.data[id] or self.data_last[#self.data_last + id]
 end
--- tip: GetLastAnim(-1) == GetNowAnim
+
 function Watcher:GetLastAnim(num)
     local data = self:GetLastData(num)
     return data and data.anim

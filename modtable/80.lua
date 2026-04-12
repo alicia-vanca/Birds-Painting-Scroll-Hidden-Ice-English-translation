@@ -34,7 +34,7 @@ local default_data = {
     clickable = true,
     color_boss = "Tomato",
     color_dirtpile = "Lavender",
-    color_sea = "Breathing blue",
+    color_sea = "Capri",
     color_item = "White",
 }
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
@@ -190,14 +190,14 @@ local screen_data = {
     },
     {
         id = "clickable",
-        label = "Support click",
+        label = "Allow click",
         hover = "Click the indicator to automatically reach",
         default = fn_get,
         fn = fn_set("clickable")
     },
     {
         id = "min_scale",
-        label = "Minimum zoom：",
+        label = "Min size：",
         hover = "The minimum size of the direction mark, default: " .. default_data.min_scale,
         default = fn_get,
         type = "radio",
@@ -206,7 +206,7 @@ local screen_data = {
     },
     {
         id = "max_scale",
-        label = "Maximum zoom：",
+        label = "Max size：",
         hover = "The maximum size of the direction mark, default: " .. default_data.max_scale,
         default = fn_get,
         type = "radio",
@@ -256,7 +256,7 @@ local fn_right = m_util:AddBindShowScreen{
         prefab = "mods",
         hover = "Click to add the entity you want to indicate direction!",
         fn = function()
-            h_util:CreatePopupWithClose(str_show, "You have not installed Langya Chapter, so you can't control an option independently!")
+            h_util:CreatePopupWithClose(str_show, "This feature has not been customized yet...")
         end,
     }}
 }

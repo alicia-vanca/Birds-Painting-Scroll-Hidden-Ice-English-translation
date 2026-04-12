@@ -92,9 +92,22 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
     saver:RegHMap(save_id, map_str, "This function cannot be turned off ...", function() return save_data.sw end, fn_save("sw"))
 end)
 
-m_util:AddBindConf(save_id, fn_left, nil, {map_str, "archive_resonator_item",
-                                           STRINGS.LMB .. map_str, true,
-                                           fn_left, nil, 5995})
+local fn_right = m_util:AddBindShowScreen({
+    title="Astral Locator Tutorial",
+    id = save_id,
+    data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1yF27BuEBG/", true)end
+    },
+    }
+})
+m_util:AddBindConf(save_id, fn_left, fn_right, {map_str, "archive_resonator_item",
+                                           STRINGS.LMB .. map_str..STRINGS.RMB.."Tutorial Demo", true,
+                                           fn_left, fn_right, 5995})
 
 t_util:IPairs(bases, function(prefab)
     AddPrefabPostInit(prefab, function(inst)

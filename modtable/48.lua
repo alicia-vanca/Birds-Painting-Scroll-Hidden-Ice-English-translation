@@ -1,50 +1,42 @@
-if m_util:IsServer() then return end
-local HxOne = require "widgets/huxi/hx_one"
-local Show = true
-i_util:AddPlayerActivatedFunc(function(player, world)
-    local pusher = player.components.hx_pusher
-    pusher:RegEquip(function(slot, equip)
-        if not (equip and equip.prefab == "skeletonhat") then return end
-        -- Display ui
-        local head = t_util:GetRecur(player, "HUD.controls.inv.equip.head")
-        local img = head and head.bgimage
-        if not img then return end
-        local size = img:GetScaledSize()
-        if head.hx_one then
-            head.hx_one:Kill()
-        end
-        Show = true
-        head.hx_one = head:AddChild(HxOne("nightmarefuel", size, function(show)
-            Show = show
-        end))
-        local _OnControl = head.OnControl
-        head.OnControl = function(self, ...)
-            return self.hx_one and self.hx_one.focus and self.hx_one:OnControl(...) or _OnControl(self, ...)
-        end
-    end)
-    pusher:RegUnequip(function(slot, equip)
-        if not (equip and equip.prefab == "skeletonhat") then return end
-        -- Disable ui
-        local UI = t_util:GetRecur(player, "HUD.controls.inv.equip.head.hx_one")
-        if UI then
-            UI:Kill()
-            UI = nil
-        end
-        -- Show a monster
-        Show = true
-    end)
-end)
 
+local save_id, str_show, logo = "sw_hideshadow", "Hide shadows", "skeletonhat"
+local prefabs = {
+    "crawlinghorror","terrorbeak",          
+    "crawlingnightmare","nightmarebeak",    
+    "oceanhorror",                          
+    "ruinsnightmare",                       
+    "shadowskittish",                       
+    "gestalt_guard",                        
+    "gestalt",                              
+    "gestalt_guard_evolved",                
+}
+local SW
+local function func(inst)
+    if SW then
+        inst:Hide()
+        if inst.SoundEmitter then
+            inst.SoundEmitter:SetMute(true)
+        end
+    else
+        inst:Show()
+        if inst.SoundEmitter then
+            inst.SoundEmitter:SetMute(false)
+        end
+    end
+end
 
-local prefabs = {"crawlinghorror","terrorbeak","crawlingnightmare","nightmarebeak", "oceanhorror"}
 t_util:IPairs(prefabs, function(prefab)
     AddPrefabPostInit(prefab, function(inst)
-        inst:DoPeriodicTask(1, function(inst)
-            if Show then
-                inst:Show()
-            else
-                inst:Hide()
-            end
-        end)
+        inst:DoPeriodicTask(FRAMES, func)
     end)
 end)
+
+local function fn_sw(value)
+    SW = not SW
+    u_util:Say(str_show, SW, nil, nil, true)
+    t_util:IPairs(e_util:FindEnts(nil, prefabs, nil, {}, {}, nil, {}), func)
+end
+
+m_util:AddBindConf(save_id, fn_sw, nil, {str_show, logo, STRINGS.LMB .. "Toggle (Auto turns off upon re-entering the game)", true, fn_sw, function()
+    h_util:CreatePopupWithClose("󰀍 Special Thanks 󰀍", "This feature was commissioned by sponsor 花间随柳.\n(It can also hide Moon Spirits)", {{text = "󰀍"}})
+end, 8002})

@@ -5,7 +5,7 @@ local save_id = "sw_wagstaff"
 local default_data = {
     tool_tip = true,
     textsize = 35,
-    color_need = "Fresh meat",
+    color_need = "Salmon",
     color_ori = "White",
     bird_warn = 12,
     range_pick = 30,
@@ -20,7 +20,7 @@ local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local function Say(who, what)
     u_util:Say(who, what, nil, nil, true)
 end
-local string_task = "Storm mission"
+local string_task = "Static task"
 
 local prefabs = {"wagstaff_tool_1", "wagstaff_tool_2", "wagstaff_tool_3", "wagstaff_tool_4", "wagstaff_tool_5"}
 local needprefab, done
@@ -258,7 +258,7 @@ local function fn()
     end)
 end
 
------------------- 我是可爱的分界线 ----------------------
+------------------ Cute section divider ----------------------
 local font_color = require("data/valuetable").RGB_datatable
 local range_table = t_util:BuildNumInsert(5, 80, 5, function(i)
     return {
@@ -282,19 +282,19 @@ local screen_data = {{
     id = "sw_p",
     label = "Pick mode",
     fn = fn_save("sw_p"),
-    hover = "Whether to automatically pick up small tools and glassstones",
+    hover = "Whether to automatically pick up small tools and Moon Shards",
     default = fn_get
 }, {
     id = "sw_m",
     label = "Mining mode",
     fn = fn_save("sw_m"),
-    hover = "Whether to automatically dig a glass stone",
+    hover = "Whether to automatically mine Charged Glassy Rock",
     default = fn_get
 }, {
     id = "sw_n",
     label = "Capture mode",
     fn = fn_save("sw_n"),
-    hover = "Whether to automatically capture the moonlight",
+    hover = "Whether to automatically capture the Moongleams",
     default = fn_get
 }, {
     id = "tool_tip",
@@ -306,7 +306,7 @@ local screen_data = {{
     id = "textsize",
     label = "Font size:",
     fn = fn_save("textsize"),
-    hover = "[Tool name] the size of the text",
+    hover = "The size of the text",
     default = fn_get,
     type = "radio",
     data = range_table
@@ -314,7 +314,7 @@ local screen_data = {{
     id = "color_ori",
     label = "Default:",
     fn = fn_save("color_ori"),
-    hover = "[Tool name] the name color of all small tools",
+    hover = "The name color of all small tools",
     default = fn_get,
     type = "radio",
     data = font_color
@@ -359,9 +359,26 @@ local screen_data = {{
 local func_right = m_util:AddBindShowScreen({
     title = string_task,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "About",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature can still be optimized; it is currently a bit choppy.\nRefer to 静电任务+ for the optimized version.")
+        end,
+    },{
+        id = "bilibili",
+        prefab = "bilibili",
+        hover = "Tutorial Demo",
+        fn = function()
+           VisitURL("https://www.bilibili.com/video/BV1jH4y1j7YW/", true)
+        end,
+    }},
+    help = "Use this feature to automatically complete the Static Charge Task before Wagstaff is captured.\nWhen this feature is enabled, the equipment in the player's hands is treated as the combat weapon."
 })
 
 m_util:AddBindConf(save_id, fn, nil,
     {string_task, "moonstorm_static_item", STRINGS.LMB .. "On/Off " .. STRINGS.RMB .. "Advanced settings", true, fn,
-     func_right, 5994})
+     func_right, 1.2})
