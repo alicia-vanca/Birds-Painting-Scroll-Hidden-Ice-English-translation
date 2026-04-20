@@ -1,5 +1,7 @@
 local t_util = require "util/tableutil"
 local c_util = require "util/calcutil"
+local i_util = require "util/inpututil"
+local PrefabNames = require("data/redirectdata").prefab_name
 local EntUtil = {
     NullName = "Unknown",
 }
@@ -38,6 +40,12 @@ function EntUtil:GetContUI(ent)
 end
 
 
+function EntUtil:GetPrefabSlot(prefab, cont)
+    local container = prefab and self:GetContainer(cont)
+    return container and t_util:GetElement(container:GetItems(), function(slot, item)
+        return item and item.prefab == prefab and slot 
+    end)
+end
 -- Can you put down a certain item
 function EntUtil:CanPutInItem(cont, item)
     local container = self:GetContainer(cont)
@@ -67,8 +75,11 @@ end
 
 -- Get stacking quantity
 function EntUtil:GetStackSize(ent)
-    if ent and ent.replica and ent.replica.stackable then
-        return ent.replica.stackable:StackSize()
+    if ent and ent.components then
+        local stackable = ent.components.stackable or (ent.replica and ent.replica.stackable)
+        if stackable then
+            return stackable:StackSize()
+        end
     end
     return 1
 end
@@ -110,13 +121,18 @@ local function HasSpoilage(item)
 end
 function EntUtil:GetPercent(inst)
     local i = 100
-    local classified = type(inst) == "table" and inst.replica and inst.replica.inventoryitem and
-    inst.replica.inventoryitem.classified
+    local classified = t_util:GetRecur(inst, "replica.inventoryitem.classified")
     if classified then
         if classified.perish and HasSpoilage(inst) then
-            i = math.floor(classified.perish:value() / 0.62)
+            
+            i = math.floor(classified.perish:value() / .62)
         elseif classified.percentused then
+            
             i = classified.percentused:value()
+            
+            if i == 255 then
+                return 100
+            end
         end
     end
     return i
@@ -141,15 +157,15 @@ function EntUtil:GetTags(ent, isclone)
     end
 end
 
--- Get component entity
-local default_name = "MISSING NAME"
+
+
 function EntUtil:ClonePrefab(prefab)
-    if type(prefab) ~= "string" then
+    if type(prefab) ~= "string" or not TheWorld or not Prefabs[prefab] then
         return {
             components = {},
             prefab = prefab,
             tags = {},
-            name = default_name
+            name = self.NullName
         }
     end
     if not Mod_ShroomMilk.PrefabCopy[prefab] then
@@ -157,24 +173,24 @@ function EntUtil:ClonePrefab(prefab)
             components = {},
             prefab = prefab,
             tags = {},
-            name = default_name
+            name = self.NullName
         }
         MOD_SRM_LOCK = true
         local IsMasterSim = TheWorld.ismastersim
         getmetatable(TheWorld).GetPocketDimensionContainer = getmetatable(TheWorld).GetPocketDimensionContainer or function() end
         TheWorld.ismastersim = true
-        local success, ret = pcall(function()
-            local prefab_copy = SpawnPrefab(prefab)
+        local success, prefab_copy = pcall(SpawnPrefab, prefab)
+        if success then
             local coms = prefab_copy and prefab_copy.components
             t_util:Pairs(coms or {}, function(k, v)
                 Mod_ShroomMilk.PrefabCopy[prefab].components[k] = v
             end)
             Mod_ShroomMilk.PrefabCopy[prefab].tags = self:GetTags(prefab_copy)
-            Mod_ShroomMilk.PrefabCopy[prefab].name = self:GetPrefabName(prefab, prefab_copy) or default_name
+            Mod_ShroomMilk.PrefabCopy[prefab].name = self:GetPrefabName(prefab, prefab_copy) or self.NullName
             if prefab_copy then
                 prefab_copy:Remove()
             end
-        end)
+        end
         TheWorld.ismastersim = IsMasterSim
         MOD_SRM_LOCK = false
         if not success then
@@ -211,7 +227,7 @@ function EntUtil:TileEnts(core_ent, prefab, allowTags, banTags, allowAnims, banA
     end
     local r_ents = {}
     if pos and TheWorld and TheWorld.Map then
-        -- allowTags = type(allowTags) == "table" and allowTags or {}
+        
         banTags = type(banTags) == "table" and banTags or { 'FX', 'DECOR', 'INLIMBO', 'NOCLICK', 'player' }
         r_ents = t_util:IPairFilter(TheWorld.Map:GetEntitiesOnTileAtPoint(pos.x, 0, pos.z), function(ent)
             if (not prefab or prefab == ent.prefab or (type(prefab) == "table" and table.contains(prefab, ent.prefab)))
@@ -312,7 +328,7 @@ function EntUtil:GetFrame(ent)
 end
 
 -- Angle
--- 呼吸: Very strange, I don't know why I have to write negative numbers. Who knows what I was thinking a few months ago?
+-- Breathing note: Very strange, I don't know why I have to write negative numbers. Who knows what I was thinking a few months ago?
 function EntUtil:GetAngle(ent) -- EntityScript:GetRotation()
     local tags_string = self:IsValid(ent) and ent.entity:GetDebugString()
     local heading = tonumber(tags_string and tags_string:match(" Heading=(.-) Prediction"))
@@ -363,8 +379,7 @@ function EntUtil:GetRadius(ent, default)
     return ent and ent.GetPhysicsRadius and ent:GetPhysicsRadius(default or 0)
 end
 
--- Prefab gets the name
-local PrefabNames = {}
+
 local function GetStrPrefab(prefab)
     return STRINGS.NAMES[prefab:upper()]
 end
@@ -372,20 +387,49 @@ function EntUtil:GetPrefabName(prefab, ent)
     if type(prefab) ~= "string" then
         return self.NullName
     end
-    local pdata = PrefabNames[prefab]
-    local name
-    if pdata then
-        prefab, name = pdata[1], pdata[2]
-    else
+    local name = PrefabNames[prefab]
+    if not name then
         name = GetStrPrefab(prefab)
-        if not name and prefab:sub(1, 10) == "transmute_" then
-            prefab = prefab:sub(11)
-            name = GetStrPrefab(prefab)
+        
+        if name and prefab:sub(-6)=="_seeds" then
+            name = GetStrPrefab("known_"..prefab) or name
         end
+        
+        if not name and prefab:sub(1, 10) == "transmute_" then
+            name = GetStrPrefab(prefab:sub(11))
+        end
+        
         if not name and prefab:sub(-10) == "_blueprint" then
-            prefab = prefab:sub(1, prefab:len()-10)
-            name = GetStrPrefab(prefab)
+            name = GetStrPrefab(prefab:sub(1, prefab:len()-10))
             name = name and subfmt(GetStrPrefab("BLUEPRINT_RARE"), {item=name})
+        end
+        
+        if not name and prefab:sub(-7) == "_sketch" then
+            name = GetStrPrefab(prefab:sub(1, prefab:len()-7))
+            name = name and subfmt(GetStrPrefab("SKETCH"), {item=name})
+        end
+        
+        if not name and prefab:sub(1, 11) == "chesspiece_" then
+            local num_last = prefab:find("_stone") or prefab:find("_moonglass") or prefab:find("_marble")
+            name = num_last and GetStrPrefab(prefab:sub(1, num_last-1))
+        end
+        
+        if not name and prefab:sub(-6)=="_waxed" then
+            local obj = t_util:GetRecur(STRINGS, "UI.HUD.WAXED")
+            local main = GetStrPrefab(prefab:sub(1, -7))
+            name = obj and main and subfmt("{obj}{main}", {obj = obj, main = main})
+        end
+
+        if not name and prefab:sub(-8) == "_spawner" then
+            name = GetStrPrefab(prefab:sub(1, prefab:len()-8))
+            name = name and name..(t_util:GetRecur(STRINGS, "UI.CUSTOMIZATIONSCREEN.START_LOCATION") or "Spawn Point")
+        end
+        if not name and prefab:sub(-7) == "spawner" then
+            name = GetStrPrefab(prefab:sub(1, prefab:len()-7))
+            name = name and name..(t_util:GetRecur(STRINGS, "UI.CUSTOMIZATIONSCREEN.START_LOCATION") or "Spawn Point")
+        end
+        if not name and prefab:sub(-5) == "_item" then
+            name = GetStrPrefab(prefab:sub(1, prefab:len()-5))
         end
         if not name then
             local skinname = GetSkinName(prefab)
@@ -403,7 +447,7 @@ function EntUtil:GetPrefabName(prefab, ent)
                 end
             end
         end
-        PrefabNames[prefab] = {prefab, name}
+        PrefabNames[prefab] = type(name) == "string" and name or self.NullName
     end
     if ent then
         name = name or ent:GetBasicDisplayName()
@@ -421,7 +465,7 @@ end
 function EntUtil:IsLightSourceEquip(item)
     return item and self:GetItemEquipSlot(item) and
     (item:HasOneOfTags({ "light", "fire", "lighter", "cave_fueled", "wormlight_fueled" })
-        or table.contains({ "lunarplanthat", "yellowamulet", "nightstick" }, item.prefab))
+        or table.contains({ "lunarplanthat", "yellowamulet", "nightstick", "hat_lichen" }, item.prefab))
 end
 
 -- Perhaps in the physical list, an ent after prefab
@@ -530,49 +574,45 @@ end
 
 ---the code here is very bad.
 local prefab_sc, prefab_chester = "shadow_container", "cont_chester"
-local prefabs_chester = {"chester", "hutch"}
 local prefabs_shadow = {prefab_sc, "magician_chest"}
--- Is a shadow container
+
+local prefabs_chester = {"chester", "hutch"}
+
+local prefabs_movable = {
+    woby = {"wobysmall", "wobybig"}
+}
+
+
 function EntUtil:IsShadowContainer(ent)
     local prefab = ent and ent.prefab
     if prefab then
         if table.contains(prefabs_shadow, prefab) then
-            return true
+            return prefab_sc
         elseif ent._chesterstate then
-            return ent._chesterstate:value() == 3
+            return (ent._chesterstate:value() == 3) and prefab_sc
         end
     end
 end
--- It is a container entity
+
+function EntUtil:IsMovableContainer(ent)
+    local prefab = ent and ent.prefab
+    if prefab then
+        if table.contains(prefabs_chester, prefab) then
+            return prefab_chester
+        else
+            return t_util:GetElement(prefabs_movable, function(prefab_movable, prefabs)
+                return table.contains(prefabs, prefab) and prefab_movable
+            end)
+        end
+    end
+end
+
+
 function EntUtil:IsContainer(ent)
     if not ent then return end
     return (ent.replica and ent.replica.container) or ent.prefab=="magician_chest"
 end
 
--- In fact, the two obtaining ids can be integrated together
--- But i am old lazy
--- Get position id
-function EntUtil:GetPosID(ent)
-    -- Special container
-    local prefab = ent and ent.prefab
-    if prefab then
-        if self:IsShadowContainer(ent) then
-            return prefab_sc
-        elseif table.contains(prefabs_chester, prefab) then
-            return prefab_chester
-        end
-    end
-    local trans = self:IsValid(ent)
-    if trans then
-        if ent:HasOneOfTags({"INLIMBO", "player"}) then
-            -- On your body or box, player
-        else
-            -- Ground
-            local x, y, z = trans:GetWorldPosition()
-            return c_util:GetPosID(x, z)
-        end
-    end
-end
 
 function EntUtil:Mod_Showme_Has(ent, prefab)
     return ent.ShowMe_chest_table and t_util:GetElement(ent.ShowMe_chest_table, function(_prefab)
@@ -608,14 +648,14 @@ end
 -- Note: Do not call the following interfaces from other modules. Change the name or content frequently. Call them only after they are stable.
 -------------------------------------------------------------------------
 
----- The test function, provided to developers
-function EntUtil:debug(ent)
+
+function EntUtil:Debug(ent)
     if not self:IsValid(ent) then return end
     ent._harrow = ent:SpawnChild("harrow")
     ent._harrow.Transform:SetScale(2, 2, 2)
     ent._harrow.Transform:SetRotation(-90)
-    local watcher = ent.components.hx_watcher
-    return watcher or ent:AddComponent("hx_watcher")
+    
+    
 end
 
 function EntUtil:AddMoonFx(ent)
@@ -631,6 +671,45 @@ function EntUtil:AddMoonFx(ent)
     _fx:DoTaskInTime(3, function(fx)
         _fx:Remove()
     end)
+end
+
+function EntUtil:DebugGoTo()
+    local trans = self:IsValid(t_util.ent)
+    if trans then
+        local x,_,z = trans:GetWorldPosition()
+        i_util:GoTo(x, z)
+    end
+end
+
+
+
+
+
+
+
+function EntUtil:GetPosID(ent)
+    
+    local prefab = ent and ent.prefab
+    if prefab then
+        if self:IsShadowContainer(ent) then
+            return prefab_sc
+        elseif table.contains(prefabs_chester, prefab) then
+            return prefab_chester
+        end
+    end
+    local trans = self:IsValid(ent)
+    if trans then
+        if ent == ThePlayer then
+            return "theplayer"
+        elseif ent:HasTag("inlimbo") then
+            
+            
+        else
+            
+            local x, y, z = trans:GetWorldPosition()
+            return c_util:GetPosID(x, z)
+        end
+    end
 end
 
 return EntUtil

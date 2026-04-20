@@ -23,8 +23,8 @@ m_table.load = {
         2
     },{
         {"sw_beauti", },
-        {"滤镜", "画质渲染","色彩调节"},
-        3,
+        {"滤镜", "画质渲染", "色彩调节", "Post Processor Disabler"},
+        {85, 3},
     },{
         {"sw_shutup", },
         {"去除噪音", "噪音", "noise"},
@@ -37,7 +37,7 @@ m_table.load = {
     },
     {
         "sw_error",
-        {"日志位置", "崩溃处理","错误追踪"},
+        {"日志位置", "崩溃处理","错误追踪", "Starve Debugger", "崩溃"},
         6
     },
     {
@@ -63,14 +63,14 @@ m_table.load = {
         "物品管理器",
         11
     },{
-        {"sw_autosort", "ex_board"},
-        {"物品整理", "自动分类", "autosort"},
-        16
+        "sw_hjsl_unequip",
+        {"装备脱落", "自动脱"},
+        12
     },{    
         -- Vanca: Preserve the [Night vision] function
         {"sw_nightsight",},
         "Smart night vision",
-        12
+        999
     },
     {
         {"sw_autorow", },
@@ -78,23 +78,27 @@ m_table.load = {
         13,
     },
     {
-        {"sw_toggle",},
-        {"切换延迟补偿","延迟补偿","compensation"},
+        {"sw_small",},
+        {"小功能绑定", "快捷小功能"},
         14,
     },
     {
         "sw_multiscreen",
         "壁纸模式",
         15,
+    },{
+        {"sw_autosort", "ex_board"},
+        {"物品整理", "自动分类", "autosort", "整理"},
+        16
     },
     {
-        {"sw_autoreel",},
+        {"sw_atreel",},
         "自动钓鱼",
         17,
     },
     {
         {"sw_wagstaff",},
-        "风暴任务",
+        {"静电任务", "风暴任务"},
         18,
     },
     {
@@ -130,7 +134,7 @@ m_table.load = {
         },
     },
     {
-        {"sw_skinQueue"},
+        {"skinqueue_plus"},
         {"重复皮肤分解","重复皮肤", "SkinQueue"},
         25,
     },
@@ -139,11 +143,16 @@ m_table.load = {
         {"一键Rescue"},
         26,
     },
-    -- {
-    --     {"sw_wendy"},
-    --     {"温蒂辅助", "Abigail Keybinds","比盖尔快捷键"},
-    --     27,
-    -- },
+    {
+        "sw_craft",
+        {"制作栏信息","More Crafting Details"},
+        27,
+    },
+    {
+        {"sw__keytweak"},
+        {"键位提示"},
+        28,
+    },
     {
         {"sw_wanda"},
         {"旺达快捷键", "wanda keybinds"},
@@ -160,6 +169,11 @@ m_table.load = {
         31,
     },
     {
+        {"map_preview","sw_map"},
+        {"地形预览", "地图扫描", "地形扫描"},
+        32,
+    },
+    {
         "sw_roll",
         {"精确拿取", "快速拿取", "快捷拿取", "Item Scroller"},
         33,
@@ -169,16 +183,12 @@ m_table.load = {
         {"更新日志"},
         34,
     },
-    -- {
-    --     "sw_wath",
-    --     {"女武神辅助","薇格弗德辅助"},
-    --     35,
-    -- },
-    -- {
-    --     "sw_wax",
-    --     {"麦斯威尔辅助", "老麦辅助", "老麦快捷键"},
-    --     36,
-    -- },
+    
+    {
+        "sw_watering",
+        {"自动浇灌",},
+        36,
+    },
     {
         "sw_space",
         {"空格过滤器","空格筛选器", "pickup filter"},
@@ -221,7 +231,7 @@ m_table.load = {
     },
     {
         "sw_folder",
-        {"模组目录","Show Mod Folder",},
+        {"模组目录",},
         45,
     },
     {
@@ -235,8 +245,8 @@ m_table.load = {
         47,
     },
     {
-        "sw_hidecrown",
-        {"骨盔禁用影怪", "骨盔：去除影怪","Bone Helm","骨头头盔"},
+        "sw_hideshadow",
+        {"隐藏影怪", "骨盔禁用影怪", "骨盔：去除影怪","Bone Helm","骨头头盔"},
         48,
     },
     {
@@ -255,19 +265,9 @@ m_table.load = {
         51,
     },
     {
-        {"sw_lantern",},
-        {"按键丢物品"},
+        {"sw_newrepair"},
+        {"按键修复", "快捷修复", "物品修复",},
         52,
-    },
-    {
-        "sw_craft",
-        {"制作栏信息","More Crafting Details"},
-        27,
-    },
-    {
-        {"sw_server",},
-        {"模拟重连", "快速重连"},
-        55,
     },
     {
         {},-- Force this feature to be enabled, and the scroll will use memory as part of the base library in the future
@@ -275,12 +275,22 @@ m_table.load = {
         53,
     },
     {
+        {"sw_suggest"},
+        {"礼包购买建议", "看线轴", "性价比"},
+        54,
+    },
+    {
+        {"sw_server",},
+        {"模拟重连", "快速重连", "lazy control"},
+        55,
+    },
+    {
         "mid_search",
         {"中键加强", "记忆力"},
         56,
     },
     {
-        "sw_autocook",
+        "sw_autocook1",
         {"自动烹饪", "auto cooking","Crockpot Repeater", "自动做饭","记忆力"},
         57,
     },
@@ -311,12 +321,12 @@ m_table.load = {
     },
     {
         {},-- This feature is mandatory to enable as the basic library of the Painting Scroll 
-        {"地图图标+",},
+        {"地图图标+", "地图图标", "MapIcon", "扫描地图", "地形预览", "扫描地形"},
         63,
     },
     {
         {"map_animal","sw_map"},
-        {"更多生物图标", "地图图标",},
+        {"更多生物图标", "Extended Map Icons", },
         64,
     },
     {
@@ -331,23 +341,18 @@ m_table.load = {
     },
     {
         {"map_wormhole", "sw_map"},
-        {"虫洞标记", "地图图标"},
+        {"虫洞标记", },
         67,
     },
     {
         {"map_gogo", "sw_map"},
-        {"自动寻路", "地图图标"},
+        {"自动寻路", },
         68,
     },
     {
         {"map_alter", "sw_map"},
-        {"定位天体", "地图图标"},
+        {"定位天体", },
         69,
-    },
-    {
-        {"map_preview","sw_map"},
-        {"地形预览", "地图扫描", "地形扫描"},
-        32,
     },
     {
         {"sw_right"},
@@ -370,6 +375,11 @@ m_table.load = {
         73,
     },
     {
+        {"sw_skinpreset"},
+        {"皮肤预设套装",},
+        74,
+    },
+    {
         "sw_starfish",
         {"海星清远古", "Moonnight 定制功能"},
         75,
@@ -379,11 +389,11 @@ m_table.load = {
         {"我的笔记", "呼吸 定制功能"},
         76,
     },
-    -- {
-    --     {"sw_tolock",},
-    --     "远程指令",
-    --     77
-    -- },
+    {
+        "sw_jh_repair",
+        {"驯牛辅助", "训牛辅助", },
+        77,
+    },
     {
         {"sw_autopush",},
         {"自动推挤", "保持跟随", "自动跟随", "如影随形", "keep following",},
@@ -405,19 +415,52 @@ m_table.load = {
         81
     },
     {
-        {"sw__keytweak"},
-        {"键位提示"},
-        28,
+        {"sw_hjsl_repair",},
+        {"自动修复", "物品修复", "快捷修复"},
+        82
     },
     {
-        {"sw_suggest"},
-        {"礼包购买建议", "看线轴", "性价比"},
-        54,
+        {"sw_pinyin",},
+        {"拼音搜索"},
+        83
     },
     {
-        {"sw_skinpreset"},
-        {"皮肤预设套装",},
-        74,
+        {"sw_beebox",},
+        {"火中取蜜"},
+        84
+    },
+    {
+        {"sw_drop",},
+        {"按键丢弃"},
+        86
+    },
+    {
+        {"sw_autoeat",},
+        {"自动吃饭", "自动干饭", "记忆力"},
+        87
+    },
+    {
+        {"sw_catcher",},
+        {"静电任务+", "静电任务", "风暴任务"},
+        88,
+    },{
+        {"sw_showhkit",},
+        {"浅海显示", "地皮显示"},
+        89
+    },{
+        {"sw_fishkill",},
+        {"自动宰杀", "自动宰鱼"},
+        90
+    },
+    {
+        "sw_butterfly",
+        {"自动抓蝴蝶"},
+        91,
+    },
+    {
+        "sw_autowork",
+        {"自动工作"},
+        92,
     },
 }
 

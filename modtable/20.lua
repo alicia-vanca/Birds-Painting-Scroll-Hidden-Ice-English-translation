@@ -4,7 +4,7 @@ end
 local save_id, string_fish = "sw_fishname", "Sea fishing"
 local seasons = {
     isspring = {
-        color = "Spring green",
+        color = "SpringGreen",
         label = "Spring"
     },
     issummer = {
@@ -12,7 +12,7 @@ local seasons = {
         label = "Summer"
     },
     isautumn = {
-        color = "Golden",
+        color = "Goldenrod",
         label = "Autumn"
     },
     iswinter = {
@@ -60,6 +60,13 @@ for i = 1, 9 do
 end
 local data_rgb = require("data/valuetable").RGB_datatable
 local screen_data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view video tutorial or feature demonstration",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV16FUZBEE32/", true)end
+    },{
     id = "fishname",
     label = "Show fish names",
     fn = function(v)
@@ -171,7 +178,17 @@ end)
 local func_right = m_util:AddBindShowScreen({
     title = string_fish,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+    
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Bait lookup",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet; stay tuned...")
+        end,
+    }}
 })
 
 m_util:AddBindConf(save_id, func_right, nil,

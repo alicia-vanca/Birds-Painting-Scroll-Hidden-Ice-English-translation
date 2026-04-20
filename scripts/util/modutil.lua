@@ -15,19 +15,11 @@ local h_util = require "util/hudutil"
 local s_mana = require "util/settingmanager"
 local i_util = require "util/inpututil"
 local e_util = require "util/entutil"
+local PM = require "data/pinyin_char_map"
 local TEMPLATES = require "widgets/redux/templates"
 local ismodder = s_mana:GetSettingLine("i_am_modder", true).ismodder
 local MID_CONF = "biubiu"
-local function NullFunction()
-end
-local names_loadmod = {}
-local _print = print
-function m_util:ClosePrint()
-    print = NullFunction
-end
-function m_util:OpenPrint()
-    print = _print
-end
+
 
 ----------------------------------- Customized interface -----------------------------------
 function m_util:Load(path, default_data)
@@ -51,13 +43,10 @@ function m_util:Save(path, save_data)
 end
 
 ----------------------------------- Function  -----------------------------------
-m_util:ClosePrint()
-local modname_table = t_util:PairFilter(KnownModIndex:GetModsToLoad(), function(_, modname)
+local modname_table = t_util:IPairFilter(i_util:GetModsToLoad(), function(modname)
     local mod = KnownModIndex:GetModInfo(modname)
-    table.insert(names_loadmod, modname)
     return mod and mod.name and mod.version and mod.name .. mod.version
 end)
-m_util:OpenPrint()
 
 function m_util:HasModName(modname)
     return t_util:GetElement(modname_table, function(_, name)
@@ -187,9 +176,9 @@ function m_util:LoadReBindData()
         if not modname then
             return
         end
-        m_util:ClosePrint()
+        i_util:ClosePrint()
         modsdata[modname] = modsdata[modname] or KnownModIndex:LoadModConfigurationOptions(modname, true)
-        m_util:OpenPrint()
+        i_util:OpenPrint()
         local moddata = modsdata[modname]
         return moddata and t_util:IGetElement(moddata, function(data)
             if data.name == setting.conf then
@@ -273,7 +262,7 @@ function m_util:SaveModOneConfig(c_name, c_value, modname)
         return print("The mod does not exist! can't write!")
     end
     local ret
-    m_util:ClosePrint()
+    i_util:ClosePrint()
     local config = KnownModIndex:LoadModConfigurationOptions(modname, true) or {}
     local settings = t_util:IPairFilter(config, function(conf_data)
         local name, value, default = conf_data.name, conf_data.saved, conf_data.default
@@ -298,18 +287,18 @@ function m_util:SaveModOneConfig(c_name, c_value, modname)
     end)
     KnownModIndex:SaveConfigurationOptions(function()
     end, modname, settings, true)
-    m_util:OpenPrint()
+    i_util:OpenPrint()
     return ret
 end
 
--- Return to prefab in the game
-local screen_names = {"ShowScreen"}
-function m_util:RegisterScreenInGame(screen_name)
-    t_util:Add(screen_names, screen_name)
+function m_util:IsTyping()
+    return TheFrontEnd and (t_util:GetRecur(TheFrontEnd:GetFocusWidget(), "inst.TextEditWidget") or TheFrontEnd.textProcessorWidget)
 end
 function m_util:InGame()
-    return ThePlayer and ThePlayer.HUD and not ThePlayer.HUD:HasInputFocus() and (not table.contains(screen_names, h_util:GetActiveScreen().name)) and
-               ThePlayer.components.hx_pusher and ThePlayer.prefab
+    return ThePlayer and ThePlayer.components.hx_pusher and not self:IsTyping() and ThePlayer.prefab
+end
+function m_util:InHUD()
+    return ThePlayer and ThePlayer.HUD==h_util:GetActiveScreen() and not self:IsTyping() and ThePlayer.HUD
 end
 -- Delay compensation
 function m_util:GetMovementPrediction()
@@ -336,7 +325,7 @@ function m_util:IsServer()
     return is_server
 end
 
-function m_util:isHost()
+function m_util:IsHost()
     return TheWorld and TheWorld.ismastersim
 end
 -- Is this a test server?
@@ -345,6 +334,9 @@ function m_util:IsBata()
 end
 function m_util:IsAdmin()
     return TheNet and TheNet:GetIsServerAdmin()
+end
+function m_util:IsOffline()
+    return TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()
 end
 
 -- That's right, it's me
@@ -392,16 +384,16 @@ end
 -- This interface will construct showscreen
 --[[
 {
-    title 弹窗标题
-    id (不自动存储) 用于区分不同的screen并对接外界访问
-    data 每个按钮的数据
-    default 默认值
+    title Popup title
+    id (not auto-saved) used to distinguish different screens and interface with external code
+    data data for each button
+    default default value
 }
 
-conf 模组配置, 为表时将赋予screen_data并直接返回构造函数
-title 面板标题
-icon 面板按钮
-hover 面板提示
+conf mod configuration; if table, assign to screen_data and return builder function
+title Panel title
+icon Panel button
+hover Panel tooltip
 ]]
 --
 local screen
@@ -496,21 +488,19 @@ end
 
 -- Developer mode re-export
 function m_util:print(...)
-    if not m_util:IsHuxi() then
+    if not self:IsHuxi() then
         return
     end
-    local args = {}
-    for _, v in ipairs({...}) do
-        table.insert(args, tonumber(v) and math.floor(v) ~= v and string.format("%.2f", v) or v)
-    end
-    print(os.date("%I:%M:%S %p", os.time()), unpack(args))
+    print(os.date("%I:%M:%S %p", os.time()), unpack(t_util:IPairToIPair({...}, function(v)
+        return tonumber(v) and math.floor(v) ~= v and string.format("%.2f", v) or v
+    end)))
 end
 
 -- Mod items
 local ModPrefabs, LoadPrefabs = {}, {}
 function m_util:IsModPrefab(prefab)
     if not LoadPrefabs[prefab] then
-        ModPrefabs[prefab] = t_util:IGetElement(names_loadmod, function(name)
+        ModPrefabs[prefab] = t_util:IGetElement(i_util:GetModsToLoad(), function(name)
             local mod = ModManager:GetMod(name)
             local prefabs = mod and mod.Prefabs or {}
             return prefabs[prefab] and mod -- GetModFancyName(mod.modname)
@@ -689,11 +679,11 @@ end
 -- General item selector
 function m_util:PushPrefabScreen(info)
     local info = c_util:FormatDefault(info, "table")
-    local context_grid = info.context or {prefab = t_util:GetRecur(t_util, "ent.prefab")}
-    local function fn_setprefab(prefab, ui)
+    local function fn_setprefab(prefab, ui, grid, context)
         if not (h_util:IsValid(ui) and ui.detail) then return end
+        context.prefab = context.prefab ~= prefab and prefab
         if ui.grid then ui.grid:RefreshView() end
-        if type(prefab)=="string" and prefab~="" then
+        if context.prefab then
             ui.detail.icon_show.SetPrefabIcon({prefab = prefab})
             local name = e_util:GetPrefabName(prefab)
             name = name == e_util.NullName and "" or name
@@ -748,10 +738,10 @@ function m_util:PushPrefabScreen(info)
             ui.grid:SetItemsData(p_data)
         else
             ui.grid:SetItemsData(t_util:IPairFilter(p_data, function(data)
-                if data.prefab:find(text) then
+                if data.prefab:rfind_plain(text) then
                     return data
                 else
-                    if data.name ~= e_util.NullName and data.name:find(text) then
+                    if data.name ~= e_util.NullName and PM:Find(data.name, text) then
                         return data
                     end
                 end
@@ -766,16 +756,14 @@ function m_util:PushPrefabScreen(info)
             ui.grid:SetItemsData(GetPrefabsData())
         end
     end
-    local function fn_btn_clear()
-        return h_util:CreateImageButton({prefab = "delete", hover = "Clear results", hover_meta = {offset_y = 50}, pos = {245}, size = 70, fn = fn_clear})
-    end
     local function fn_loadui(ui)
-        ui.editline:SetPosition(-220, 165)
-        ui.detail:SetPosition(305, 100)
+        ui.editline:SetPosition(-201, 112)
+        ui.detail:SetPosition(233, 70)
+        ui.detail:SetScale(.9)
 
         ui.detail.btn_write.image:SetTint(1, 1, .5, 1)
-        ui.detail.btn_write:SetPosition(0, -240)
-        ui.detail.btn_write:SetHoverText(info.hover_btnwrite or "Manually enter the item code that cannot be found on the left", {offset_y = 60})
+        ui.detail.btn_write:SetPosition(0, -220)
+        ui.detail.btn_write:SetHoverText(info.hover_btnwrite or "Manually enter the item code if it cannot be found on the left", {offset_y = 60})
         ui.detail.btn_write:SetOnClick(function()
             h_util:CreateWriteWithClose("Enter item code:", {
                 text = "Confirm",
@@ -789,11 +777,11 @@ function m_util:PushPrefabScreen(info)
         end)
 
         ui.detail.btn_ok.image:SetTint(.4, 1, .4, 1)
-        ui.detail.btn_ok:SetPosition(0, -315)
-        ui.detail.btn_ok:SetHoverText(info.hover_btnok or "Decided to choose you!", {offset_y = 60})
+        ui.detail.btn_ok:SetPosition(0, -295)
+        ui.detail.btn_ok:SetHoverText(info.hover_btnok or "This is the one!", {offset_y = 60})
 
         ui.grid:SetItemsData(GetPrefabsData())
-        fn_setprefab(context_grid.prefab, ui)
+        fn_setprefab(t_util:GetPrefab(), ui, ui.grid, {})
     end
     self:AddBindShowScreen{
         title = info.text_title or "Item Selector",
@@ -803,32 +791,37 @@ function m_util:PushPrefabScreen(info)
         data_create = {
             {
                 id = "grid",
-                name = "BuildGrid_PrefabButton",
-                meta = {
-                    context = context_grid,
-                    fn_sel = fn_setprefab,
-                }
+                fn = function()
+                    return h_util:BuildGrid_PrefabButton{
+                        context = info.context,
+                        fn_sel = fn_setprefab,
+                    }
+                end
             },{
                 id = "editline",
             },{
                 id = "textedit",
                 pid = "editline",
                 fn = function()
-                    return h_util:CreateTextEdit({width = 380, height = 80, hover = "Enter the name or code of the item", fn = fn_edited})
+                    return h_util:CreateTextEdit({width = 320, height = 60, hover = "Enter the item name, code, or pinyin", fn = fn_edited})
                 end
             },{
                 id = "btn_clear",
                 pid = "editline",
-                fn = fn_btn_clear,
+                fn = function()
+                    return h_util:CreateImageButton({prefab = "delete", hover = "Clear results", hover_meta = {offset_y = 50}, pos = {190}, size = 60, fn = fn_clear})
+                end,
             },{
                 id = "btn_filter", -- Useless button, because the input result can be automatically searched
                 pid = "editline",
                 fn = function()
-                    return h_util:CreateImageButton({xml = HUD_ATLAS, tex = "magnifying_glass_off.tex", hover = "Click to search", hover_meta = {offset_y = 50}, pos = {320}, size = 70, fn = fn_edited})
+                    return h_util:CreateImageButton({xml = HUD_ATLAS, tex = "magnifying_glass_off.tex", hover = "Click to search", hover_meta = {offset_y = 50}, pos = {250}, size = 60, fn = fn_edited})
                 end,
             },{
                 id = "detail",
-                name = "BuildGrid_PrefabDetail",
+                fn = function()
+                    return h_util:BuildGrid_PrefabDetail()
+                end
             },{
                 id = "btn_ok",
                 pid = "detail",
@@ -845,7 +838,153 @@ function m_util:PushPrefabScreen(info)
         },
         fn_line = fn_loadui,
         dontpop = true,
+        title_help = "Feature Linkage",
+        help = m_util:HasModName("群鸟绘卷·夏") and "After declaring an item,\nit will be selected here automatically." or "Quick selection is unavailable until [Bird Scroll·Summer] is enabled!"
     }()
 end
+
+
+function m_util:ExportModsInfo()
+    local filename = "___(^o^)___.txt"
+    local str = "\n"..i_util:GetModsInfo().."\n\n\n\n"..i_util:GetModsClash()
+    TheSim:SetPersistentString("../"..filename, str)
+    h_util:CreatePopupWithClose("Mod information exported", "Please open "..filename.." to view", {{
+        text = h_util.ok,
+        cb = function()
+            TheSim:OpenDocumentsFolder()
+        end}})
+end
+
+
+function m_util:ExportEntsInfo()
+    local filename = "@@@ 50 @@@.txt"
+    local str = "\n"..i_util:GetEntsInfo()
+    TheSim:SetPersistentString("../"..filename, str)
+    h_util:CreatePopupWithClose("Entity information exported", "Please open "..filename.." to view", {{
+        text = h_util.ok,
+        cb = function()
+            TheSim:OpenDocumentsFolder()
+        end}})
+end
+
+
+
+
+
+
+
+
+
+function m_util:FuncListRemove(save_data, id_list, fn_save, fn_title, fn_body, fn_img_hover, fn_mod_hover)
+    return function()
+        return t_util:IPairToIPair(save_data[id_list], function(prefab)
+            local name = e_util:GetPrefabName(prefab)
+            name = name == e_util.NullName and prefab or name
+            local data = {
+                id = prefab, 
+                fn = function()
+                    h_util:CreatePopupWithClose(fn_title(name), type(fn_body)=="string" and fn_body or fn_body(name), {
+                        {
+                            text = h_util.no
+                        },{
+                            text = "Confirm removal",
+                            cb = function()
+                                t_util:Sub(save_data[id_list], prefab)
+                                fn_save()
+                            end
+                        }
+                    })
+                end
+            }
+            local str = c_util:TruncateChineseString(name, 10)
+            if h_util:GetPrefabAsset(prefab) then
+                data.type = "imgstr"
+                data.label = str
+                data.hover = fn_img_hover(name, prefab)
+                data.prefab = prefab
+            else
+                data.type = "textbtn"
+                data.default = str
+                data.label = "Mod item:"
+                data.hover = type(fn_mod_hover)=="string" and fn_mod_hover or fn_mod_hover(name, prefab)
+            end
+            return data
+        end)
+    end
+end
+
+
+
+
+function m_util:FuncListReset(save_data, default_data, fn_save, str_body, id_list, fn_refresh)
+    return function()
+        h_util:CreatePopupWithClose("Warning", str_body.."\nThis action is irreversible once confirmed!", {
+            {
+                text = h_util.no,
+            },{
+                text = h_util.yes,
+                cb = function()
+                    
+                    save_data[id_list] = {}
+                    t_util:EasyCopy(save_data[id_list], default_data[id_list])
+                    fn_save()
+                    h_util:PlaySound("learn_map")
+                    if type(fn_refresh)=="function" then
+                        fn_refresh()
+                    end
+                end
+            }
+        })
+    end
+end
+
+function m_util:FuncListAdd(save_data, fn_save, id_list, title, name)
+    return function()
+        m_util:PushPrefabScreen{
+            text_title = "Select the "..name.." to "..title,
+            text_btnok = "Add "..name,
+            hover_btnok = "Add this "..name.." to the "..title.." list",
+            fn_btnok = function(prefab)
+                if table.contains(save_data[id_list] or {}, prefab) then
+                    h_util:CreatePopupWithClose("Duplicate entry", "This "..name.." is already in the "..title.." list,\nplease add a different "..name..".")
+                else
+                    t_util:Add(save_data[id_list] or {}, prefab, true)
+                    fn_save()
+                end
+            end,
+        }
+    end
+end
+
+
+function m_util:DebugRequire(path)
+    if not path then return print("Path does not exist!") end
+    package.loaded[path] = nil
+    local success, ret = pcall(require, path)
+    if ret then
+        return ret
+    else
+        print(ret)
+    end
+end
+
+
+
+
+
+function m_util:RegisterScreenInGame(screen_name)
+    i_util:ObsoletePrint()
+end
+
+function m_util:ClosePrint()
+    i_util:ObsoletePrint()
+    i_util:ClosePrint()
+end
+function m_util:OpenPrint()
+    i_util:ObsoletePrint()
+    i_util:OpenPrint()
+end
+
+
 
 return m_util

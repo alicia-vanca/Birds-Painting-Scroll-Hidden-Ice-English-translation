@@ -455,16 +455,22 @@ end
 
 local fn_right = m_util:AddBindShowScreen({
     title = string_mid .. " - Advanced settings",
-    id = save_id,
-    data = {{
-        id = "readme",
-        label = "Use guide",
+    id = save_id,            icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Custom",
         fn = function()
-            h_util:CreatePopupWithClose("Mid-key enhancement · use guide",
-                "Try middle-clicking the crafting bar, sidebar, or inventory item")
+            h_util:CreatePopupWithClose(nil, "No data visualization feature has been added yet. Stay tuned.")
         end,
-        hover = "Click to view the tutorial",
-        default = true
+    }},
+    data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1h2CrB5E6f/", true)end
     }, {
         id = "force_memory",
         label = "Force local memory",
@@ -541,7 +547,7 @@ m_util:AddBindConf(save_id, fn_left, nil, {string_mid, "book_horticulture_upgrad
 Mod_ShroomMilk.Func.OpenMidSearchUI = fn_left
 
 
--- 呼吸个人补充
+-- Breathe personal addition
 AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self, ...)
     local _OnMouseButton = self.OnMouseButton
     function self.OnMouseButton(self, button, down, ...)

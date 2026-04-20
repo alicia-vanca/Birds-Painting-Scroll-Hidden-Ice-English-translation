@@ -12,25 +12,28 @@ local m_util = require "util/modutil"
 local c_util = require "util/calcutil"
 
 
--- See the parameter usage in the interface.md of the bird scroll_function panel and advanced settings page
+
+
+
+
 local ScreenScreen = Class(Screen, function(self, screen_data)
     Screen._ctor(self, "ShowScreen")
-    self.w, self.h = 1000, 625
-    self.font_size = 45
-    -- Draw background: always include click return background, book page
-    -- Construct self.root
+    self.w, self.h = 800, 500
+    self.font_size = 35
+    
+    
     self:PaintRoot()
     self:PaintScreen(screen_data)
 end)
 
--- fn_line: Draw line data
--- fn_active: Whether to listen to screen activation
+
+
 function ScreenScreen:PaintScreen(screen_data)
     self.screen_data = m_util:HookShowScreenData(c_util:FormatDefault(screen_data, "table"))
-    self.value = {} -- widget_cache_data
+    self.value = {} 
     self.page = 1
     self:PaintIcon()
-    self:PaintTop() -- Draw title and title underline, and double arrow
+    self:PaintTop() 
     
     local function fn_linebuilt()
         local fn = self.screen_data.fn_line or function()end
@@ -43,7 +46,7 @@ function ScreenScreen:PaintScreen(screen_data)
     end or fn_linebuilt
     
     if not self.screen_data.fn_active then
-        self:PaintData() -- Draw data items
+        self:PaintData() 
     end
 end
 
@@ -58,10 +61,10 @@ function ScreenScreen:PaintTop()
         nil, nil, { 1, 1 }, { 0, 0 }))
     self.arr_r = self.title:AddChild(ImageButton("images/frontend.xml", "turnarrow_icon.tex", "turnarrow_icon_over.tex", nil,
         nil, nil, { 1, 1 }, { 0, 0 }))
-    self.arr_l:SetPosition(-self.w / 6, 0)
-    self.arr_l:SetScale(1, .5, .6)
-    self.arr_r:SetPosition(self.w / 6, 0)
-    self.arr_r:SetScale(-1, .5, .6)
+    self.arr_l:SetPosition(-self.w / 5.5, 0)
+    self.arr_l:SetScale(1, .4, .6)
+    self.arr_r:SetPosition(self.w / 5.5, 0)
+    self.arr_r:SetScale(-1, .4, .6)
     self.arr_r:SetHoverText("Next page")
     self.arr_l:SetHoverText("Previous page")
     self.arr_l:SetOnClick(function()
@@ -87,18 +90,19 @@ function ScreenScreen:PaintRoot()
     self.root = self:AddChild(Widget("root"))
     self.root:SetVAnchor(ANCHOR_MIDDLE)
     self.root:SetHAnchor(ANCHOR_MIDDLE)
+    self.root:SetScaleMode(SCALEMODE_PROPORTIONAL)
     self.book = self.root:AddChild(Image(xml_quag, "quagmire_recipe_menu_bg.tex"))
     self.book:SetSize(self.w, self.h)
 end
 
-local sizes_default = {80, 70, 65}
+local sizes_default = {60, 55, 50}
 local btn_pos_data = {
-    right11 = {300, 240},
-    right21 = {260, 240},
-    right22 = {340, 240},
-    right31 = {250, 240},
-    right32 = {320, 240},
-    right33 = {390, 240},
+    right11 = {250, 170},
+    right21 = {235, 170},
+    right22 = {295, 170},
+    right31 = {215, 170},
+    right32 = {270, 170},
+    right33 = {325, 170},
 }
 -- id, size, pos
 function ScreenScreen:PaintIcon()
@@ -114,9 +118,14 @@ function ScreenScreen:PaintIcon()
         self.icons.btn_help = self.icons:AddChild(h_util:CreateImageButton({
             prefab = "cookbook_missing",
             fn = function()
-                h_util:CreatePopupWithClose(self.screen_data.title and self.screen_data.title.."·Hint" or "Function Hint", text_help)
+                local title_help = self.screen_data.title_help
+                local title_str = self.screen_data.title and self.screen_data.title.." · Help" or "Feature Help"
+                if type(title_help) == "string" then
+                    title_str = title_help
+                end
+                h_util:CreatePopupWithClose(title_str, text_help)
             end,
-            hover = "Function Hint",
+            hover = "Feature Help",
             pos = {-btn_pos_data.right11[1], btn_pos_data.right11[2]}
         }))
     end
@@ -151,121 +160,14 @@ function ScreenScreen:UpdatePage(num)
 end
 
 function ScreenScreen:PaintData()
-    -- do nothing
-    -- but no delete
-end
-
-
-function ScreenScreen:BuildGrid_PrefabDetail()
-    local w = Widget("grid_detail")
-    w.icon_show = w:AddChild(h_util:CretePrefabButton({
-        scale = 0.75,
-        bg = "ui",
-        noclick = true,
-    }))
-    w.text_show = w:AddChild(Text(NEWFONT, 40, "", UICOLOURS.BLACK))
-    w.text_show:SetPosition(0, -145)
-    return w
-end
--- data{prefab, hover}
--- ctor{context, fn_sel(prefab, lines, self)}
-function ScreenScreen:BuildGrid_PrefabButton(c_tor)
-    local cell_size = 90        -- Actual cell display size
-    local cell_rate = 1.5  -- The smaller the cell, the larger it is
-    local row_w = cell_size     -- Single column width
-    local row_h = cell_size     -- Single row height
-    local row_spacing = cell_rate*0.2       -- Cell spacing
-	local boarder_scale = 1
-    local line, col = 4, 6
-    local c_tor = c_util:FormatDefault(c_tor, "table")
-    local context = c_tor.context or {}
-
-    local function ScrollWidgetsCtor(_, index)
-        return h_util:CretePrefabButton({
-            id = "grid_cell_"..index,
-            scale = 1/cell_rate,
-        })
-    end
-    local function fn_sel(prefab, w)
-        return function()
-            if prefab == context.prefab then
-                context.prefab = nil
-            else
-                context.prefab = prefab
-            end
-            if c_tor.fn_sel then
-                c_tor.fn_sel(context.prefab, self.lines, self)
-            end
-        end
-    end
-    local function ScrollWidgetSetData(context, w, data)
-        if data then
-            w.SetPrefabIcon({prefab = data.prefab})
-            w:SetHoverText(data.hover, { offset_y = cell_size })
-            if w.focus_icon then
-                w.focus_icon:Kill()
-            end
-            if data.prefab == context.prefab then
-                w.focus_icon = w.cell_root:AddChild(Image("images/global_redux.xml", "shop_sale_tag.tex"))
-                local size = cell_size*0.8
-                w.focus_icon:ScaleToSize(size, size)
-                local shift = size/4
-                w.focus_icon:SetPosition(shift, shift)
-            end
-            w.cell_root:SetOnClick(fn_sel(data.prefab, w))
-            w:Show()
-        else
-            w:Hide()
-        end
-    end
-
-
-    local grid = TEMPLATES.ScrollingGrid({}, {
-        scroll_context = context,
-        widget_width = row_w+row_spacing,  -- Total cell width
-        widget_height = row_h+row_spacing, -- Total cell height
-        num_visible_rows = line,              -- Number of visible rows
-        num_columns = col,                   -- Number of columns
-        item_ctor_fn = ScrollWidgetsCtor,  -- Item constructor
-        apply_fn = ScrollWidgetSetData,     -- Data binding function
-        scrollbar_offset = 20,
-    })
-    -- Construct scrollbar
-    grid.up_button:SetTextures(xml_quag, "quagmire_recipe_scroll_arrow_hover.tex")
-    grid.up_button:SetScale(0.5)
-    grid.down_button:SetTextures(xml_quag, "quagmire_recipe_scroll_arrow_hover.tex")
-    grid.down_button:SetScale(-0.5)
-    grid.scroll_bar_line:SetTexture(xml_quag, "quagmire_recipe_scroll_bar.tex")
-    grid.scroll_bar_line:SetScale(.8)
-    grid.position_marker:SetTextures(xml_quag, "quagmire_recipe_scroll_handle.tex")
-    grid.position_marker.image:SetTexture(xml_quag, "quagmire_recipe_scroll_handle.tex")
-    grid.position_marker:SetScale(.6)
-    -- Construct upper and lower beautification bar
-	local grid_w, grid_h = grid:GetScrollRegionSize()
-	local grid_boarder = grid:AddChild(Image(xml_quag, "quagmire_recipe_line.tex"))
-	grid_boarder:SetScale(boarder_scale, boarder_scale)
-    grid_boarder:SetPosition(-3, grid_h/2)
-	grid_boarder = grid:AddChild(Image(xml_quag, "quagmire_recipe_line.tex"))
-	grid_boarder:SetScale(boarder_scale, -boarder_scale)
-    grid_boarder:SetPosition(-3, -grid_h/2-1)
-    local grid_text = grid:AddChild(Text(HEADERFONT, cell_size/cell_rate, "", UICOLOURS.BROWN_DARK))
-    -- Empty prompt
-    local _SetItemsData = grid.SetItemsData
-    grid.SetItemsData = function(ui, ...)
-        _SetItemsData(ui, ...)
-        grid_text:SetString(#ui.items == 0 and "Found 0 results" or "")
-    end
-    -- Default position
-    grid:SetPosition(-145, -70)
     
-    return grid
+    
 end
+
+
+
 
 function ScreenScreen:LoadDefault(b_data, value)
-    if self.value[b_data] and not b_data.notload then
-        return self.value[b_data]
-    end
-
     local screen_default = self.screen_data.default
     if type(b_data.default) == "function" then
         value = b_data.default(b_data.id)
@@ -281,7 +183,7 @@ function ScreenScreen:LoadDefault(b_data, value)
 end
 
 
------------------------------------------------ Make_Type
+
 function ScreenScreen:Make_log()
     self:UpdatePage(1)
     local shift_x = (-0.5+0.12)*self.w
@@ -289,17 +191,17 @@ function ScreenScreen:Make_log()
     local b_data = self.data[self.page]
     if not b_data then return end
     local widget = self.lines:AddChild(Widget("log"))
-    local time = widget:AddChild(Text(HEADERFONT, 38, b_data.time, UICOLOURS.BLACK))
-    local content = widget:AddChild(Text(HEADERFONT, 40, b_data.content, UICOLOURS.BLACK))
+    local time = widget:AddChild(Text(HEADERFONT, self.font_size-2, b_data.time, UICOLOURS.BLACK))
+    local content = widget:AddChild(Text(HEADERFONT, self.font_size-5, b_data.content, UICOLOURS.BROWN_DARK))
 
     time:SetHAlign(ANCHOR_LEFT)
-    content:SetRegionSize(850, self.h)
+    content:SetRegionSize(self.w/1.2, self.h)
     content:EnableWordWrap(true)
     content:SetVAlign(ANCHOR_TOP)
     content:SetHAlign(ANCHOR_LEFT)
 
     time:SetPosition(50, 50)
-    content:SetPosition(400, -300)
+    content:SetPosition(310, -220)
 end
 
 function ScreenScreen:Make_ten()
@@ -308,7 +210,7 @@ function ScreenScreen:Make_ten()
     self.lines:SetPosition(shift_x, (0.5-0.32)*self.h)
     self.bar = self.lines:AddChild(Image(xml_quag, "quagmire_recipe_scroll_bar.tex"))
     self.bar:SetSize(5, 0.626*self.h)
-    self.bar:SetPosition(-shift_x, -self.h/2+160)
+    self.bar:SetPosition(-shift_x, self.h * -0.25)
     for i = 1, self.num do
         local nodot = (self.page - 1) * self.num + i
         local b_data = self.data[nodot]
@@ -323,12 +225,12 @@ function ScreenScreen:Make_ten()
         widget:SetPosition((i - 1) % 2 * (self.w / 2 - 60), -math.floor((i - 1) / 2) * 70)
     end
 end
--- data_create:
---- meta: Parameters passed when generating ui
---- name: The function name in self, if this item exists, execute and generate ui 
---- fn: If there is no name above, execute this function to generate ui
---- id: The id of the ui
---- pid: If this item exists, the ui is attached to the id element, otherwise it is attached to lines
+
+
+
+
+
+
 function ScreenScreen:Make_player()
     self:UpdatePage()
     local data = c_util:FormatDefault(self.screen_data.data_create, "table")
@@ -341,18 +243,75 @@ function ScreenScreen:Make_player()
     end)
 end
 
------------------------------------------------ MakeTen_
--- id, label, hover, type, fn 通用
--- xml, tex or prefab
+
+
+
+
+
+
+function ScreenScreen:Ten_dashimg(b_data)
+    local w = Widget("dashimg")
+    local btn = w:AddChild(TextBtn())
+    w.ui_text = btn
+    btn:SetFont(HEADERFONT)
+    btn:SetTextSize(self.font_size - 2)
+    local _width = 0.28*self.w
+
+    local line = btn:AddChild(Image("images/hx_long2.xml", "scrollbar_line.tex"))
+    line:SetSize(5, _width)
+    line:SetRotation(90)
+    line:SetPosition(0, -25)
+    function btn.uiSwitch(value)
+        local val = value and true or false
+        local data = b_data.data[val]
+        if data then
+            data = type(data) == "table" and data or {label = data}
+            local xml, tex = data.xml or b_data.xml, data.tex or b_data.tex
+            if not xml then
+                xml, tex = h_util:GetPrefabAsset(data.prefab or b_data.prefab)
+            end
+            w.ui_img:SetTexture(xml, tex)
+            h_util:ActivateBtnScale(w.ui_img, 55)
+            btn:SetText(data.label)
+            local rgb = h_util:GetRGB(data.color or "black")
+            btn:SetTextColour(rgb)
+            local rate = .8
+            btn:SetOverColour(rgb[1]*rate, rgb[2]*rate, rgb[3]*rate, rgb[4]*rate)
+        end
+    end
+    function btn.switch(value)
+        btn.uiSwitch(value)
+        if type(b_data.fn) == "function" then
+            b_data.fn(value, self.lines, self.data, self)
+        end
+    end
+    btn:SetOnClick(function()
+        self.value[b_data] = not self.value[b_data]
+        btn.switch(self.value[b_data])
+    end)
+    btn:SetPosition(self.w*0.22, 0)
+
+    
+    local xml, tex = b_data.xml, b_data.tex
+    if not xml then
+        xml, tex = h_util:GetPrefabAsset(b_data.prefab)
+    end
+    w.ui_img = btn:AddChild(Image(xml, tex))
+    btn.uiSwitch(self.value[b_data])
+    w.ui_img:SetPosition(self.w*-0.21, 0)
+    return w
+end
+
+
 function ScreenScreen:Ten_imgstr(b_data)
     local w = Widget("imgstr")
     local btn = w:AddChild(TextBtn())
     w.ui_text = btn
     btn:SetText(b_data.label)
-    btn:SetTextColour(UICOLOURS.BLACK)
+    btn:SetTextColour(UICOLOURS.BROWN_DARK)
     btn:SetFont(HEADERFONT)
-    btn:SetTextSize(40)
-    local _width = 280
+    btn:SetTextSize(self.font_size - 2)
+    local _width = 0.28*self.w
 
     local line = btn:AddChild(Image(xml_quag, "quagmire_recipe_scroll_bar.tex"))
     line:SetSize(5, _width)
@@ -369,25 +328,25 @@ function ScreenScreen:Ten_imgstr(b_data)
     btn:SetOnClick(function()
         btn.switch()
     end)
-    btn:SetPosition(200, 0)
+    btn:SetPosition(self.w*0.22, 0)
 
     -- TODO:h_util:CretePrefabButton(info)
     local xml, tex = b_data.xml, b_data.tex
-    if h_util:GetPrefabAsset(b_data.prefab) then
+    if not xml then
         xml, tex = h_util:GetPrefabAsset(b_data.prefab)
     end
     local img = btn:AddChild(Image(xml, tex))
     w.ui_img = img
-    -- img:SetScale(65 / btn:GetSize())
-    h_util:ActivateBtnScale(img, 65)
-    img:SetPosition(-200, 0)
+    
+    h_util:ActivateBtnScale(img, 55)
+    img:SetPosition(self.w*-0.21, 0)
     return w
 end
 -- default
 function ScreenScreen:Ten_radio(b_data)
     local btn = Widget("radio")
 
-    btn.text = btn:AddChild(Text(HEADERFONT, 40, b_data.label, UICOLOURS.BLACK))
+    btn.text = btn:AddChild(Text(HEADERFONT, self.font_size-2, b_data.label, UICOLOURS.BLACK))
     local width = btn.text:GetRegionSize()
     btn.text:SetPosition(width/2-15, 0)
     
@@ -397,17 +356,17 @@ function ScreenScreen:Ten_radio(b_data)
     local arrow_size = btn.arr_l:GetSize()
     local arrow_scale = 60 / arrow_size
     btn.arr_r:SetNormalScale(arrow_scale)
-    btn.arr_r:SetFocusScale(arrow_scale * 1.2)
+    btn.arr_r:SetFocusScale(arrow_scale * 1.1)
     btn.arr_l:SetNormalScale(arrow_scale)
-    btn.arr_l:SetFocusScale(arrow_scale * 1.2)
+    btn.arr_l:SetFocusScale(arrow_scale * 1.1)
 
-    btn.arr_l:SetPosition(150, 0)
-    btn.arr_r:SetPosition(360, 0)
+    btn.arr_l:SetPosition(self.w*0.15, 0)
+    btn.arr_r:SetPosition(self.w*0.36, 0)
 
     
     local str_show = ""
-    btn.showtext = btn:AddChild(Text(HEADERFONT, 40, str_show, UICOLOURS.BLACK))
-    btn.showtext:SetPosition(255, 0)
+    btn.showtext = btn:AddChild(Text(HEADERFONT, self.font_size-5, str_show, UICOLOURS.BROWN_MEDIUM))
+    btn.showtext:SetPosition(self.w*.255, 0)
 
     local function getid()
         self.value[b_data] = tostring(self.value[b_data])
@@ -477,15 +436,15 @@ function ScreenScreen:Ten_box(b_data)
     btn:SetOnClick(function()
         btn.switch(not self.value[b_data])
     end)
-    btn.labeltext = btn:AddChild(Text(HEADERFONT, 40, b_data.label, UICOLOURS.BLACK))
-    btn.labeltext:SetPosition(200, 0)
+    btn.labeltext = btn:AddChild(Text(HEADERFONT, self.font_size-2, b_data.label, UICOLOURS.BROWN_DARK))
+    btn.labeltext:SetPosition(self.w*.2, 0)
     return btn
 end
 -- default
 function ScreenScreen:Ten_textbtn(b_data)
     local w = Widget("textbtn")
 
-    w.text = w:AddChild(Text(HEADERFONT, 40, b_data.label, UICOLOURS.BLACK))
+    w.text = w:AddChild(Text(HEADERFONT, self.font_size-2, b_data.label, UICOLOURS.BLACK))
     local width = w.text:GetRegionSize()
     w.text:SetPosition(width/2-15, 0)
 
@@ -493,8 +452,8 @@ function ScreenScreen:Ten_textbtn(b_data)
     w.showtext = w:AddChild(ttn)
     ttn:SetText(self.value[b_data] or "Not Set")
     ttn:SetFont(HEADERFONT)
-    ttn:SetTextSize(42)
-    ttn:SetColour(UICOLOURS.BLACK)
+    ttn:SetTextSize(self.font_size-5)
+    ttn:SetColour(UICOLOURS.BROWN_DARK)
     function w.uiSwitch(value)
         self.value[b_data] = value
         ttn:SetText(self.value[b_data] or "Not Set")
@@ -508,7 +467,7 @@ function ScreenScreen:Ten_textbtn(b_data)
         w.switch()
     end)
 
-    local _width = 230
+    local _width = self.w*.25
     ttn:SetPosition(_width, 0)
 
     -- Just any background image
@@ -519,7 +478,7 @@ function ScreenScreen:Ten_textbtn(b_data)
     local line = ttn:AddChild(Image(xml_quag, "quagmire_recipe_scroll_bar.tex"))
     line:SetSize(5, _width)
     line:SetRotation(90)
-    line:SetPosition(0, -25)
+    line:SetPosition(0, -23)
 
 
     return w

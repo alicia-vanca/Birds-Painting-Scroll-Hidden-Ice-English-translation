@@ -132,14 +132,3 @@ AddClassPostConstruct("widgets/invslot", function(self)
 end)
 
 
-
-
-AddClassPostConstruct("components/inventory_replica", function(self)
-    self.TakeActiveItemFromCountOfSlot = function(self, slot, count)
-        if self.inst.components.inventory ~= nil then
-            self.inst.components.inventory:TakeActiveItemFromCountOfSlot(slot, count)
-        elseif self.classified ~= nil then
-            self.classified:TakeActiveItemFromCountOfSlot(slot, count)
-        end
-    end
-end)

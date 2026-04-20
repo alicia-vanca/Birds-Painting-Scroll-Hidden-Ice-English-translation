@@ -1,6 +1,7 @@
 ------------------ Function settings ------------------
 local playerhud = require "screens/playerhud"
 local save_id, string_brain = "sw_brain", "Memory+"
+local id_box_info = "_huxi_box_info"
 local default_data = {
     box_preview = false,
     sign_more = false,
@@ -127,19 +128,15 @@ local function AddHighlight(ent, color)
     end
 end
 local function GetMemoryBoxData(ent)
-    if not e_util:IsContainer(ent) then
-        return
-    end
-    -- Original logic
-    local pos_id = e_util:GetPosID(ent)
-    return pos_id and DataBox[pos_id]
+    local pos_id = p_util:GetEntPosID(ent)
+    return pos_id and (DataBox[pos_id] or DataInv[pos_id])
 end
 
 -- This interface is provided outside
 local function HasPrefabWithBox(ent, prefab, dontcheckbundle)
     local data_cont = GetMemoryBoxData(ent)
     if not data_cont then return end
-    local pos_id = e_util:GetPosID(ent)
+    local pos_id = p_util:GetEntPosID(ent)
     local has = t_util:GetElement(data_cont, function(slot, data)
         if type(data) ~= "table" then return end
         if data.prefab == prefab then
@@ -150,7 +147,7 @@ local function HasPrefabWithBox(ent, prefab, dontcheckbundle)
             local line = DataInv[pos_id.."_"..slot]
             if line then
                 return t_util:GetElement(line, function(slot, data)
-                    return data.prefab == prefab
+                    return type(data) == "table" and data.prefab == prefab
                 end)
             end
         end
@@ -248,34 +245,28 @@ local function ShowPrefabView(prefab, is_display)
     HighlightPrefab(pointer)
 end
 AddClassPostConstruct("widgets/ingredientui", function (self, ...)
-    local _OnGainFocus = self.OnGainFocus
-    function self.OnGainFocus(self, ...)
+    local _OnGainFocus, _OnLoseFocus = self.OnGainFocus, self.OnLoseFocus
+    function self.OnGainFocus(...)
         ShowPrefabView(self.recipe_type, true)
-        if _OnGainFocus then
-            return _OnGainFocus(self, ...)
-        end
+        return _OnGainFocus(...)
     end
 
-    local _OnLoseFocus = self.OnLoseFocus
-    function self.OnLoseFocus(self, ...)
+    function self.OnLoseFocus(...)
         ShowPrefabView(self.recipe_type, false)
-        if _OnLoseFocus then
-            return _OnLoseFocus(self, ...)
-        end
+        return _OnLoseFocus(...)
     end
 end)
 -- Sidebar display
 AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function (self, ...)
-    local _OnGainFocus = self.OnGainFocus
-    function self.OnGainFocus(self, ...)
+    local _OnGainFocus, _OnLoseFocus = self.OnGainFocus, self.OnLoseFocus
+    function self.OnGainFocus(...)
         ShowPrefabView(self.recipe_name, true)
-        return _OnGainFocus(self, ...)
+        return _OnGainFocus(...)
     end    
     
-    local _OnLoseFocus = self.OnLoseFocus
-    function self.OnLoseFocus(self, ...)
+    function self.OnLoseFocus(...)
         ShowPrefabView(self.recipe_name, false)
-        return _OnLoseFocus(self, ...)
+        return _OnLoseFocus(...)
     end
 end)
 ------------------ Smart mini sign ------------------
@@ -300,7 +291,7 @@ local enable_SeedImages = Mod_ShroomMilk.Setting.SeedImages
 local function ShowSmartMinisign(cont)
     if not cont or enable_smart_minisign then return end
     if m_data.brain_sign and table.contains(prefabs_minisign, cont.prefab) then
-        local id = e_util:GetPosID(cont)
+        local id = p_util:GetEntPosID(cont)
         if not (cont.huxi_sign and cont.huxi_sign:IsValid()) then
             cont.huxi_sign = cont:SpawnChild("hminisign")
             if cont.prefab == "dragonflychest" then
@@ -334,7 +325,7 @@ local function ShowSmartMinisign(cont)
     end
 end
 local function RefreshMinisigns()
-    if m_util:isHost() then
+    if m_util:IsHost() then
         t_util:Pairs(Ents, function(id, ent)
             ShowSmartMinisign(ent)
         end)
@@ -372,6 +363,22 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
     DataInv = saver:GetMap(id_inv)
     -- Server small wood card judgment
     enable_smart_minisign  = TUNING.SMART_SIGN_DRAW_ENABLE
+    
+    
+    local function LoadInvBox(item, cont, slot)
+        local id_item_pos = p_util:GetEntPosID(item, cont, slot)
+        local box_data = id_item_pos and DataInv[id_item_pos]
+        if box_data then
+            item[id_box_info] = box_data
+        end
+    end
+    t_util:IPairs(p_util:GetSlotsFromAll(nil, nil, nil, "mouse") or {}, function(line)
+        LoadInvBox(line.item, line.cont, line.slot)
+    end)
+    
+    t_util:Pairs(p_util:GetEquips() or {}, function(slot, equip)
+        LoadInvBox(equip, player, slot)
+    end)
 end)
 
 ------------------ box memory -------------------
@@ -386,22 +393,31 @@ local function RefreshBoxMemory(cont)
         -- Only handle the box with a grid greater than 4
         if ui_cont then
             local numslots = #ui_cont.inv
-            if numslots > 4 then
-                local id_cont_pos = e_util:GetPosID(cont)
+            if numslots > 4 or cont:HasTag("inlimbo") then
+                local id_cont_pos = p_util:GetEntPosID(cont)
                 if id_cont_pos then
-                    DataBox[id_cont_pos] = {
+                    local inlimbo = cont:HasTag("inlimbo")
+                    local boxdata = {
                         num = tostring(numslots),
-                        -- full = container:IsFull() and true or nil
+                        pos = inlimbo and id_cont_pos or nil,
                     }
                     local count = 0
                     t_util:Pairs(ui_cont.inv, function(i, slot)
                         local item = slot and slot.tile and slot.tile.item
                         if item then
-                            DataBox[id_cont_pos][tostring(i)] = GetItemInfo(item) or nil
+                            boxdata[tostring(i)] = GetItemInfo(item) or nil
                             count = count + 1
                         end
                     end)
-                    DataBox[id_cont_pos].full = count == container:GetNumSlots() and true or nil
+                    boxdata.full = count == container:GetNumSlots() and true or nil
+                    
+                    cont[id_box_info] = boxdata
+                    
+                    if inlimbo then
+                        DataInv[id_cont_pos] = boxdata
+                    else
+                        DataBox[id_cont_pos] = boxdata
+                    end
                     ShowSmartMinisign(cont)
                 end
                 -- BindBrainSave () - test code remember to delete
@@ -415,7 +431,29 @@ playerhud.CloseContainer = function(self, cont, side, ...)
     RefreshBoxMemory(cont)
     return _CloseContainer(self, cont, side, ...)
 end
------------------- Box preview ------------------
+local function RefreshInvBox(item, cont, slot)
+    if item[id_box_info] then
+        local _pos = item[id_box_info].pos
+        if _pos then
+            DataInv[_pos] = nil
+        end
+        local id_cont_pos = p_util:GetEntPosID(item, cont, slot)
+        if id_cont_pos then
+            item[id_box_info].pos = id_cont_pos
+            DataInv[id_cont_pos] = item[id_box_info]
+        end
+    end
+end
+
+i_util:AddPlayerActivatedFunc(function(player, world, pusher)
+    
+    pusher:RegChanInv(RefreshInvBox)
+    
+    pusher:RegAddInv(function(cont, slot, item)
+        RefreshInvBox(item, cont, slot)
+    end)
+end)
+
 local function OpenBoxNotInlimBo(player)
     local ui_conts = t_util:GetRecur(player, "HUD.controls.containers") or {}
     return t_util:GetElement(ui_conts, function(cont)
@@ -437,7 +475,7 @@ i_util:AddHoverOverFunc(function(str, player, item_inv, item_world)
     if e_util:GetContainer(item_world) or cont_shadow then
         local sbox = GetSBox()
         if sbox then
-            local id_cont_pos = e_util:GetPosID(item_world)
+            local id_cont_pos = p_util:GetEntPosID(item_world)
             if id_cont_pos and DataBox then
                 local cont_open = OpenBoxNotInlimBo(player)
                 if cont_open and (cont_open==item_world or (e_util:IsShadowContainer(cont_open) and cont_shadow)) then
@@ -458,6 +496,13 @@ end)
 local desc_add = "\nThis is a local function. The data will not be refreshed after someone else opens the box"
 local VData = require "data/valuetable"
 local screen_data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://b23.tv/1DQ6nH8", true)end
+    },{
     id = "brain_save",
     label = "Save at dawn",
     hover = "If you don’t frequently rollback or crash,\nand you don’t like the lag when saving at dawn, you can disable this option",
@@ -540,7 +585,16 @@ local screen_data = {{
 local function fn()
     m_util:AddBindShowScreen({
         title = string_brain,
-        id = save_id,
+        id = save_id,            
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Data visualization",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "No custom feature has been added yet. Stay tuned.")
+        end,
+    }},
         data = screen_data
     })()
     if not save_data.force_memory and (m_util:EnableInsight() or m_util:EnableShowme()) then

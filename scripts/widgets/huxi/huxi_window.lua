@@ -3,13 +3,15 @@ local ImageButton = require "widgets/imagebutton"
 local Widget = require "widgets/widget"
 local TextBtn = require "widgets/textbutton"
 local Text = require "widgets/text"
-local c_util, e_util, h_util, m_util, t_util, s_mana  = 
+
+local c_util, e_util, h_util, m_util, t_util, s_mana,i_util  = 
 require "util/calcutil",
 require "util/entutil",
 require "util/hudutil",
 require "util/modutil",
 require "util/tableutil",
-require "util/settingmanager"
+require "util/settingmanager",
+require "util/inpututil"
 
 
 local save_id, str_title = "mainboard", "Icon or panel settings"
@@ -44,14 +46,14 @@ local HuxiWindow = Class(Widget, function(self)
 
     self.root:SetPosition(h_util.screen_x*0.77, h_util.screen_y*0.528)
     self._base.Hide(self)
-    self:SetScaleMode(SCALEMODE_FIXEDSCREEN_NONDYNAMIC)
+    self:SetScaleMode(SCALEMODE_FIXEDPROPORTIONAL)
 end)
 
 
 function HuxiWindow:MakeFrame()
-    local w = Widget("huxi_menu_frame")
-
     local width, height = self.width, self.height
+    local w = h_util:BuildFrame(width, height)
+
     local atlas = resolvefilepath(CRAFTING_ATLAS)
 
     -- Title
@@ -60,35 +62,13 @@ function HuxiWindow:MakeFrame()
     self.title_panel:SetText(Mod_ShroomMilk.Mod["春"].name)
     self.title_panel:SetTextSize(28)
     self.title_panel:SetColour(UICOLOURS.WHITE)
-    -- self.title_panel:SetOnClick(function()
-    --     -- self:CloseIt()
-    --     self.title_panel:SetText(self.GetQuotation())
-    -- end)
+    self.title_panel:SetOnClick(function()
+        self:GetQuotation()
+    end)
     self.title_panel:SetPosition(0, height / 2 - 13)
 
-    -- Background
-    local fill = w:AddChild(Image(atlas, "backing.tex"))
-    fill:ScaleToSize(width + 10, height + 18)
-    fill:SetTint(1, 1, 1, 0.3)
-
-    -- Four edges up and down, left, left, left and right
-    local left = w:AddChild(Image(atlas, "side.tex"))
-    local right = w:AddChild(Image(atlas, "side.tex"))
-    local top = w:AddChild(Image(atlas, "top.tex"))
-    local bottom = w:AddChild(Image(atlas, "bottom.tex"))
-    -- Split
+    
     local itemlist_split = w:AddChild(Image(atlas, "horizontal_bar.tex"))
-
-    left:SetPosition(-width / 2 - 8, 1)
-    right:SetPosition(width / 2 + 8, 1)
-    top:SetPosition(0, height / 2 + 10)
-    bottom:SetPosition(0, -height / 2 - 8)
-
-    left:ScaleToSize(-26, -(height - 20))
-    right:ScaleToSize(26, height - 20)
-    top:ScaleToSize(width+33, 38)
-    bottom:ScaleToSize(width+33, 38)
-
     local splitline_y = height / 2 - self.split_height
     itemlist_split:SetPosition(0, splitline_y)
     itemlist_split:ScaleToSize(width, 15)
@@ -145,7 +125,7 @@ function HuxiWindow:MakeButtons()
     end)
     table.sort(icons_data, function(a, b)
         if a.priority == b.priority then
-            return a.name > b.name      -- No name sorting in the chinese environment
+            return tostring(a) > tostring(b)
         else
             return a.priority > b.priority
         end
@@ -191,7 +171,7 @@ function HuxiWindow:CustomButton(icon)
     local icondata = icon.imgdata
     if type(icondata) == "table" then
         local xml, tex = icondata.xml, icondata.tex
-        if type(xml) == "string" and type(tex) == "string" and TheSim:AtlasContains(xml, tex) then
+        if type(xml) == "string" and type(tex) == "string" then
             icon.xml, icon.tex = xml, tex
         end
     elseif type(icondata) == "string" then
@@ -286,6 +266,48 @@ function HuxiWindow:ChanStyle()
         end)
         self.title_panel:SetText("󰀜  Happy holidays!  󰀜")
         m_util:RefreshIcon(true)
+    end
+end
+
+function randomString()
+    local s = ""
+    for i = 1, 40 do
+        s = s .. string.char(math.random(65, 122))
+    end
+    return s
+end
+local countstart = 10
+local countdown = countstart
+function HuxiWindow:GetQuotation()
+    countdown = countdown - 1
+    if countdown < 1 or m_util:IsMilker() then
+        countdown = countstart
+        h_util:PlaySound("learn_map")
+        self:Hide()
+        h_util:CreatePopupWithClose("Easter Egg Mode", "What information would you like to output?", {{
+            text = "Mod Info",
+            cb = function()
+                i_util:DoTaskInTime(0, function()
+                    m_util:ExportModsInfo()
+                end)
+            end
+        }, {
+            text = "Entity Info",
+            cb = function()
+                i_util:DoTaskInTime(0, function()
+                    m_util:ExportEntsInfo()
+                end)
+            end
+        }})
+    elseif countdown < 5 then
+        h_util:PlaySound("collect_item")
+        self.title_panel:SetText("Easter Egg Mode: "..countdown)
+    elseif countdown < 9 then
+        self.title_panel:SetText(randomString())
+    else
+        i_util:DoTaskInTime(countstart*.8, function()
+            countdown = countstart
+        end)
     end
 end
 

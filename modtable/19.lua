@@ -47,7 +47,7 @@ local fn = m_util:AddBindShowScreen({
     data = {
         {
             id = "sw",
-            label = "Prompt type:",
+            label = "Warn type:",
             fn = fn_save("sw"),
             hover = "Target type of wild fire warning",
             default = fn_get,
@@ -56,7 +56,16 @@ local fn = m_util:AddBindShowScreen({
                 return {data = i, description = i}
             end)
         }
-    }
+    },
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Astronomical Descendants version",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet; stay tuned...")
+        end,
+    }}
 })
 m_util:AddBindConf(save_id, fn, nil,
-    {string_warning, "firestaff_flamelash", STRINGS.LMB .. "Advanced settings", true, fn, nil, -9996})
+    {string_warning, "firestaff_flamelash", "Click to enter advanced wildfire warning settings", true, fn, nil, -9996})

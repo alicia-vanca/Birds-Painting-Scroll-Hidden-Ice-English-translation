@@ -113,7 +113,7 @@ function WM:OpenID(file_id)
 end
 
 
----------------------------- 面向开发者---------------------------
+---------------------------- For Developers ---------------------------
 -- The interface here will not be deleted, but it is not recommended to use it for testing
 
 -- Get the current archive seed

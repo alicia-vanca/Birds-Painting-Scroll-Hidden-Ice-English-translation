@@ -1,4 +1,4 @@
-local save_id, string_fn = "sw_hideshell", "Shell hidden"
+local save_id, string_fn = "sw_hideshell", "Hide Shells"
 local prefabs_shell = {"singingshell_octave3", "singingshell_octave5", "singingshell_octave4"}
 local thread
 local function fn()
@@ -18,8 +18,9 @@ local function fn()
                 end)
                 Sleep(1)
             end
-            self:StopNowTask()
         end, save_id)
     end
 end
-m_util:AddBindConf(save_id, fn, nil, {string_fn, "hermit_pearl", "Help Hermit salvage shell piles", true, fn, nil, 5997})
+m_util:AddBindConf(save_id, fn, nil, {string_fn, "hermit_pearl", STRINGS.LMB.."Toggle "..STRINGS.RMB.."View tutorial", true, fn, function()
+    VisitURL("https://www.bilibili.com/video/BV1U92DB3E1M/", true)
+end, 5997})

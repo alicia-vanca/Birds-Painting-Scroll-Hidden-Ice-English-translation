@@ -11,14 +11,15 @@ local function fn_left()
             return pusher:StopNowTask()
         else
             pusher:RegNowTask(function(player, pc)
-                local picker = player.components.playeractionpicker
-                local ent = e_util:FindEnt()
-                if ent then
-                    local acts = picker:GetLeftClickActions(ent:GetPosition(), ent)
-                    t_util:Pairs(acts, function(i, act)
-                        m_util:print("test" .. i, act)
-                    end)
-                end
+                local sgmoving = player.sg and player.sg:HasStateTag("moving")
+                local sgdoing= player.sg and player.sg:HasStateTag("doing")
+                local sgworking = player.sg and player.sg:HasStateTag("working")
+                local sgidle = player.sg and player.sg:HasStateTag("idle")
+                local moving = player:HasTag("moving")
+                local doing = player:HasTag("doing")
+                local working = player:HasTag("working")
+                local idle = player:HasTag("idle")
+                print(os.date("%I:%M:%S %p", os.time()), idle, moving, working, doing, sgidle, sgmoving, sgworking, sgdoing)
                 d_util:Wait(0.5)
             end, nil, "null")
         end

@@ -19,11 +19,18 @@ Assets = {
 	-- Exclusive texture of painting rolls
 	Asset("ATLAS", "images/hx_icons1.xml"),
 	Asset("ATLAS", "images/hx_icons2.xml"),
-	-- Key display
+	Asset("ATLAS", "images/hx_square.xml"),
+	Asset("ATLAS", "images/hx_ui.xml"),
+	Asset("ATLAS", "images/hx_long.xml"),
+	Asset("ATLAS", "images/hx_long2.xml"),
+	
 	Asset("ATLAS", "images/keyup.xml"),
 	Asset("ATLAS", "images/keydown.xml"),
 	Asset("ATLAS", "images/spaceup.xml"),
 	Asset("ATLAS", "images/spacedown.xml"),
+
+	
+	Asset("ATLAS", "images/cb_under_construction.xml"),
 }
 
 PrefabFiles = {
@@ -32,4 +39,7 @@ PrefabFiles = {
 	"harrow",
 	-- Smart wooden sign
 	"hminisign",
+	
+	"hgrid",
+	"hfloorkit",
 }

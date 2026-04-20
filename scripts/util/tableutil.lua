@@ -1,6 +1,13 @@
 local t_util = {}
 
--- Get the first items of the container items
+function t_util:Clear(t)
+    self:Pairs(t, function(key)
+        t[key] = nil
+    end)
+end
+
+
+
 function t_util:GetMinValue(t)
     if type(t) ~= "table" then
         return
@@ -14,14 +21,13 @@ function t_util:GetMinValue(t)
     end
 end
 
--- The list of each is json to map according to id
+-- Convert a list of JSON strings into a map and array using each object's id
 function t_util:MapAndArrayFromJsonList(t)
     local map,array = {},{}
     for _,line in pairs(t) do
-        local re, data = xpcall(
-            function() return json.decode(line) end, 
-            function() end
-        )
+        local re, data = pcall(function() 
+            return json.decode(line) 
+        end)
         if re then
             local key = data.id
             if key then
@@ -50,7 +56,7 @@ function t_util:MapFromList(t, num)
     return m
 end
 
--- Merceable multiple map, or for deep copy
+-- Merge multiple maps; also useful for shallow copying
 function t_util:MergeMap(...)
     local m = {}
     for _, map in ipairs({...})do
@@ -71,7 +77,7 @@ function t_util:MergeList(...)
     end
     return mTable
 end
--- Copy the data from table t2 to t1
+-- Recursively copy data from table t2 into table t1
 function t_util:EasyCopy(t1, t2)
     t_util:Pairs(t2, function(k, v)
         if type(v) == "table" then
@@ -83,6 +89,7 @@ function t_util:EasyCopy(t1, t2)
             t1[k] = v
         end
     end)
+    return t1
 end
 
 
@@ -108,18 +115,24 @@ function t_util:GetNextLoopKey(t, key, reverse)
     return _t[num]
 end
 
--- Return to the processing value of a certain element that meets conditions
+-- Return the result from the first element that satisfies the condition
 function t_util:GetElement(t, func)
     for k,v in pairs(t)do
-        local result = func(k,v)
-        if result then return result end
+        local ret = func(k,v)
+        if ret then return ret end
     end
 end
 
 function t_util:IGetElement(t, func)
     for _,v in ipairs(t)do
-        local result = func(v)
-        if result then return result end
+        local ret = func(v)
+        if ret then return ret end
+    end
+end
+function t_util:ForIGet(t, func)
+    for k, v in ipairs(t)do
+        local ret = func(k, v)
+        if ret then return ret end
     end
 end
 
@@ -133,6 +146,7 @@ function t_util:IPairs(t, func)
         func(v)
     end
 end
+
 function t_util:SortIPair(t)
     table.sort(t, function (a, b)
         return (type(a.priority)=="number" and a.priority or 0) > (type(b.priority)=="number" and b.priority or 0)
@@ -227,16 +241,39 @@ function t_util:BuildNumInsert(first, last, skip, func)
     return t
 end
 
+function t_util:AddIPairs(from, to, first)
+    to = to or {}
+    self:IPairs(from, function(ele)
+        t_util:Add(to, ele, first)
+    end)
+    return to
+end
 function t_util:Add(t, element, first)
     if not self:GetElement(t, function(_, ele)
         return ele == element
     end) then
         if first then
-            table.insert(t, 1, element)
+            table.insert(t, type(first)=="number" and first or 1, element)
         else
             table.insert(t, element)
         end
     end
+    return t
+end
+function t_util:True(t, element)
+    if element then
+        table.insert(t, element)
+    end
+end
+
+function t_util:SubIPairs(from, to)
+    if not to or #to==0 then
+        return {}
+    end
+    self:IPairs(from, function(ele)
+        t_util:Sub(to, ele)
+    end)
+    return to
 end
 function t_util:Sub(t, element)
     for i = #t, 1, -1 do
@@ -338,6 +375,11 @@ function t_util:NumThreshold(num, tolds)
     end) or #tolds + 1
 end
 
+function t_util:GetPrefab()
+    local tpdebug = type(self.ent)
+    local prefab = (tpdebug == "string" and self.ent) or (tpdebug == "table" and self.ent.prefab)
+    return type(prefab) == "string" and prefab
+end
 
 -----------------------------------Deprecated interfaces-----------------------------------
 -- h_util:GetChild or c_util:LoopGet is recommended

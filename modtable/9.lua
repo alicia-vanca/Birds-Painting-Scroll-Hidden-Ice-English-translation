@@ -20,22 +20,22 @@ m_util:AddBindConf("c_hidehud", function()
     if ThePlayer.HUD:IsVisible()then
         ThePlayer.HUD:Hide()
         ThePlayer.HUD.under_root:Hide()
-        u_util:Say("Screenshot mode", "Hidden hud", "head", "Thistle color", true)
+        u_util:Say("Screenshot mode", "Hidden hud", "head", "Thistle", true)
     else
         ThePlayer.HUD:Show()
-        ThePlayer.HUD.under_root:Show() -- Direction indication adaptation
-        u_util:Say("Screenshot mode", "Display hud", "head", "Thistle color", true)
+        ThePlayer.HUD.under_root:Show() 
+        u_util:Say("Screenshot mode", "Display hud", "head", "Thistle", true)
     end
 end)
 m_util:AddBindConf("c_hideself", function()
     if ThePlayer.entity:IsVisible()then
         ThePlayer:Hide()
         ThePlayer.DynamicShadow:Enable(false)
-        u_util:Say("Screenshot mode", "Hidden player", "head", "Thistle color", true)
+        u_util:Say("Screenshot mode", "Hidden player", "head", "Thistle", true)
     else
         ThePlayer:Show()
         ThePlayer.DynamicShadow:Enable(true)
-        u_util:Say("Screenshot mode", "Display player", "head", "Thistle color", true)
+        u_util:Say("Screenshot mode", "Display player", "head", "Thistle", true)
     end
 end)
 local c_follow_ent, null_target
@@ -54,35 +54,35 @@ m_util:AddBindConf("c_track", function ()
     end
     TheCamera:SetTarget(ent)
     c_follow_ent = ent
-    u_util:Say("Perspective", ent.name, "self", "Thistle color", true)
+    u_util:Say("Perspective", ent.name, "self", "Thistle", true)
 end)
 m_util:AddBindConf("c_back", function ()
     if TheCamera.target ~= ThePlayer then
         TheCamera:SetTarget(ThePlayer)
-        u_util:Say("Perspective", ThePlayer.name, "self", "Thistle color", true)
+        u_util:Say("Perspective", ThePlayer.name, "self", "Thistle", true)
     elseif c_follow_ent then
         if c_follow_ent == null_target then
             TheCamera:SetTarget(c_follow_ent)
-            u_util:Say("Tracking position", c_follow_ent:GetPosition(), "self", "Thistle color", true)
+            u_util:Say("Tracking position", c_follow_ent:GetPosition(), "self", "Thistle", true)
         elseif e_util:IsValid(c_follow_ent) then
             TheCamera:SetTarget(c_follow_ent)
-            u_util:Say("Perspective", c_follow_ent.name, "self", "Thistle color", true)
+            u_util:Say("Perspective", c_follow_ent.name, "self", "Thistle", true)
         else
             u_util:Say("Perspective", "Target invalid", "self", "Red", true)
         end
     end
 end)
 
--- Small steps. minimal distance. the maximum distance. the minimum leaning distance. the maximum leaning distance, the current distance, the target distance
+
 local argu = {"zoomstep","mindist","maxdist","mindistpitch","maxdistpitch","distance","distancetarget", "fov"}
--- Store the default data
+
 local args_default = {}
--- Great perspective
+
 local value_bigger_forest = {10, 10, 180, 30, 60, 80, 80, 35}
 local value_bigger_cave = {10, 10, 180, 25, 40, 80, 80, 35}
--- Look down
+
 local value_overlook = {10, 10, 180, 90, 90, 80, 80, 35}
--- Eagle eye
+
 local value_eagle = {10, 10, 180, 90, 90, 80, 80, 165}
 
 local function SetView(vt)

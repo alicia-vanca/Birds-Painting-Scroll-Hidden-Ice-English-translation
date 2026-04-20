@@ -1,8 +1,8 @@
 local save_id, string_seed = "sw_nutrients", "Nutrients"
 local HxNut = require "widgets/huxi/hx_nut"
 local default_data = {
-    color_weed = "Refractory brick color",
-    color_pick = "Primary color/black",
+    color_weed = "Firebrick",
+    color_pick = "Primary/black",
     color_mois = "Blue",
     color_tend = "Coral",
     color_fer = "Green",
@@ -83,7 +83,7 @@ local function GetCropsData(core)
                     if con == 0 then
                         null = null + 1
                     else
-                        sum = sum + con -- 正数为2
+                        sum = sum + con -- positive values are usually 2
                     end
                 end
             end
@@ -109,6 +109,7 @@ local data_fer = {
     [3] = {0.55, "50%+"},
     [4] = {1, "100%"}
 }
+local id_periodic_nut = "sw_nutrients_periodic"
 local function RreshNut(player)
     local hud = player.HUD
     if hud then
@@ -159,44 +160,53 @@ local function RreshNut(player)
         end
     end
 end
+
+-- 260412 VanCa: Change NowTask to Periodic, allow AutoWatering function to works with nutrients view active
+local function StopNutView(pusher)
+    if TheWorld then
+        i_util:ClosePrint()
+        TheWorld:PushEvent("nutrientsvision", {enabled = false})
+        i_util:OpenPrint()
+        t_util:IPairs(e_util:FindEnts(nil, nil, 40, {"farm_plant"}), function(crop)
+            h_util.SetAddColor(crop)
+        end)
+    end
+    if pusher then
+        pusher:RemovePeriodic(RreshNut)
+        pusher:RemovePeriodic(id_periodic_nut)
+    end
+    if h_util:GetHUD().hx_nut then
+        h_util:GetHUD().hx_nut:Kill()
+        h_util:GetHUD().hx_nut = nil
+    end
+    u_util:Say(string_seed, "Off", nil, nil, true)
+end
+
 local function fn()
     -- Filter switch
     local pusher = ThePlayer and ThePlayer.components.hx_pusher
     local n_over = t_util:GetRecur(ThePlayer or {}, "HUD.nutrientsover")
     if not (n_over and pusher) then return end
-    if pusher:GetNowTask() then
-        return pusher:StopNowTask()
-    end
+    
+    -- 260412 VanCa: Change NowTask to Periodic, allow AutoWatering function to works with nutrients view active
     local enabled = not n_over.shown
-    m_util:ClosePrint()
+    if not enabled then
+        return StopNutView(pusher)
+    end
+    i_util:ClosePrint()
     TheWorld:PushEvent("nutrientsvision", {enabled = enabled})
-    m_util:OpenPrint()
-    -- Analyze the soil
-    if not enabled then return end
+    i_util:OpenPrint()
+    
     u_util:Say(string_seed, "On", nil, nil, true)
     pusher:RegPeriodic(RreshNut)
-    pusher:RegNowTask(function(player, pc)
+    
+    -- 260412 VanCa: Change NowTask to Periodic, allow AutoWatering function to works with nutrients view active
+    pusher:RegPeriodic(function(player)
         local farm_plants = e_util:FindEnts(nil, nil, 40, {"farm_plant"})
         t_util:IPairs(farm_plants, function(crop)
             h_util.SetAddColor(crop, GetCropColor(crop))
         end)
-        d_util:Wait(1)
-    end, function()
-        if TheWorld then
-            m_util:ClosePrint()
-            TheWorld:PushEvent("nutrientsvision", {enabled = false})
-            m_util:OpenPrint()
-            t_util:IPairs(e_util:FindEnts(nil, nil, 40, {"farm_plant"}), function(crop)
-                h_util.SetAddColor(crop)
-            end)
-            pusher:RemovePeriodic(RreshNut)
-            if h_util:GetHUD().hx_nut then
-                h_util:GetHUD().hx_nut:Kill()
-                h_util:GetHUD().hx_nut = nil
-            end
-            u_util:Say(string_seed, "Off", nil, nil, true)
-        end
-    end, "null")
+    end, id_periodic_nut)
 end
 
 local data_rgb = require("data/valuetable").RGB_datatable
@@ -205,13 +215,21 @@ local function addColor(id, label)
         id = id,
         label = label.."：",
         fn = fn_save(id),
-        hover = label.."\n set up to [primary/black] will not change color when",
+        hover = label.."\nWhen set to [primary/black], the color will not change",
         default = fn_get,
         type = "radio",
         data = data_rgb,
     }
 end
 local screen_data = {
+    {
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1i727BoEc8/", true)end
+    },
     {
         id = "reset",
         label = "Reset",
@@ -240,10 +258,10 @@ local screen_data = {
         default = true,
     },
     addColor("color_weed", "Weed color"),
-    addColor("color_pick", "Pick color"),
-    addColor("color_tend", "Need to take care"),
+    addColor("color_pick", "Ready for harvest"),
+    addColor("color_tend", "Need care"),
     addColor("color_mois", "Lack of water"),
-    addColor("color_fer", "Lack of color"),
+    addColor("color_fer", "Lack of nutrients"),
     {
         id = "scale",
         label = "Set icon size",
@@ -254,7 +272,7 @@ local screen_data = {
             end
         end,
         type = "radio",
-        hover = "Lavigating the icon",
+        hover = "Icon scale",
         default = fn_get,
         data = t_util:BuildNumInsert(0.1, 2, 0.1, function(i)
             return {data = i, description = i}
@@ -266,4 +284,14 @@ m_util:AddBindConf(save_id, fn, nil, {string_seed, "nutrientsgoggleshat", STRING
     title = string_seed,
     id = save_id,
     data = screen_data,
+    
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Auto farming",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature is not yet customized: queue logic supports fertilization and compost barrels.")
+        end,
+    }}
 }), 7997})

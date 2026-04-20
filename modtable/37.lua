@@ -48,7 +48,7 @@ end
 
 local fn_screenadd = function()
     -- Pop up selection page
-    m_util:PushPrefabScreen({
+    m_util:PushPrefabScreen{
         text_title = "Select Items to Filter",
         text_btnok = "Add Filter",
         hover_btnok = "Add this item to the filter list",
@@ -56,7 +56,7 @@ local fn_screenadd = function()
             t_util:Add(save_data.prefabs, prefab, true)
             fn_save()
         end
-    })
+    }
 end
 
 local icondata = {

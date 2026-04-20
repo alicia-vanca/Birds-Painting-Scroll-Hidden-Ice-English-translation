@@ -12,9 +12,9 @@ local function addjoke(text, color, img)
     table.insert(jokes, {text=text, color=color, img=img})
 end
 addjoke("Due to your use of cheat mods, you have been banned by the administrator!", "Crimson", "view_ban")
-addjoke("Hold down 「ALT+F4」 to speed up entering the game.", "Spring green")
+addjoke("Hold down 「ALT+F4」 to speed up entering the game.", "SpringGreen")
 addjoke("Thank you for playing, here's a skin redemption code 「"..code_joke.."」. Please activate it on the 「Collection」 page.", "Yellow", "quagmire_key")
-addjoke("Three-minute countdown...The Constant is about to descend upon the globe.....", "Breathing blue", "world")
+addjoke("Three-minute countdown...The Constant is about to descend upon the globe.....", "Capri", "world")
 addjoke("Insufficient disk space! Uninstalling Don't Starve...")
 
 local _, joke

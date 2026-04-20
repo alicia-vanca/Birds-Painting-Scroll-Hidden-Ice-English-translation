@@ -8,7 +8,7 @@ local prefabs = {
         "shadowthrall_hands", "shadowthrall_horns", "shadowthrall_wings", "mutatedwarg", "mutatedbearger",
         "mutateddeerclops", "mooseegg",
         cave_exit = "cave_open2",
-        moose_nesting_ground = "mooseegg"
+        "moose_nesting_ground",
 }
 
 local prefabs_wormhole = {"tentacle_pillar_hole", "tentacle_pillar", "wormhole", "ndpr_wormhole",}

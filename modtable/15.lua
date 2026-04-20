@@ -131,14 +131,13 @@ AddClassPostConstruct("screens/redux/multiplayermainscreen", function(self)
     end
 end)
 
--- self = h_util:GetActiveScreen()
--- self.banner_root:SetPosition(-0.06*RESOLUTION_X, -0.07*RESOLUTION_Y)
--- anim = t_util:GetChild(self.banner_root, "UIAnim")
--- anim:GetAnimState():SetBuild("dst_menu_halloween3")
--- anim:GetAnimState():SetBank("dst_menu_halloween3")
--- anim:GetAnimState():PlayAnimation("loop", true)
--- anim:SetScale(.667)
 
--- pref = Prefab("modfrontend_".."dst_menu_halloween3", nil, {Asset("ANIM", "anim/dst_menu_halloween3.zip")}, nil, true)
--- RegisterSinglePrefab(pref)
--- TheSim:LoadPrefabs({pref.name})
+
+
+
+
+
+
+
+
+

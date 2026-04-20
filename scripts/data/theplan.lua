@@ -1,100 +1,36 @@
 return 
 [=[
---------------------------Start Writing Plan Here----------------------------
-【Automation】
-1. Automatically catch butterflies (used to make butterfly saddles)
-2. Fire and honey (non-destructive acquisition of honey)
 
-【Production Bar Information】
-3. Valkyrie war song effect
+[Action Sequence]
 
-【Cattle Training Assistant】
-1. Timed, fixed-point, quantitative feeding
-2. Display riding time, or predict taming degree based on riding time
-
-
-【Map Icons】
-1. Enlarge some icons, such as the treasure's X
-2. Predicting the wind rolling grass
-
-
-【Automatic Cooking】
-1. Add low-speed mode or improve the algorithm
-2. Return the ingredients after cooking
-
-【Middle Mouse Button Enhancement】
-1. Fix the problem of repeatedly opening the box
-2. When on the path to open the box, the recipe bar does not change
-3. Use the latest interface of Cray to adapt the middle key enhancement and right key pick-up
-
-【Item Manager】
-1. Change to whitelist mode, restrict the repair materials (so that it is compatible with mods like Elf Princess)
-2. Linkage with [Cut a Cane], quick repair will support the repair of specified items such as eye masks and terror shields
+1. Support action wait, for example double-clicking to catch a butterfly can wait and auto-catch when it appears.
+2. Support empty response, so you can double-click to catch without clicking the butterfly precisely.
+3. Support preview, with no major difference from actual planting.
+4. Allow custom items to be treated as the same category.
+5. Support queued attacks, no need to hold ctrl+shift; shift double-click will work.
+6. Remove farmland alignment, allow box-select planting in 3x3 or 10-tile blocks.
+7. Support continuous repeated giving and using on yourself.
+8. Support double-click fertilizing and watering.
+9. Further strengthen queued attacks, allowing double-click chase for walrus butterflies, etc., instead of chasing and then running away.
+10. No longer click-first logic; it is still space-priority logic, so it can work while the mouse is holding an item.
+11. Support lighting trees with empty hands (caves only).
+12. Lantern tree chopping?
 
 
-【Boat Assistant】
-1. Add patches, sails, anchors, steering wheels, etc. after the player boards the ship
+[Simple Geometry]
 
+1. Simplify code, keep only rectangular range display.
+2. Hold Alt to automatically hide entities around the mouse for easier placement (@CyB-T inspiration).
+3. Display grid cell center points (this feature existed before, but the previous implementation was not the original version).
+4. Preserve the old Ctrl-hold temporary display toggle.
+5. Always show the item on the mouse when holding fertilizer (new players in the old version often asked why poop did not show).
+6. Preserve the old feature to set colors for point markers.
+7. Preserve the old feature to change grid size (or maybe add a hotkey to show all surrounding points at once).
+8. Preserve the old option to choose whether to show planting preview.
+9. Preserve the old option to choose whether to display the item on the cursor, show quantity, or show nothing.
+10. Add precise structure placement support (show placement points when carrying a statue).
+Doubts:
+1. Keep the optional grid display on farmland, but should farmland alignment be part of geometry or action sequence?
+2. Should geometry directly include circle planting and similar features?
 
-【Intelligent Module】
-1. Add the function to display disabled modules
-2. Add the function of forced enable function
-3. Mark the bear child players such as the burning house
-4. Prompt for modules that may cause crashes
-
-
-【Function Panel】
-1. Add the function to adjust the icon sorting
-2. Add the function of self-selected icons
-
-
-【Range Tracking】
-1. Remove the treasure indicator (change to direction indicator or breath bar indicator)
-
-
-【Breath Bar】
-1. Add mod support
-2. Memo function, allowing players to select icons and enter data
-3. Add icon to wildfire warning
-
-
-【Scroll of Winter】
-2、Scout's Assistant:
-Implementing the shortest charging time for automatic firing of the slingshot
-Implementing automatic firing of the slingshot during double damage time
-Implementing fully automatic firing of the slingshot with double damage charging
-Walter automatically loads bird and butterfly bullets
-Middle key or side key for dashing
-
-
-3、Plant Person's Assistant: Flower Ceremony
-4、Wanda's Assistant: Naming Table, 150/60HP Conversion
-
-
-【Elegance Chapter】
-1. Add automatic walking magic eye, Gemini magic eye
-
-【Queue Theory】
-1. Add continuous watering action
-2. Fix the problem of slow skin change speed
-
-【Noise Reduction】
-1. Shadow lamp
-2. Ice eye tower
-
-
-【Decompose Duplicate Skins】
-1. Fix the problem of dropping the residual page during the decomposition process
-
-
-【Gift Record】
-1. Use status animation to display percentage
-2. Fix the display problem under different resolutions
-
-[Cut a cane]
-Fix the problem of Yemei cutting canes
-Press V to feed the cow
-
-[Admin panel]
-[Eyeball grass prediction]
 ]=]

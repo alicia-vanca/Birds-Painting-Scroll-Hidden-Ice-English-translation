@@ -1,4 +1,4 @@
--- Map seed editor
+
 local ImageButton = require "widgets/imagebutton"
 local Popup = require "screens/redux/popupdialog"
 
@@ -44,7 +44,7 @@ AddClassPostConstruct("widgets/redux/worldsettings/worldsettingstab", function(s
                             if seed then
                                 local function btnfn()
                                     local popup = Popup(Mod_ShroomMilk.Mod["春"].name,
-                                                        "The function of generating the world through seed is still under development ... \n \nThis world's seed: " ..
+                                                        "Generating world through seed is still under development ... \n \nThis world's seed: " ..
                                                             seed .. "\nSession: " .. session, {{
                                         text = "I see",
                                         cb = function()
@@ -60,8 +60,8 @@ AddClassPostConstruct("widgets/redux/worldsettings/worldsettingstab", function(s
                 end)
             end
         else
-            -- Todo: generate the world according to seed
-            -- Makebtn (pos, 'click me to set map seeds')
+            
+            
         end
     end
 end)

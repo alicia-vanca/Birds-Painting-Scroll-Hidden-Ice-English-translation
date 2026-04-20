@@ -102,11 +102,11 @@ local function GetScreenData()
                 type = "textbtn",
                 fn = function()
                     m_util:PopShowScreen()
-                    m_util:AddBindShowScreen({
+                    m_util:AddBindShowScreen{
                         title = data.label .. " - Advanced settings",
                         id = data.id.."_showscreen",
                         data = type(data.screen_data) == "function" and data.screen_data() or data.screen_data,
-                    })()
+                    }()
                 end
             })
         end

@@ -10,7 +10,7 @@ local default_data = {
     search_seed = false,
     color_player = "Blue",
     color_hover = "Blue",
-    color_click = "Magic",
+    color_click = "Lilac",
     color_placer = "Yellow",
     time_click = 30,
 }
@@ -48,25 +48,26 @@ local function apply(prefab, color, range, always, add, quick, callback)
                         callback(rotary, inst, trans:GetScale())
                     end
                 end
-				-- 250516 VanCa: Bring back old change: Highlight not depend on Show attack range.
-                if not c_data.range_attack and not save_data.highlight then             -- After turning off the function, you still need to cancel the highlight
+                -- 250516 VanCa: Bring back old change: Highlight not depend on Show attack range.
+                if not c_data.range_attack and not save_data.highlight then
+                    -- After turning off the function, you still need to cancel the highlight
                     e_util:SetHighlight(inst, false)
                     rotary:SetVisable(false)
                     return
                 end
                 if e_util:GetCombatTarget(inst) == ThePlayer then
                     e_util:SetHighlight(inst, save_data.highlight)
-					if c_data.range_attack then
-						rotary:SetVisable(true):SetColor(save_data.color_combat)
-					end
+                    if c_data.range_attack then
+                        rotary:SetVisable(true):SetColor(save_data.color_combat)
+                    end
                 elseif c_data.range_attack and (always or not save_data.autoshow) then
                     rotary:SetVisable(true):SetColor(tcolor)
                 else
                     e_util:SetHighlight(inst, false)					
-					if c_data.range_attack then
-						local dist = e_util:GetDist(inst)
-						rotary:SetVisable(not (dist and dist > 3*range) and not e_util:GetLeaderTarget(inst)):SetColor(tcolor)
-					end
+                    if c_data.range_attack then
+                        local dist = e_util:GetDist(inst)
+                        rotary:SetVisable(not (dist and dist > 3*range) and not e_util:GetLeaderTarget(inst)):SetColor(tcolor)
+                    end
                 end
             end
         end)
@@ -468,8 +469,18 @@ local screen_data = {
 }
 
 
-m_util:AddBindShowScreen("range_board", "Range tracking", "alterguardianhat_lastprism", "Click to open range related settings", {
+m_util:AddBindShowScreen("range_board", "Range tracking", "alterguardianhat_lastprism", "Click to open related settings", {
     title = "Range tracking",
     id = save_id,
-    data = screen_data
+    data = screen_data,
+    
+    icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Customize various ranges",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet...")
+        end,
+    }}
 }, nil, 9997)

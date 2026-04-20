@@ -107,9 +107,7 @@ i_util:AddSessionLoadFunc(function(saver, world, player, pusher)
 
     -- Synchronize boss data when leaving the game
     saver:RegSaveFunc(function()
-        t_util:Pairs(save_boss, function(key)
-            save_boss[key] = nil
-        end)
+        t_util:Clear(save_boss)
         local data = saver:GetStatData(stat_name) or {}
         t_util:Pairs(data, function(icon_name, boss_data)
             save_boss[icon_name] = math.floor(boss_data.value) -- Save only icons and corresponding time
@@ -206,8 +204,18 @@ t_util:IPairs(eyes_prefab, function(prefab)
         end)
     end)
 end)
--- Crazy pig
--- Refresh when dawn
+AddPrefabPostInit("knight_yoth", function(inst)
+    RemoveBoss("knight_yoth")
+    inst:ListenForEvent("onremove", function(inst)
+        if e_util:IsAnim("death", inst) then
+            if not e_util:FindEnt(nil, "knight_yoth") and p_util:GetItemFromAll({"costume_princess_body", "mask_princesshat"}, nil, nil, "mouse") then
+                AddBoss("knight_yoth", TUNING.YOTH_PRINCESS_SUMMON_COOLDOWN)
+            end
+        end
+    end)
+end)
+
+
 t_util:IPairs({"daywalker", "daywalker2"}, function(prefab)
     AddPrefabPostInit(prefab, function(boss)
         boss:DoTaskInTime(0.2, function(inst)

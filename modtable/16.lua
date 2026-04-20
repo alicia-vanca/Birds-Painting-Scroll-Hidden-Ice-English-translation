@@ -18,8 +18,8 @@ local data_ingre = require("data/itemlist_material")
 
 local configdata = {
     ingre = {
-        label = "Basic material",
-        hover = "[T key console] the items in the [material] directory are calculated",
+        label = "Material",
+        hover = "Select their prefered storage.\nItems under the [Materials] section in the [T key console] are all considered materials.",
         pos = "inv",
         we = 2,
         func = function (item)
@@ -31,7 +31,7 @@ local configdata = {
     },
     food = {
         label = "Food",
-        hover = "All Right-click items are [eat]",
+        hover = "Select their prefered storage.\nAll items whose right-click action is [Eat]",
         pos = "bp",
         we = 2,
         func = function (item)
@@ -40,7 +40,7 @@ local configdata = {
     },
     equip = {
         label = "Equipment", 
-        hover = "All items that can be equipped",
+        hover = "Select their prefered storage.\nAll items that can be equipped",
         pos = "inv",
         we = -1,
         func = function (item)
@@ -49,7 +49,7 @@ local configdata = {
     },
     mod ={
         label = "Mod", 
-        hover = "Not the content of the famine version",
+        hover = "Select their prefered storage.\nNot content from the original DST game.",
         pos = "bp",
         we = -1,
         func = function (item)
@@ -58,7 +58,7 @@ local configdata = {
     },
     cont = {
         label = "Box",
-        hover = "A container that can install other items",
+        hover = "Select their prefered storage.\nA container that can hold other items",
         pos = "inv",
         we = 1,
         func = function (item)
@@ -66,10 +66,10 @@ local configdata = {
         end
     },
     other = {
-        label = "Besides",
+        label = "Others",
         pos = "bp",
         we = 0,
-        hover = "All items that are not in the above classification",
+        hover = "Select their prefered storage.\nAll items not classified above",
         func = function ()end
     }
 }
@@ -93,7 +93,7 @@ local function fn_merge(slots_data)
             local item_active = p_util:GetActiveItem()
             if item_active and item_active.prefab == item.prefab then
                 if d_util:PutActiveItemInSlot(slot_data.cont, slot_data.slot, FRAMES, save_data.delay) then
-                    u_util:Say(string_say, "Put item "..item_active.name.." Time out", nil, "Red", true)
+                    u_util:Say(string_say, "Put "..item_active.name.." time out", nil, "Red", true)
                     return true
                 end
                 return
@@ -102,7 +102,7 @@ local function fn_merge(slots_data)
                     local item_get = slots_data[j].item
                     if item_get.prefab == item.prefab then
                         if d_util:TakeActiveItem(item_get, FRAMES, save_data.delay) then
-                            u_util:Say(string_say, "Pick up the item "..item_get.name.." Time out", nil, "Red", true)
+                            u_util:Say(string_say, "Pick up "..item_get.name.." time out", nil, "Red", true)
                             return true
                         end
                         return
@@ -219,7 +219,12 @@ local function fn_tidy()
     if error_slot then
         u_util:Say(string_say, "Sorting item "..error_slot.item.name.." Fail", nil, "Red", true)
     else
-        local result =  t_util:GetElement(data_put, function(cont, data_put_cont)
+        
+        
+        
+        
+
+        local result = t_util:GetElement(data_put, function(cont, data_put_cont)
             return t_util:GetElement(data_put_cont, function(slot, data_slot)
                 -- Getele is repeatedly executed until the end or return true
                 return d_util:MoveItemInSlot(data_slot.item, cont, slot, FRAMES, save_data.delay) and data_slot
@@ -287,7 +292,7 @@ local screendata_fix = {
         default = fn_get,
     },{
         id = "delay",
-        label = "Maximum delay:",
+        label = "Max delay:",
         fn = fn_save("delay"),
         hover = "The movement exceeds this time as the finishing failure",
         default = fn_get,
@@ -320,8 +325,8 @@ local function AddPos(id, label, hover)
         default = fn_get,
         type = "radio",
         data = {
-            {data = "inv", description = "Priority"},
-            {data = "bp", description = "Prioritize backpack"},
+            {data = "inv", description = "Inv"},
+            {data = "bp", description = "Bpack"},
         }
     }
 end
@@ -330,7 +335,7 @@ local function AddWe(id)
         id = id,
         label = "Weight:",
         fn = fn_save(id),
-        hover = "The greater the items, the more the items are the previous \n negative weight will be placed at the end of the container!",
+        hover = "Items with higher weights appear at the front\nItems with negative weights are placed at the back of the container!",
         default = fn_get,
         type = "radio",
         data = to_20,

@@ -1,12 +1,13 @@
--- There is no need to judge theplayer in this file, without player will automatically return nil
--- It should be better to write this library in the form of practical components, but it is really lazy. how convenient to copy the code of the old mousse
--- p_util ThePlayer
--- i_util inventory
--- b_util builder
+-- This file does not need to validate ThePlayer; without a player it will return nil automatically.
+-- It would be better to write this library as practical components, but for convenience the old Mouse code was reused.
+-- p_util: player utilities
+-- i_util: inventory utilities
+-- b_util: builder utilities
 local t_util = require "util/tableutil"
 local e_util = require "util/entutil"
 local c_util = require "util/calcutil"
-local g_func = Mod_ShroomMilk.Func
+local m_func = Mod_ShroomMilk.Func
+local m_data = Mod_ShroomMilk.Data
 
 local i_util = {}
 local p_util = {}
@@ -36,7 +37,7 @@ function i_util:IsInvEnabled()
 end
 
 
--- This function does not check the parameters, keep in mind!(pay attention to the case)
+-- This function does not validate parameters, so be careful with the input types and case.
 function i_util:GetActions(cate, right, ...)
     -- Inv: the action of the item bar item item item
     -- Useitem: the action of the item is the action of the scene object it, target
@@ -75,8 +76,9 @@ function i_util:GetActions(cate, right, ...)
 end
 
 function i_util:GetAction(cate, code, right, ...)
-    if not cate then
-        return getpicker():DoGetMouseActions()
+    if not cate and e_util:IsValid(code) then
+        local lmb, rmb = getpicker():DoGetMouseActions(code:GetPosition(), code)
+        return {lmb = lmb, rmb = rmb}
     end
     local acts = i_util:GetActions(cate, right, ...)
     if not code then
@@ -120,7 +122,7 @@ function i_util:GetMouseAction(code_list, target, right)
         end)
     end
 end
--- If you don't get strictly, you will return to act, right
+-- If strict matching fails, fall back to the first matching action.
 function i_util:GetMouseActionSoft(code_list, target)
     local act = i_util:GetMouseAction(code_list, target, true)
     if act then
@@ -148,16 +150,16 @@ function i_util:GetMouseActionClick(ent, act_codes)
 end
 
 
--- The attack interface does not judge biological legitimacy. please see the other mod i wrote in biological legality.
--- Note: after the fenghua article is enabled, this interface will be covered!
+-- The attack interface does not check biological legality. See the other mod for legality rules.
+-- Note: this interface is overridden when the Fenghua feature is enabled.
 function i_util:Attack(target, needequip)
-    if needequip and g_func.EquipAttack then
-        g_func.EquipAttack()
+    if needequip and m_func.EquipAttack then
+        m_func.EquipAttack()
     end
     local pos = target:GetPosition()
     p_util:DoAction(BufferedAction(ThePlayer, target, ACTIONS.ATTACK), RPC.LeftClick, ACTIONS.ATTACK.code, pos.x, pos.z, target, true, 10, true, nil, nil, false)
 end
--- Eat and eat
+-- Eat an item
 function i_util:Eat(food)
     if not e_util:IsValid(food) then
         return
@@ -171,9 +173,12 @@ end
 function i_util:Equip(item)
     local siminv = getsiminvent()
     if siminv then
-        -- Byd when i can't help it, right?
+        -- This is awkward but necessary.
         local picker = getpicker()
         local can_equip = true
+        if not e_util:IsValid(item) then
+            return
+        end
         if picker.rightclickoverride then
             can_equip = false
             local acts = picker.rightclickoverride(ThePlayer, item)
@@ -184,7 +189,7 @@ function i_util:Equip(item)
                 end)
             end
         end
-        -- When guandong cave, the items that have already equip cannot be equip again
+        -- Items that are already equipped cannot be equipped again.
         if can_equip and i_util:GetEquip(e_util:GetItemEquipSlot(item)) ~= item then
             siminv:Equip(item)
         end
@@ -203,8 +208,8 @@ function i_util:FindAndEquip(prefab, func)
 end
 
 
--- Uninstall
--- Notmouse: can't uninstall the equipment on the mouse: roughly determine whether there is a place with the backpack and backpack.
+-- Unequip an item
+-- notmouse: do not unequip the item on the mouse cursor; checks if backpack space is available.
 function i_util:UnEquip(item, notmouse)
     if notmouse then
         local bp_cont = e_util:GetContainer(i_util:GetBackpack())
@@ -216,7 +221,7 @@ function i_util:UnEquip(item, notmouse)
     if item and item:HasTag("heavy") then
         getinvent():DropItemFromInvTile(item)
     else
-        if TheWorld and TheWorld.ismastersim then
+        if getsiminvent() then
             getinvent():ControllerUseItemOnSelfFromInvTile(item)
         else
             SendRPCToServer(RPC.ControllerUseItemOnSelfFromInvTile, ACTIONS.UNEQUIP.code, item)
@@ -242,9 +247,9 @@ function i_util:EquipPrefab(prefab)
 end
 
 -- Transfer item
-function i_util:MoveItemFromAllOfSlot(slot, srccontainer, destcontainer)
+function i_util:MoveItemFromAllOfSlot(slot, srccontainer, destcontainer, outdated)
     local invent = getsiminvent()
-    if invent then
+    if invent or outdated then
         local container = e_util:GetContainer(srccontainer)
         if container then
             container:MoveItemFromAllOfSlot(slot, destcontainer)
@@ -283,7 +288,7 @@ function i_util:CanTakeItem(item)
     return container and containerCanHas(container, item) and backpack
 end
 
--- Have you already opened a container
+-- Check whether a container is already open
 function i_util:IsOpenContainer(cont_inst)
     local container = e_util:GetContainer(cont_inst)
     if container then
@@ -306,36 +311,62 @@ end
 
 -- Put down the items on the mouse
 function i_util:ReturnActiveItem(dontDrop)
-    return getinvent():ReturnActiveItem()
+    if getsiminvent() then
+        return getsiminvent():ReturnActiveItem()
+    else
+        return SendRPCToServer(RPC.ReturnActiveItem)
+    end
 end
 
 -- A certain item is discarded in place
 function i_util:DropItemFromInvTile(item, single)
     if not item then return end
     single = single and true or false
-    return getinvent():DropItemFromInvTile(item, single)
+    if getsiminvent() then
+        return getsiminvent():DropItemFromInvTile(item, single)
+    else
+        SendRPCToServer(RPC.DropItemFromInvTile, item, single)
+    end
 end
 
 -- Exchange a certain item
 function i_util:SwapActiveItemWithSlot(cont, slot)
     local container = e_util:GetContainer(cont)
     if container then
+        local ismaster = getsiminvent()
         if type(slot) == "number" then
-            container:SwapActiveItemWithSlot(slot)
+            if ismaster then
+                container:SwapActiveItemWithSlot(slot)
+            else
+                SendRPCToServer(RPC.SwapActiveItemWithSlot, slot, cont~=ThePlayer and cont or nil)
+            end
         else
-            container:SwapEquipWithActiveItem()
+            if ismaster then
+                container:SwapEquipWithActiveItem()
+            else
+                SendRPCToServer(RPC.SwapEquipWithActiveItem)
+            end
         end
     end
 end
 
 -- Pick up a certain item
-function i_util:TakeActiveItemFromAllOfSlot(cont, slot)
+function i_util:TakeActiveItemFromAllOfSlot(cont, slot, outdated)
     local container = e_util:GetContainer(cont)
     if container then
+        local ismaster = getsiminvent()
         if type(slot) == "number" then
-            container:TakeActiveItemFromAllOfSlot(slot)
+            if ismaster or outdated then
+                container:TakeActiveItemFromAllOfSlot(slot)
+            else
+                SendRPCToServer(RPC.TakeActiveItemFromAllOfSlot, slot, cont~=ThePlayer and cont or nil)
+            end
         else
-            container:TakeActiveItemFromEquipSlot(slot)
+            if ismaster or outdated then
+                container:TakeActiveItemFromEquipSlot(slot)
+            else
+                SendRPCToServer(RPC.TakeActiveItemFromEquipSlot, slot, cont~=ThePlayer and cont or nil)
+            end
         end
     end
 end
@@ -343,10 +374,19 @@ end
 function i_util:TakeActiveItemFromHalfOfSlot(cont, slot)
     local container = e_util:GetContainer(cont)
     if container then
+        local ismaster = getsiminvent()
         if type(slot) == "number" then
-            container:TakeActiveItemFromHalfOfSlot(slot)
+            if ismaster then
+                container:TakeActiveItemFromHalfOfSlot(slot)
+            else
+                SendRPCToServer(RPC.TakeActiveItemFromHalfOfSlot, slot, cont~=ThePlayer and cont or nil) 
+            end
         else
-            container:TakeActiveItemFromEquipSlot(slot)
+            if ismaster then
+                container:TakeActiveItemFromEquipSlot(slot)
+            else
+                SendRPCToServer(RPC.TakeActiveItemFromEquipSlot, slot, cont~=ThePlayer and cont or nil)
+            end
         end
     end
 end
@@ -354,55 +394,93 @@ end
 function i_util:TakeActiveItemFromCountOfSlot(cont, slot, count)
     local container = e_util:GetContainer(cont)
     if container then
-        if TheWorld and TheWorld.ismastersim then
-            -- 科雷接口有bug，暂时不能统一用这个完成
+        if getsiminvent() then
+            
+            
+            
             container:TakeActiveItemFromCountOfSlot(slot, count, ThePlayer)
         else
-            if cont == ThePlayer then
-                SendRPCToServer(RPC.TakeActiveItemFromCountOfSlot, slot, nil, count)
-            else
-                SendRPCToServer(RPC.TakeActiveItemFromCountOfSlot, slot, cont, count)
-            end
+            
+            SendRPCToServer(RPC.TakeActiveItemFromCountOfSlot, slot, cont~=ThePlayer and cont or nil, count)
         end
     end
 end
--- Put down one of the items
+
 function i_util:PutOneOfActiveItemInSlot(cont, slot)
     local container = e_util:GetContainer(cont)
     if container then
+        local ismaster = getsiminvent()
         if type(slot) == "number" then
             if e_util:GetStackSize(self:GetActiveItem()) == 1 then
                 return self:PutAllOfActiveItemInSlot(cont, slot)
             else
                 if self:GetItemInSlot(cont, slot) then
-                    container:AddOneOfActiveItemToSlot(slot)
+                    if ismaster then
+                        container:AddOneOfActiveItemToSlot(slot)
+                    else
+                        SendRPCToServer(RPC.AddOneOfActiveItemToSlot, slot, cont~=ThePlayer and cont or nil)
+                    end
                 else
-                    container:PutOneOfActiveItemInSlot(slot)
+                    if ismaster then
+                        container:PutOneOfActiveItemInSlot(slot)
+                    else
+                        SendRPCToServer(RPC.PutOneOfActiveItemInSlot, slot, cont~=ThePlayer and cont or nil)
+                    end
                 end
             end
         else
-            container:EquipActiveItem()
+            if ismaster then
+                container:EquipActiveItem()
+            else
+                SendRPCToServer(RPC.EquipActiveItem)
+            end
         end
     end
 end
--- Put down an item
+
 function i_util:PutAllOfActiveItemInSlot(cont, slot)
     local container = e_util:GetContainer(cont)
     if container then
+        local ismaster = getsiminvent()
         if type(slot) == "number" then
             if self:GetItemInSlot(cont, slot) then
-                container:AddAllOfActiveItemToSlot(slot)
+                if ismaster then
+                    container:AddAllOfActiveItemToSlot(slot)
+                else
+                    SendRPCToServer(RPC.AddAllOfActiveItemToSlot, slot, cont~=ThePlayer and cont or nil)
+                end
             else
-                container:PutAllOfActiveItemInSlot(slot)
+                if ismaster then
+                    container:PutAllOfActiveItemInSlot(slot)
+                else
+                    SendRPCToServer(RPC.PutAllOfActiveItemInSlot, slot, cont~=ThePlayer and cont or nil)
+                end
             end
         else
-            container:EquipActiveItem()
+            if ismaster then
+                container:EquipActiveItem()
+            else
+                SendRPCToServer(RPC.EquipActiveItem)
+            end
+        end
+    end
+end
+
+function i_util:MoveItemFromCountOfSlot(slot, cont_src, cont_dest, count)
+    local src_cont, dest_cont = e_util:GetContainer(cont_src), e_util:GetContainer(cont_dest)
+    if src_cont and dest_cont then
+        if getsiminvent() then
+            src_cont:MoveItemFromCountOfSlot(slot, cont_dest, count)
+        elseif cont_src == ThePlayer then
+            SendRPCToServer(RPC.MoveInvItemFromCountOfSlot, slot, cont_dest, count)
+        else
+            SendRPCToServer(RPC.MoveItemFromCountOfSlot, slot, cont_src, cont_dest~=ThePlayer and cont_dest or nil, count)
         end
     end
 end
 
 
--- Obtain items in a container
+
 function i_util:GetItemInSlot(cont, slot)
     if type(slot) == "number" then
         local container = e_util:GetContainer(cont)
@@ -429,10 +507,7 @@ function i_util:GetBackpack()
 end
 
 
-local order_all = { "container", "backpack", "equip", "body", "mouse" }
--- Get all items (item name, tag, condition function, order of obtaining items) [Items under the mouse will only be included if order == ‘mouse’]
-function i_util:GetItemsFromAll(prefab, needtags, func, order)
-    local result = {}
+function i_util:GetCateItemInst()
     local invent = getinvent()
     local items = {
         body = invent:GetItems(),
@@ -453,6 +528,13 @@ function i_util:GetItemsFromAll(prefab, needtags, func, order)
         end
     end)
 
+    return items
+end
+
+
+
+local order_all = { "container", "backpack", "equip", "body", "mouse" }
+local function OrderToSort(order)
     local t = type(order)
     if order == "mouse" then
         order = order_all
@@ -463,15 +545,21 @@ function i_util:GetItemsFromAll(prefab, needtags, func, order)
     else
         order = { "container", "backpack", "equip", "body" }
     end
+    return order
+end
 
+
+function i_util:GetItemsFromAll(prefab, needtags, func, order)
+    local items = self:GetCateItemInst()
     local all_items = {}
-    t_util:IPairs(order, function(o)
+    t_util:IPairs(OrderToSort(order), function(o)
         if items[o] then
             all_items = t_util:MergeList(all_items, items[o])
         end
     end)
-
     needtags = type(needtags) == "string" and { needtags } or (type(needtags) == "table" and needtags)
+
+    local result = {}
     for _, item in pairs(all_items) do
         if (not prefab or prefab == item.prefab or (type(prefab) == "table" and table.contains(prefab, item.prefab))) and
             (not needtags or item:HasTags(needtags)) and (not func or func(item)) then
@@ -481,9 +569,9 @@ function i_util:GetItemsFromAll(prefab, needtags, func, order)
     return result
 end
 
--- Get a item
-function i_util:GetItemFromAll(prefab, needtags, func, oreder)
-    return i_util:GetItemsFromAll(prefab, needtags, func, oreder)[1]
+
+function i_util:GetItemFromAll(prefab, needtags, func, order)
+    return i_util:GetItemsFromAll(prefab, needtags, func, order)[1]
 end
 
 
@@ -496,16 +584,6 @@ function i_util:GetSlotsFromAll(prefab, needtags, func, order)
     local result = {}
     local invent = getinvent()
 
-    local tp = type(order)
-    if order == "mouse" then
-        order = order_all
-    elseif tp == "string" and order_all[order] then
-        order = { order }
-    elseif tp == "table" then
-        -- do nothing
-    else
-        order = { "container", "backpack", "equip", "body" }
-    end
     needtags = type(needtags) == "string" and { needtags } or (type(needtags) == "table" and needtags)
     local function add_ret(cont, slot, item)
         if item and (not prefab or prefab == item.prefab or (type(prefab) == "table" and table.contains(prefab, item.prefab))) and
@@ -533,7 +611,7 @@ function i_util:GetSlotsFromAll(prefab, needtags, func, order)
         end)
     end
 
-    t_util:IPairs(order, function(o)
+    t_util:IPairs(OrderToSort(order), function(o)
         if o == "body" then
             t_util:Pairs(invent:GetItems(), function(slot, item)
                 add_ret(ThePlayer, slot, item)
@@ -554,12 +632,12 @@ function i_util:GetSlotsFromAll(prefab, needtags, func, order)
     return result
 end
 
--- Item: object slot: position container: cont_instst
+-- Get slot info for an item: object, slot position, container instance
 function i_util:GetSlotFromAll(prefab, needtags, func, order)
     return i_util:GetSlotsFromAll(prefab, needtags, func, order)[1]
 end
 
--- Get the grid of a certain item (called slot and conflict with the above, it is better to be called hud)
+-- Get the UI grid widget for a specific item
 function i_util:GetItemHUD(item)
     local data = i_util:GetSlotFromAll(item.prefab, nil, function(ent)
         return item == ent
@@ -582,12 +660,24 @@ function p_util:IsRider()
         ThePlayer.replica.rider.classified.ridermount:value()
 end
 
+
+function p_util:IsBusying()
+    return ThePlayer:HasTag("boathopping")
+end
+
+
+
+
+
+
 function p_util:DoAction(act, rpc, ...)
     local pc = getcontrol()
-    local meta = { ... }
-    if pc and rpc and act then
+    if pc and act then
+        local meta = {...}
         act.preview_cb = function()
-            SendRPCToServer(rpc, unpack(meta))
+            if rpc then
+                SendRPCToServer(rpc, unpack(meta))
+            end
         end
         if pc.locomotor then
             pc:DoAction(act)
@@ -597,14 +687,20 @@ function p_util:DoAction(act, rpc, ...)
     end
 end
 
--- This method can only move within the loading range
+-- Walk to a position within the loaded area
 function p_util:WalkTo(pos, needequip)
-    if needequip and g_func.EquipWalk then
-        g_func.EquipWalk()
+    if needequip and m_func.EquipWalk then
+        m_func.EquipWalk()
     end
     p_util:DoAction(BufferedAction(ThePlayer, nil, ACTIONS.WALKTO, nil, pos), RPC.LeftClick, ACTIONS.WALKTO.code, pos.x, pos.z)
 end
--- Statue in the back of the back
+function p_util:ForceWalkTo(pos)
+    if m_func.ForceEquipWalk then
+        m_func.ForceEquipWalk()
+    end
+    p_util:DoAction(BufferedAction(ThePlayer, nil, ACTIONS.WALKTO, nil, pos), RPC.LeftClick, ACTIONS.WALKTO.code, pos.x, pos.z)
+end
+
 function i_util:IsHeavy()
     return getinvent():IsHeavyLifting()
 end
@@ -627,7 +723,7 @@ function i_util:GetInvID(cont, slot)
         -- Body
         return "inv_"..slot
     else
-        -- Note that the code here is 10,000.
+        -- Note: this code uses 10,000 as a marker.
         -- Ground
         local pos_id = e_util:GetPosID(cont)
         if pos_id then
@@ -635,7 +731,55 @@ function i_util:GetInvID(cont, slot)
         end
     end
 end
--- Nearby
+
+
+
+function i_util:GetEntPosID(item, cont, slot)
+    if not item then return end
+    if item == ThePlayer then
+        return "inv"
+    else
+        
+        local id_fix = e_util:IsShadowContainer(item) or e_util:IsMovableContainer(item)
+        if id_fix then return id_fix end
+        
+        local trans = e_util:IsValid(item)
+        if not trans then return end
+
+        if item:HasTag("inlimbo") then
+            if cont then
+                if cont == ThePlayer then
+                    return "inv_"..slot
+                else
+                    id_fix = i_util:GetEntPosID(cont)
+                    if id_fix then
+                        return id_fix .. "_" .. slot
+                    end
+                end
+            else
+                local cont_data = i_util:GetSlotFromAll(nil, nil, function(ent)
+                    return ent == item
+                end, "mouse")
+                if cont_data then
+                    if cont_data.cont == ThePlayer then
+                        return "inv_"..cont_data.slot
+                    else
+                        id_fix = i_util:GetEntPosID(cont_data.cont)
+                        if id_fix then
+                            return id_fix .. "_" .. cont_data.slot
+                        end
+                    end
+                end
+            end
+        else
+            local x, y, z = trans:GetWorldPosition()
+            return c_util:GetPosID(x, z)
+        end
+    end
+end
+
+
+
 function p_util:IsNear(ent)
     local dist = e_util:GetDist(ent)
     if dist then
@@ -695,7 +839,7 @@ end
 
 
 
--- If you can order, you can return, can you click if you can’t order it.
+-- If the action can be ordered, return it; otherwise try clicking if possible.
 function p_util:TryClick(ent, actid)
     local pos
     if e_util:IsValid(ent) then
@@ -738,7 +882,7 @@ function p_util:TryClick(ent, actid)
     end
 end
 
--- Obtain
+-- Get all available actions for a target
 function p_util:GetAllActions(target, right)
     if not e_util:IsValid(target) then return end
     local acts_scene = i_util:GetActions("scene", right, target) or {}
@@ -836,7 +980,11 @@ function p_util:GetAttackRange()
     return ThePlayer.replica and ThePlayer.replica.combat and ThePlayer.replica.combat:GetAttackRangeWithWeapon()
 end
 
--- Whether it is within the player's attack range
+function p_util:GetWeaponRange(prefab)
+    return m_data.WeaponRange and prefab and m_data.WeaponRange[prefab]
+end
+
+
 function p_util:AttackInRange(target)
     if e_util:IsValid(target) then
         local w_range = p_util:GetAttackRange() or 2
@@ -854,6 +1002,11 @@ function p_util:CanAttack(target)
     end
 end
 
+
+function p_util:CanDeploy(item, pos)
+    local inventoryitem = t_util:GetRecur(item, "replica.inventoryitem")
+    return inventoryitem and inventoryitem:CanDeploy(pos, nil, ThePlayer) and pos
+end
 
 local function GetSpeed(locomotor)
     local speed = locomotor:GetRunSpeed()
@@ -957,6 +1110,7 @@ end
 -- This method will not be interrupted for multiple sends, so it may cause continuous sending and cause more production
 function b_util:MakeSth(prefab, skin)
     local recipe = GetValidRecipe(prefab)
+    local skin = skin or Profile:GetLastUsedSkinForItem(prefab)
     return recipe and getbuilder():MakeRecipeFromMenu(recipe, skin)
 end
 
@@ -995,15 +1149,6 @@ function d_util:GetTile()
     end))
 end
 
-function d_util:GetItemID(item)
-    if item then
-        local data = i_util:GetSlotFromAll(nil, nil, function(ent)
-            return ent == item
-        end)
-        return data and i_util:GetInvID(data.cont, data.slot, data.item)
-    end
-end
-
 function d_util:GetShadowCont()
     local invent = ThePlayer and getinvent()
     return invent and t_util:GetElement(invent:GetOpenContainers() or {}, function(cont)
@@ -1011,13 +1156,13 @@ function d_util:GetShadowCont()
     end)
 end
 
--- The method of abandonment, but continues here to be compatible with some old functions
+-- Deprecated method kept for compatibility with older code
 function i_util:GetInvAction(item, right, code)
     return i_util:GetAction("inv", code, right, item)
 end
 
 
--- The function used by using to me to test
+-- Testing helper function
 -- pu = require("util/playerutil")
 
 local r_util = {}

@@ -2,7 +2,7 @@ local save_id, stat_name, boss_str = "huxi_clock", "clock_time", "Current time"
 local default_data = {
     sw = m_util:IsHuxi(),
     format = "%H:%M",
-    color = "Khaki",
+    color = "Coral",
 }
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local v_data = require "data/valuetable"

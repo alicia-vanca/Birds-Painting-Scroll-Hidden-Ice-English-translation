@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Spring 󰀜"
-version = "5.81_01"
+version = "9.1_02"
 
 
 description =
@@ -15,11 +15,9 @@ description =
 
 
 	󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚󰀚
-	󰀒：QQ group has been disbanded
-	󰀬：If you encounter any problems, please attach the log and send an email to hanhuxi@qq.com
+	󰀬: If you encounter problems, please attach the log and add QQ group 2155066095.
 																					󰀍
 ]]
-
 author = "呼吸 | Translated by VanCa"
 forumthread = ""
 api_version = 10
@@ -229,6 +227,34 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
+		name = "sw_hjsl_unequip",
+		label = "Auto unequip",
+		hover = "Set the durability threshold below which equipment will be auto-unequipped",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_jh_repair",
+		label = "Beefalo assist",
+		hover = "Assisted Beefalo operations",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_newrepair",
+		label = "Quick repair",
+		hover = "Repair the selected item with the specified material when the hotkey is pressed",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_hjsl_repair",
+		label = "Auto repair",
+		hover = "Auto-repair items when durability falls below the threshold",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
 		name = "sw_autorow",
 		label = "Auto rowing",
 		hover = "Right-click to open the adv. settings to adjust the speed by yourself",
@@ -236,7 +262,7 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
-		name = "sw_autoreel",
+		name = "sw_atreel",
 		label = "Auto pond fishing",
 		hover = "Auto fishing. Right-click to open the adv. settings",
 		options = theBoardKeys,
@@ -250,9 +276,30 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
-		name = "sw_wagstaff",
-		label = "Storm mission",
-		hover = "Help Wagstaff to do some tasks",
+		name = "sw_autoeat",
+		label = "Auto eat",
+		hover = "When idle, automatically eat food",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_fishkill",
+		label = "Auto fish kill",
+		hover = "Click to slaughter all fish and similar creatures on you; right-click the icon to open advanced settings",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_watering",
+		label = "Auto watering",
+		hover = "Refill the watering can and automatically water crops",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_autowork",
+		label = "Auto work",
+		hover = "Automatically perform various tasks",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -278,16 +325,23 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
+		name = 'sw_hideshadow',
+		label = "Hide shadow creature",
+		hover = "Toggle whether shadow creatures are visible and attackable in-game",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
 		name = "sw_nickname",
 		label = "Nickname",
-		hover = "The game usernames of other players in the room will be displayed above their heads",
+		hover = "The name of other players in the room will be displayed above their heads",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
 	{
 		name = "sw_double",
 		label = "Double-click",
-		hover = "Double-click to batch batch discard and batch transfer",
+		hover = "Shift + Double-click to batch discard and batch transfer",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -305,6 +359,20 @@ configuration_options =
 		options = theBoardKeys,
 		default = "biubiu",
 	},
+	{
+		name = "sw_beebox",
+		label = "Fire honey harvest",
+		hover = "Light the bee box and take the honey",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_drop",
+		label = "Hotkey drop",
+		hover = "Drop items with hotkey",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
 	-- {
 	-- 	name = "sw_roll",
 	-- 	label = "Precise picking",
@@ -312,6 +380,20 @@ configuration_options =
 	-- 	options = theBoardKeys,
 	-- 	default = "biubiu",
 	-- },
+	{
+		name = "sw_wagstaff",
+		label = "Storm mission",
+		hover = "Help Wagstaff to do some tasks",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
+		name = "sw_catcher",
+		label = "Static task+",
+		hover = "Automatically complete static tasks, but does not support Wagstaff version",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
 	{
 		name = "sw_DAG",
 		label = "Archive assistance",
@@ -334,6 +416,13 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
+		name = "sw_small",
+		label = "Small feature bind",
+		hover = "One-click toggle for very small features like lag compensation and quick exit",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
+	{
 		name = "sw_space",
 		label = "Space filter",
 		hover = "Pressing space bar does not trigger actions for some items",
@@ -351,13 +440,6 @@ configuration_options =
 		name = "sw_skinHistory",
 		label = "Gift records",
 		hover = "No technology is required to open gifts, and a [Gift Records] button is added to record the gifts received",
-		options = theBoardKeys,
-		default = "biubiu",
-	},
-	{
-		name = "sw_skinQueue",
-		label = "Skin queue",
-		hover = "Added a [Disassemble Duplicate Skin] button to help obtain spools",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -410,9 +492,9 @@ configuration_options =
 		default = "biubiu",
 	},
 	{
-		name = "sw_autocook",
+		name = "sw_autocook1",
 		label = "Auto cook",
-		hover = "Middle-click the pot or press the button to start. If you hold down CTRL at the same time, it is [collect mode]",
+		hover = "Activate by middle-clicking the crockpot or using the hotkey",
 		options = theBoardKeys,
 		default = "biubiu",
 	},
@@ -598,6 +680,13 @@ configuration_options =
 		options = tof,
 		default = true,
 	},
+	{
+		name = "sw_butterfly",
+		label = "Auto catch butterflies",
+		hover = "Enable this function to start catching butterflies",
+		options = theBoardKeys,
+		default = "biubiu",
+	},
 
 	addTitle("Single function"),
 	{
@@ -654,15 +743,15 @@ configuration_options =
 	},
 	{
 		name = "sw_tele",
-		label = "Transmit",
-		hover = "Leave a position mark in place after transmitting the organism",
+		label = "Teleportation marker",
+		hover = "Leaves a location marker after teleporting a creature",
 		options = tof,
 		default = true,
 	},
 	{
 		name = "sw_folder",
 		label = "Mod directory",
-		hover = "Direct mod storage directory below the mod name",
+		hover = "Show mod directory below the mod name",
 		options = tof,
 		default = true,
 	},
@@ -675,8 +764,29 @@ configuration_options =
 	},
 	{
 		name = "sw_suggest",
-		label = "Skin Purchase Suggestions",
-		hover = "Provide suggestions in simple language when buying skins in the mall",
+		label = "Skin purchase suggestions",
+		hover = "Provide suggestions in simple language when buying skins in the shop",
+		options = tof,
+		default = true,
+	},
+	{
+		name = "skinqueue_plus",
+		label = "Duplicate skin dismantle",
+		hover = "Add a 'Dismantle duplicate skins' button to help obtain skeins",
+		options = tof,
+		default = true,
+	},
+	{
+		name = "sw_skinpreset",
+		label = "Skin preset set",
+		hover = "When viewing character skins, you can wear presets directly",
+		options = tof,
+		default = true,
+	},
+	{
+		name = "sw_suggest",
+		label = "Bundle purchase suggestions",
+		hover = "Provide plain-language suggestions when buying gift bundles in the shop",
 		options = tof,
 		default = true,
 	},
@@ -698,13 +808,6 @@ configuration_options =
 		default = 6,
 	},
 	{
-		name = 'sw_hidecrown',
-		label = "Bone helmet display switch",
-		hover = "Add a switch to show/hide the shadow monsters when wearing a bone helmet",
-		options = tof,
-		default = true,
-	},
-	{
 		name = 'sw_modplayer',
 		label = "Mod character avatar",
 		hover = "Whether to display the avatar of the mod character you are playing on the Host Game page",
@@ -712,22 +815,6 @@ configuration_options =
 		default = true,
 	},
 
-	
-	addTitle("Single binding"),
-	{
-		name = "sw_toggle",
-        label = "Lag compensation toggle",
-        hover = "One-click switch lag compensation On/Off",
-        options = theKeys,
-        default = 110,
-	},
-	{
-		name = "sw_lantern",
-        label = "Quick drop",
-        hover = "One-click drop lamp, bird catcher, thermal stone (to heat source), trap (to rabbit hole)",
-        options = theKeys,
-        default = 122,
-	},
 
 	addTitle("My world"),
 	{
@@ -810,7 +897,7 @@ configuration_options =
 	{
 		name = "range_click",
 		label = "Click show range",
-		hover = "Display range when the mouse clicks on the entity such as wood and casting machines in the water",
+		hover = "Displaye the range when the mouse click on entities such as Knobbly Trees's canopy or catapults",
 		options = tof,
 		default = true,
 	},
@@ -860,20 +947,6 @@ configuration_options =
 		default = true,
 	},
 	{
-		name = "auto_unequip",
-		label = "Auto unequip",
-		hover = "Magiluminescence and other equipment automatically unequips when durability is low",
-		options = tof,
-		default = true,
-	},
-	{
-		name = "auto_repair",
-		label = "Auto repair/refuel",
-		hover = "Automatically repair/refuel equipment such as Magiluminescence when its durability is low",
-		options = tof,
-		default = true,
-	},
-	{
 		name = "cd_skeleton",
 		label = "Bone Armor cooldown",
 		hover = "Add a blue circle to display the cooldown of Bone Armor",
@@ -895,15 +968,8 @@ configuration_options =
 		default = true,
 	},
 	{
-		name = "sw_manualAdd",
-        label = "Repair button",
-        hover = "Press this key to automatically add lamp fuel and repair equipment",
-        options = theKeys,
-        default = 118,
-	},
-	{
 		name = "sw_autosort",
-        label = "Item Arrangement",
+        label = "Inventory sort",
         hover = "Press this key to automatically classify and organize all items\n【Please enable the function panel to view advanced settings!】",
         options = theKeys,
         default = 127,
@@ -971,10 +1037,10 @@ configuration_options =
 		label = "Change mode",
 		hover = "The model of the perspective of the above perspective",
 		options = {
-			{ description = "Default - Wide View - Overlooking", data = 1 },
-			{ description = "Default - Wide View", data = 2, },
-			{ description = "Default - Overlooking", data = 3, },
-			{ description = "Wide View - Overlooking", data = 4, },
+			{ description = "Default-Wide-TopDown", data = 1 },
+			{ description = "Default-Wide", data = 2, },
+			{ description = "Default-TopDown", data = 3, },
+			{ description = "Wide-TopDown", data = 4, },
 		},
 		default = 1,
 	},

@@ -20,7 +20,7 @@ i_util:AddRightClickFunc(function (pc, player, down, act)
             pusher:RegNowTask(function()
                 Sleep(save_data.frame*FRAMES)
                 local hands = p_util:GetEquip("hands")
-                -- You can row when holding a paddle
+                
                 if hands and hands.prefab == prefab then
                     if e_util:IsValid(boat) then
                         local pos = boat:GetPosition() + pos_rela
@@ -55,12 +55,29 @@ local screen_data = {
         type = "radio",
         data = frame_datatable
     },
+    {
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view video tutorial or feature demonstration",
+        fn = function()VisitURL("https://www.bilibili.com/video/BV1U92DB3E1M/", true)end
+    },
 }
-local func_right = m_util:AddBindShowScreen({
+local func_right = m_util:AddBindShowScreen{
     title = "Auto rowing",
     id = "hx_" .. save_id,
-    data = screen_data
-})
+    data = screen_data,
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Boat controls",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet: boat UI controls")
+        end,
+    }}
+}
 local function func_left()
     local state = not save_data.sw
     fn_save("sw")(state)

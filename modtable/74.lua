@@ -1,6 +1,6 @@
 -- Skin Preset Suits (This feature should be written by Cole)
 local TEMPLATES = require "widgets/redux/templates"
-local title, shift = "Part of the set", 55
+local title, shift = "Parts of the set", 55
 
 -- MISC_ITEMS TheItems:GetIAPDefs() PREFAB_SKINS  SKIN_SET_ITEMS = require("skin_set_info")
 local function GetSkinSetForPrefab(prefab)
@@ -50,53 +50,52 @@ local function GetSkinSetForPrefab(prefab)
     return suits
 end
 
-local function GetSkinSetForDefault()
-    return {
-        {
-            itp = "suit_sleepy1",
-            suit = {
-                body = "body_pj_blue_agean",
-                legs = "legs_pj_blue_agean",
-            },
+local skin_set_default = 
+{
+    {
+        itp = "suit_sleepy1",
+        suit = {
+            body = "body_pj_blue_agean",
+            legs = "legs_pj_blue_agean",
         },
-        {
-            itp = "suit_sleepy2",
-            suit = {
-                body = "body_pj_red_redbird",
-                legs = "legs_pj_red_redbird",
-            },
+    },
+    {
+        itp = "suit_sleepy2",
+        suit = {
+            body = "body_pj_red_redbird",
+            legs = "legs_pj_red_redbird",
         },
-        {
-            itp = "suit_sleepy3",
-            suit = {
-                body = "body_pj_grey",
-                legs = "legs_pj_grey",
-            },
+    },
+    {
+        itp = "suit_sleepy3",
+        suit = {
+            body = "body_pj_grey",
+            legs = "legs_pj_grey",
         },
-        {
-            itp = "suit_yawn1",
-            suit = {
-                body = "body_pj_purple_mauve",
-                legs = "legs_pj_purple_mauve",
-            },
+    },
+    {
+        itp = "suit_yawn1",
+        suit = {
+            body = "body_pj_purple_mauve",
+            legs = "legs_pj_purple_mauve",
         },
-        {
-            itp = "suit_yawn2",
-            suit = {
-                body = "body_pj_green_hunters",
-                legs = "legs_pj_green_hunters",
-            },
+    },
+    {
+        itp = "suit_yawn2",
+        suit = {
+            body = "body_pj_green_hunters",
+            legs = "legs_pj_green_hunters",
         },
-        {
-            itp = "suit_yawn3",
-            suit = {
-                body = "body_pj_orange_honey",
-                legs = "legs_pj_orange_honey",
-            },
+    },
+    {
+        itp = "suit_yawn3",
+        suit = {
+            body = "body_pj_orange_honey",
+            legs = "legs_pj_orange_honey",
         },
-        {itp = "none"},
-    }
-end
+    },
+    {itp = "none"},
+}
 
 local function GetSuitName(prefabname, itp)
     local name = GetSkinName(itp)
@@ -107,14 +106,13 @@ local function GetSuitName(prefabname, itp)
             name = STRINGS.SET_NAMES.emote_yawn..itp:sub(-1)
         end
     end
-    name = name:gsub(prefabname, ""):gsub(STRINGS.SKIN_TAG_CATEGORIES.ITEM.CHEST, ""):gsub(STRINGS.UI.COLLECTIONSCREEN.SET_INFO, ""):gsub("“I", "")
-    return name
+    return name:gsub(prefabname, ""):gsub(STRINGS.SKIN_TAG_CATEGORIES.ITEM.CHEST, ""):gsub(STRINGS.UI.COLLECTIONSCREEN.SET_INFO, ""):gsub("“I", "")
 end
 
 local function GetPlayerSuits(prefab, list_ban)
-    local suits = t_util:MergeList(GetSkinSetForPrefab(prefab) or {}, GetSkinSetForDefault())
+    local suits = t_util:MergeList(GetSkinSetForPrefab(prefab) or {}, skin_set_default)
     local prefabname = e_util:GetPrefabName(prefab)
-    prefabname = prefabname:gsub("%-", "%%%-") -- %%- also works
+    prefabname = prefabname:gsub("%-", "%%%-") 
     t_util:IPairs(suits, function(suit)
         suit.name = GetSuitName(prefabname, suit.itp)
     end)
@@ -160,7 +158,7 @@ end)
 AddClassPostConstruct("screens/redux/lobbyscreen", function(self)
     t_util:IPairs(self.panels or {}, function(fn_data)
         local LoadoutPanel = fn_data.panelfn
-        if not LoadoutPanel then return end
+        if not type(LoadoutPanel)=="table" then return end
         local __ctor = LoadoutPanel._ctor
         if not __ctor then return end
         LoadoutPanel._ctor = function(self, owner, ...)
@@ -238,3 +236,5 @@ AddClassPostConstruct("widgets/redux/loadoutselect_beefalo", function(self)
     self.btn_suit = self.loadout_root:AddChild(BuildBeefaloSuitBtn(function(skins) self:ApplySkinPresets(skins) end))
     self.btn_suit:SetPosition(200-shift, 315)
 end)
+
+Mod_ShroomMilk.Func.GetSkinSetForPrefab = GetSkinSetForPrefab

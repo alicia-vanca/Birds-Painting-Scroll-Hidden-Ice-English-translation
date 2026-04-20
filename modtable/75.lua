@@ -107,16 +107,13 @@ local function fn()
     end)
 end
 
-local screen_data = {
-    {
-        id = "readme",
-        label = "󰀍󰀍󰀍󰀍",
-        fn = function()
-            h_util:CreatePopupWithClose("󰀍"..string_show.." · special thanks",
-                "This feature is specially customized by player Moonlight\n\nMessage: I hope everyone can meet the one who can accompany you to play Don't Starve for a long time~")
-        end,
-        hover = "Thank you very much",
-        default = true
+local screen_data = {{
+        id = "bilibili",
+        prefab = "bilibili",
+        type = "imgstr",
+        label = "Tutorial Demo",
+        hover = "Click to view the video tutorial or feature demo",
+        fn = function()VisitURL("https://www.xiaohongshu.com/explore/69136d9a000000000402a22e?app_platform=android&ignoreEngage=true&app_version=8.42.0&share_from_user_hidden=true&xsec_source=app_share&type=video&xsec_token=CBxEH_jtmnYdO2PBfK68PNXBIshDTKrNf9l9SvdkAb12w=&author_share=1&xhsshare=QQ&shareRedId=N0wzRTpJR042NzUyOTgwNjY0OThHPEg_&apptime=1762881049&share_id=ebc7b63dd6514f49a95d65e589856336", true)end
     },{
         id = "show",
         label = "Respawn point display",
@@ -158,7 +155,15 @@ local screen_data = {
 local func_right = m_util:AddBindShowScreen({
     title = string_show,
     id = "hx_" .. save_id,
-    data = screen_data,
+    data = screen_data,            icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Store location",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "This feature has not been customized yet, stay tuned...")
+        end,
+    }},
 })
 
 

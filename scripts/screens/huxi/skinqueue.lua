@@ -8,7 +8,6 @@ local TextBtn = require "widgets/textbutton"
 local TEMPLATES = require "widgets/redux/templates"
 local ItemImage = require "widgets/redux/itemimage"
 local HGift = require "widgets/huxi/huxi_gift"
-local WTC = require("data/valuetable").weekday_en_to_cn
 local h_util = require("util/hudutil")
 
 local units_per_row = 2.7

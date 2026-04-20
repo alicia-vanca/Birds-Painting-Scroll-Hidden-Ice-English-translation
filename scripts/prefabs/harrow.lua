@@ -48,7 +48,7 @@ local function fn()
     anim:SetSortOrder(3)
     anim:SetBloomEffectHandle("shaders/anim.ksh")
     anim:SetLightOverride(1)
-    -- anim:SetDeltaTimeMultiplier(0.3)
+    
 
 
     inst.SetColor = h_util.SetColor

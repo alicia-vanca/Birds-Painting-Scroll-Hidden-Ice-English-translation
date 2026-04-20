@@ -6,7 +6,11 @@ local default_data = {
 }
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local bantags = {'FX', 'DECOR', 'INLIMBO', 'NOCLICK', 'player', 'stewer', 'backpack', 'trader', 'lamp'}
--- Get the position that can be taken on the body or backpack
+local function Say(str)
+    u_util:Say(str, nil, nil, nil, true)
+end
+
+
 local function GetCanTake(item)
     local can_cont
     local can_slot = e_util:CanPutInItem(ThePlayer, item)
@@ -28,53 +32,33 @@ local function SearchAndTakePrefab(prefab, amount_has, amount_need)
     local pusher = m_util:GetPusher()
     if not (func_has and pusher and prefab) then return end
     local name = e_util:GetPrefabName(prefab)
+    local box = e_util:FindEnt(nil, nil, save_data.range_search, {"_container"}, bantags, nil, nil, function(cont)
+        return func_has(cont, prefab, true) and p_util:GetMouseActionSoft({"RUMMAGE"}, cont)
+    end)
+    if box then
+        Say("Searching for "..name)
+    else
+        return Say("I cannot find "..name)
+    end
+    p_util:ReturnActiveItem()
     pusher:RegNowTask(function(player, pc)
-        d_util:Wait()
-        if amount_need <= 0 then
-            if GetCanTake(p_util:GetActiveItem()) then
-                p_util:ReturnActiveItem()
-            end
-            u_util:Say("Picked up "..name.." complete")
-            return true
-        end
-        local item_active = p_util:GetActiveItem()
-        if item_active then
-            if item_active.prefab == prefab then
-                local can_cont, can_slot = GetCanTake(item_active)
-                if can_cont then
-                    if d_util:PutOneOfActiveItemInSlot(can_cont, can_slot) then
-                        return true
-                    elseif amount_need > 0 then
-                        amount_need = amount_need - 1
-                        return
-                    end
-                else
-                    u_util:Say("No space left")
-                    return true
-                end
+        d_util:OpenContainer(box)
+        local info = p_util:GetSlotFromAll(prefab, nil, function(item,cont,slot)
+            return cont == box
+        end, {"container"})
+        if info then
+            local can_cont, can_slot = GetCanTake(info.item)
+            if can_cont then
+                p_util:MoveItemFromCountOfSlot(info.slot, box, can_cont, amount_need)
+                Say("Pickup complete")
             else
-                p_util:ReturnActiveItem()
+                Say("No inventory slots available")
             end
         else
-            u_util:Say("Searching for "..name)
-            local box = e_util:FindEnt(nil, nil, save_data.range_search, {"_container"}, bantags, nil, nil, function(cont)
-                return func_has(cont, prefab, true) and p_util:GetMouseActionSoft({"RUMMAGE"}, cont)
-            end)
-            if not box then
-                u_util:Say("I can't find "..name)
-                return true
-            end
-            d_util:OpenContainer(box, 0.5)
-            func_refresh(box)
-            local item_box = p_util:GetSlotFromAll(prefab, nil, function(item,cont,slot)
-                return cont == box
-            end, {"container"})
-            if item_box then
-                if d_util:TakeActiveItem(item_box.item) then
-                    return true
-                end
-            end
+            Say("Item not found")
         end
+        func_refresh(box)
+        return true
     end)
 end
 

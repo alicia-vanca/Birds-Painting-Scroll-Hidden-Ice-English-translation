@@ -1,4 +1,4 @@
-if m_util:IsServer() then
+if m_util:IsServer() or m_util:IsMilker() then
     return
 end
 local save_id, string_thank = "thanks", "Thank you"
@@ -48,7 +48,7 @@ local UserTable = {
         fix = "Lightning attach",
         move = "Trace",
         label = "八雪",
-        desc = "Alas, i found wild meatballs.",
+        desc = "Alas, I found wild meatballs.",
         hover = "T key control table perfect sticker",
     },
     ['76561198297714368'] = {
@@ -62,21 +62,21 @@ local UserTable = {
         fix = "Lightning attach",
         move = "Crack",
         label = "糖炒栗子星人",
-        desc = "It's not that the ending of the story is not good enough, but that we have too much requirements for the story",
+        desc = "It's not that the ending of the story is not good enough, but that we have too many requirements for the story",
         hover = "T key control table perfect sticker",
     },
     ["76561198163711010"] = {
         fix = "Lightning attach",
         move = "Snowflake",
         label = "晓佳乐",
-        desc = " Qunbird painting spokesperson xiaojiale will serve you online",
+        desc = "Qunbird painting spokesperson Xiao Jiale will serve you online",
         hover = "Bug tester",
     },
     ["76561199088296896"] = {
         fix = "The arrival of the moon god",
         move = "Note",
         label = "抹茶麻薯糯米糍",
-        desc = " The daily academic progress is 5%, and the famine progress is 100%",
+        desc = "The daily academic progress is 5%, and the famine progress is 100%",
         hover = "T key control table perfect sticker",
     },
     ["76561198306201750"] = {
@@ -110,9 +110,121 @@ local UserTable = {
     ["76561199471728571"] = {
         fix = "The arrival of the moon god",
         move = "Snowflake",
-        label = "Mumu the Devil",
-        desc = "Being in a daze and doing nothing seriously is already working hard",
-        hover = "T key console item classification",
+        label = "月夜睦雨声",
+        desc = "Just being serious about zoning out and doing nothing is already hard work.",
+        hover = "T key console item categorization",
+    },
+    ["76561199080863191"] = {
+        fix = "Flame attached",
+        move = "Snowflake",
+        label = "小谢",
+        desc = "Do not worry about the road ahead; there will be someone in the world who knows you.",
+        hover = "Quick announcement to refine multiple character lines",
+    },
+    ["76561199510051627"] = {
+        fix = "Lightning attach",
+        move = "Crack",
+        label = "CyB-T",
+        desc = "Want it? Don't ask me.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_osFM6k2H = {
+        fix = "Swirl",
+        move = "Snowflake",
+        label = "󰀒violet",
+        desc = "This eternal continent is very interesting; the game is much more fun with you in it.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_CjFIZiTh = {
+        fix = "Flame attached",
+        move = "Petal",
+        label = "莹贝贝",
+        desc = "Phew, fortunately you are here; it makes my heart feel warm.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_jXab3Ejm = {
+        fix = "Rainy cloud",
+        move = "Ice",
+        label = "小宇",
+        desc = "Pure save file; a small server does not count as open.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    ["76561199751930023"] = {
+        fix = "Lightning attach",
+        move = "Snowflake",
+        label = "Ningishu",
+        desc = "Ciallo~",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_1lRu_BZr = {
+        fix = "Flame attached",
+        move = "Snowflake",
+        label = "景典",
+        desc = "Jingdian is the most handsome in the universe.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    ["76561199796927299"] = {
+        fix = "Lightning attach",
+        move = "Snowflake",
+        label = "αlpha",
+        desc = "Wishing everyone happiness every day.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_3RvV906o = {
+        fix = "The arrival of the moon god",
+        move = "Snowflake",
+        label = "ai_杨易心",
+        desc = "Yixin is the cutest; will you play Don't Starve with Yixin forever?",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_mjA2x0Tc = {
+        fix = "Flame attached",
+        move = "Ice",
+        label = "EMT",
+        desc = "I have everything I need now!",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_p843wCVK = {
+        fix = "Flame attached",
+        move = "Crack",
+        label = "着火了不是我干的",
+        desc = "It definitely wasn't me; stop tagging me.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_qRBOnWzi = {
+        fix = "Lightning attach",
+        move = "Snowflake",
+        label = "󰀐阿刊󰀐",
+        desc = "I am the attention grabber.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_jntKH_5p = {
+        fix = "Lightning attach",
+        move = "Snowflake",
+        label = "Chenchenxu",
+        desc = "You are a good person; I will follow you.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_9Gv_xeWk = {
+        fix = "Flame attached",
+        move = "Note",
+        label = "小平安",
+        desc = "The effect is so cool!",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    ["76561199378096907"] = {
+        fix = "Flame attached",
+        move = "Snowflake",
+        label = "鲨鲨",
+        desc = "Purely green play.",
+        hover = "Created a video tutorial for the painting scroll",
+    },
+    KU_TCDTv6KY = {
+        fix = "Lightning attach",
+        move = "Snowflake",
+        label = "没名字有木有",
+        desc = "What exactly is my name?",
+        hover = "Created a video tutorial for the painting scroll",
     },
 }
 t_util:Pairs(UserTable, function(id, data)
@@ -120,18 +232,21 @@ t_util:Pairs(UserTable, function(id, data)
 end)
 
 i_util:AddLeftClickFunc(function(pc, player, down, act_left, ent_mouse)
-    if not (ent_mouse and ent_mouse:HasTag("player") and act_left and act_left.action and act_left.action.id == "LOOKAT") then return end
-    local id_klei = ent_mouse.userid
-    local data = id_klei and TheNet:GetClientTableForUser(id_klei)
-    local id_net = data and data.netid
-    if not id_net then return end
-    local data_fx = UserTable[id_klei] or UserTable[id_net]
-    if not data_fx then return end
-    if data_fx.desc then
-        u_util:Say("󰀍 thank you very much 别", data_fx.desc, "self", "Red")
+    if not ent_mouse or not ent_mouse:HasTag("player") then return end
+    if player == ent_mouse then return end
+    if (act_left and act_left.action and act_left.action.id == "LOOKAT") then
+        local id_klei = ent_mouse.userid
+        local data = id_klei and TheNet:GetClientTableForUser(id_klei)
+        local id_net = data and data.netid
+        if not id_net then return end
+        local data_fx = UserTable[id_klei] or UserTable[id_net]
+        if not data_fx then return end
+        if data_fx.desc then
+            u_util:Say("󰀍Special Thanks󰀍", data_fx.desc, "self", "red")
+        end
+        if save_data[data_fx.id] then return end
+        e_util:AddMoonFx(ent_mouse)
     end
-    if save_data[data_fx.id] then return end
-    e_util:AddMoonFx(ent_mouse)
 end)
 local FixTable = {
     ["Lightning attach"] = function()
@@ -194,7 +309,7 @@ local FixTable = {
         inst.AnimState:SetLayer(LAYER_BACKGROUND) 
         inst.AnimState:SetScale(2.3, 2.3)
         inst.Transform:SetPosition(0, 0, 7.2)
-        inst.AnimState:SetAddColour(unpack(h_util:GetWRGB("Breathing purple")))
+        inst.AnimState:SetAddColour(unpack(h_util:GetWRGB("VioletBlue")))
         return inst
     end
 }
@@ -369,7 +484,7 @@ end
 
 local function Fn()
     m_util:AddBindShowScreen({
-        title = "󰀍 thank you very much 󰀍",
+        title = "󰀍 Thank you 󰀍",
         id = "thanks",
         data = screendata,
     })()

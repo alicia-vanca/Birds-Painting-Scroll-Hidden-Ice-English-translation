@@ -1,92 +1,117 @@
--- This interface is used for newbies who know a little bit of code
+local m_util = require "util/modutil"
+local isHuxi = m_util:IsHuxi()
+
+
 return {
-    overlays = {
-        label = "Screen halo",
-        hover = "There is a circle of dark filter around the screen\nor is it called 'depth of field'?",
+    {
+        id = "overlays",
+        prefab = "screen_tv",
+        label = "Screen Vignette",
+        hover = "A dark, blurry filter around the edges of the screen\nor something like 'depth of field'? ",
         shelter = {
             [{"vig"}] = {"vigpaint", "vig"},   
         },
     },
-    sandover = {
-        label = "Sandstorm or moon storm",
-        hover = "Sandstorm filter\nMoon storm filter",
+    {
+        id = "pauseover",
+        prefab = "missing_asset",
+        label = "Pause Blackout",
+        hover = "This is originally developer-mode content.\nShow the black screen overlay when the game is paused?",
+        shelter = {
+            [{"serverpause_underlay"}] = true,
+        },
+        default = not isHuxi,
+    },
+    {   id = "sandover",
+        prefab = "townportaltalisman",
+        label = "Sandstorm",
+        hover = "The sandstorm effect from the Summer Oasis.",
         shelter = {
             [{"sanddustover"}] = {"sand_texture2", "sand_over"},
-            [{"moonstormdust"}] = true,
             [{"sandover", "bg"}] = {"gradient2", "sand_over"},
+        },
+    },
+    {   
+        id = "moonstorm",
+        prefab = "screen_moonstorm",
+        label = "Moonstorm",
+        hover = "The moonstorm effect after activating the celestial event.",
+        shelter = {
+            [{"moonstormdust"}] = true,
             [{"moonstormover","bg"}] = {"gradient2", "moonstorm_over"},
         },
     },
-    pauseover = {
-        label = "Pause black screen",
-        hover = "This was originally the content of developer mode\nDo you want to display the black screen when paused?",
-        shelter = {
-            [{"serverpause_underlay"}] = true,
-        }
-    },
-    -- helmover = {
-    --     label = "Equipment filter",
-    --     hover = "Goggles,\nGardeneer hat,\nW.A.R.B.I.S. head gear\nand other equipment depth of field",
-    --     shelter = {
-    --         [{"gogglesover","bg"}] = true,
-    --         [{"nutrientsover","bg"}] = true,
-    --         [{"Wagpunkui","overlay"}] = {"ui_parts", "wagpunk_over"},
-    --     },
-    -- },
-    wagpunkui = {
-        label = "W.A.R.B.I.S. head gear",
-        hover = "W.A.R.B.I.S. head gear filter",
+    {
+        id = "wagpunkui",
+        prefab = "wagpunkhat",
+        label = "Wagpunk Hat",
+        hover = "The depth-of-field effect from the Wagpunk hat.",
         shelter = {
             [{"Wagpunkui","overlay"}] = {"ui_parts", "wagpunk_over"},
         },
     },
-    nutrientsover = {
-        label = "Gardeneer hat",
-        hover = "Gardeneer hat filter",
+    {
+        id = "nutrientsover",
+        prefab = "nutrientsgoggleshat",
+        label = "Farming Hat",
+        hover = "The depth-of-field effect from the Farming Pioneer hat.",
         shelter = {
             [{"nutrientsover","bg"}] = true,
         },
     },
-    gogglesover = {
-        label = "Goggles",
-        hover = "Goggles filter",
+    {
+        id = "gogglesover",
+        prefab = "deserthat",
+        label = "Desert Goggles",
+        hover = "The depth-of-field effect from the goggles.",
         shelter = {
             [{"gogglesover","bg"}] = true,
         },
     },
-    scrapmonocleover = {
-        label = "Horizon expandinator",
-        hover = "Horizon expandinator filter",
+    {
+        id = "scrapmonocleover",
+        prefab = "scrap_monoclehat",
+        label = "Scrap Monocle",
+        hover = "Scrap Monocle",
         shelter = {
             [{"scrapmonocleover"}] = {"ui_parts", "scrap_monocle_over"},
         },
     },
-    inspectaclesover = {
+    {
+        id = "inspectaclesover",
+        prefab = "inspectacleshat",
         label = "Inspectacles",
-        hover = "Inspectacles filter\n【Winona's Equipment】",
+        hover = "Inspectacles filter\n[Winona's equipment]",
         shelter = {
             [{"inspectaclesover"}] = {"ui_parts", "inspectacles_over"},
         },
     },
-    roseglasseshat = {
-        label = "Rose-colored glasses",
-        hover = "Rose-colored glasses filter\n【Winona's Equipment】",
+    {
+        id = "roseglasseshat",
+        prefab = "roseglasseshat",
+        label = "Rose Glasses",
+        hover = "Rose Glasses filter\n[Winona's equipment]",
         shelter = {
             [{"roseglassesover"}] = {"ui_parts", "roseglasseshat_over"},
         },
     },
-    fruitover = {
-        label = "Nightberry filter",
-        hover = "Night vision filter after eating nightberry",
+    {
+        id = "fruitover",
+        prefab = "ancientfruit_nightvision",
+        label = "Nightberry",
+        hover = "The night vision filter after eating a Nightberry.",
         shelter = {
             [{"nightvisionfruitover"}] = {"ui_parts1", "nightvision_fruit_over"},
             [{"nightvisionfruitover"}] = {"ui_parts2", "nightvision_fruit_over"},
             [{"nightvisionfruitover"}] = {"ui_parts_tint", "nightvision_fruit_over"},
         },
+        default = not isHuxi,
     },
-    outline = {
-        label = "Insane bloodshot",
-        hover = "Whether to display bloodshot vision that indicates mental breakdown",
+    {
+        id = "outline",
+        prefab = "nightmarebeak",
+        label = "Madness Veins",
+        hover = "Show the veins that indicate mental collapse?",
         shelter = {
             [{"vig"}] = {"vein01", "vig"},
             [{"vig"}] = {"vein02", "vig"},
@@ -94,11 +119,183 @@ return {
             [{"vig"}] = {"vein04", "vig"},
         },
     },
-    clouds = {
-        label = "Cloud",
-        hover = "The clouds when the vision is raised",
+    {
+        id = "clouds",
+        prefab = "screen_clouds",
+        label = "Foggy Vision",
+        hover = "The white fog that appears when visibility increases.",
         shelter = {
             [{"clouds"}] = {"cloud", "clouds_ol"},
         },
-    }
+    },
+    {
+        id = "spray",
+        prefab = "icon_wetness",
+        label = "Raindrops",
+        hover = "The raindrop effect around the screen when it rains.",
+        shelter = {
+            [{"drops_vig"}] = {"water_dot_01", "paddle_over"},
+            [{"drops_vig"}] = {"water_dot_02", "paddle_over"},
+            [{"drops_vig"}] = {"water_dot_03", "paddle_over"},
+            [{"drops_vig"}] = {"water_dot_04", "paddle_over"},
+            [{"drops_vig"}] = {"water_dot_05", "paddle_over"},
+        },
+        default = true,
+    },
+    {
+        id = "miasmaclouds",
+        prefab = "cave_vent_rock",
+        label = "Miasma Overlay",
+        hover = "The miasma that bubbles out of vents.",
+        shelter = {
+            [{"miasmaclouds"}] = {"cloud_parts", "miasma_over"},
+            [{"miasmaover", "bg"}] = {"cloud_parts", "miasma_over"},
+        },
+        default = not isHuxi,
+    },
+    {
+        id = "mindcontrolover",
+        prefab = "stalker_atrium",
+        label = "Mind Control",
+        hover = "A mental-control filter that appears at low sanity\nfrom the Ancient shadow weaver.",
+        shelter = {
+            [{"mindcontrolover"}] = {"tentacle2", "mind_control_overlay"},
+            [{"mindcontrolover"}] = {"inside ghost", "mind_control_overlay"},
+            [{"mindcontrolover"}] = {"blink", "mind_control_overlay"},
+        },
+        default = true,
+    },
+    {
+        id = "parasitethrallover",
+        prefab = "shadowthrall_parasite",
+        label = "Void Parasite",
+        hover = "Reportedly the overlay after death by the parasite mask,\nawaiting group testing.",
+        shelter = {
+            [{"parasitethrallover"}] = {"ol_part", "thrall_parasite_overlay"},
+            [{"parasitethrallover"}] = {"frame", "thrall_parasite_overlay"},
+        },
+        default = true,
+    },
+    {
+        id = "batover",
+        prefab = "halloween_ornament_2",
+        label = "Halloween Bat",
+        hover = "The bat effect that frequently appears while chopping trees during Halloween events.",
+        shelter = {
+            [{"batover"}] = {"fx_pre", "bat_tree_fx"},
+            [{"batover"}] = {"fx_pre_1", "bat_tree_fx"},
+            [{"batover"}] = {"wing01", "bat_tree_fx"},
+            [{"batover"}] = {"puffs1", "bat_tree_fx"},
+            [{"batover"}] = {"puffs2", "bat_tree_fx"},
+            [{"batover"}] = {"bat_dissolve01", "bat_tree_fx"},
+            [{"batover"}] = {"bat_head01", "bat_tree_fx"},
+        },
+        default = true,
+    },
+    {
+        id = "bloodover",
+        prefab = "icon_health",
+        label = "Player Hit",
+        hover = "The filter shown when the player is hit by monsters.",
+        shelter = {
+            [{"bloodover", "bg"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "beefbloodover",
+        prefab = "beefalo",
+        label = "Beefalo Hurt",
+        hover = "The filter when a beefalo is very low on health.",
+        shelter = {
+            [{"beefbloodover", "bg"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "iceover",
+        prefab = "icon_cold",
+        label = "Player Freeze",
+        hover = "The snowflake filter when the player is freezing.",
+        shelter = {
+            [{"iceover", "img"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "fireover",
+        prefab = "fire",
+        label = "Player Burn",
+        hover = "The bottom flame effect when the player is on fire.",
+        shelter = {
+            [{"fireover", "anim"}] = {"flames", "fire_over"},
+            [{"fireover", "anim"}] = {"fire_over01", "fire_over"},
+        },
+        default = true,
+    },
+    {
+        id = "heatover",
+        prefab = "icon_heat",
+        label = "Player Overheat",
+        hover = "The screen effect when the player is overheating.",
+        shelter = {
+            [{"heatover", "img"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "fumeover",
+        prefab = "spore_moon",
+        label = "Spore Cloud Poison",
+        hover = "The screen effect when the player is poisoned by a spore cloud.",
+        shelter = {
+            [{"fumeover", "over", "bg"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "flareover",
+        prefab = "miniflare",
+        label = "Flare Effect",
+        hover = "The screen effect when a flare/flare bomb/rift reaches its maximum stage.",
+        shelter = {
+            [{"flareover", "bg"}] = true,
+        },
+        default = true,
+    },
+    {
+        id = "lunarburnover",
+        prefab = "alterguardian_phase4_lunarrift",
+        label = "Celestial Scion",
+        hover = "The white light filter during the final battle with the Celestial Scion.",
+        shelter = {
+            [{"lunarburnover", "anim"}] = {"fx_beam_end", "wagboss_beam_over"},
+            [{"lunarburnover", "anim"}] = {"fx_parts", "wagboss_beam_over"},
+            [{"lunarburnover", "anim"}] = {"gradient2", "wagboss_beam_over"},
+            [{"lunarburnover", "anim"}] = {"fire_over01", "wagboss_beam_over"},
+            [{"lunarburnover", "anim"}] = {"fx_beam_thick", "wagboss_beam_over"},
+        },
+        default = true,
+    },
+    {
+        id = "InkOver",
+        prefab = "squid",
+        label = "Ink Effect",
+        hover = "The occlusion effect when a squid spits ink at the player.",
+        shelter = {
+            [{"InkOver", "InkOver"}] = {"streak_01", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"streak_01", "ink_over"},
+            [{"InkOver", "InkOver"}] = {"streak_02", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"streak_02", "ink_over"},
+            [{"InkOver", "InkOver"}] = {"splat_01", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"splat_01", "ink_over"},
+            [{"InkOver", "InkOver"}] = {"splat_02", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"splat_02", "ink_over"},
+            [{"InkOver", "InkOver"}] = {"splat_03", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"splat_03", "ink_over"},
+            [{"InkOver", "InkOver"}] = {"splat_04", "ink_over"},
+            [{"InkOver", "InkOver2"}] = {"splat_04", "ink_over"},
+        },
+        default = true,
+    },
 }

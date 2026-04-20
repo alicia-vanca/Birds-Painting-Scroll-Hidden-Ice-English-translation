@@ -7,7 +7,6 @@ local default_data = {
     sw = m_util:IsHuxi() and "on" or "off",
     light_unequip = true,
     right_hold = false,
-    starve_value = 0,
 }
 
 local function func_hand(item)
@@ -16,17 +15,14 @@ end
 local function func_light(item)
     return e_util:IsLightSourceEquip(item) and e_util:GetPercent(item) > 0
 end
-local function func_food(item)
-    return p_util:GetAction("inv", "eat", true, item)
-end
 
-local slots = {"walk", "attack", "light", "right", "eat"}
+
+local slots = {"walk", "attack", "light", "right"}
 local act_codes = {"LOOKAT", "WALKTO"}
 t_util:IPairs(slots, function(slot)
     default_data["ui_"..slot] = true
 end)
 default_data.ui_right = m_util:IsHuxi()
-default_data.ui_eat = false
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 
 
@@ -36,7 +32,7 @@ local function GetEquip(prefab)
     if prefab then
         local NeedAutoUnEquip = Mod_ShroomMilk.Func.NeedAutoUnEquip
         local slot_data = p_util:GetSlotFromAll(prefab, nil, function(item)
-            return p_util:GetAction("inv", {"equip", "unequip"}, true, item) and e_util:GetPercent(item) > 0 and (NeedAutoUnEquip and not NeedAutoUnEquip(item))
+            return p_util:GetAction("inv", {"equip", "unequip"}, true, item) and e_util:GetPercent(item) > 0 and (not NeedAutoUnEquip or not NeedAutoUnEquip(item))
         end, {"equip", "body", "backpack", "container", "mouse"})
         if slot_data and not t_util:GetElement(EQUIPSLOTS, function(_, slot)
             return slot == slot_data.slot
@@ -115,12 +111,20 @@ local function PressAttack()
     local pc = t_util:GetRecur(ThePlayer, "components.playercontroller")
     if pc then
         atk_target = pc:GetCombatTarget() or pc:GetAttackTarget(TheInput:IsControlPressed(CONTROL_FORCE_ATTACK)) or atk_target
-        if e_util:IsValid(atk_target) and not p_util:IsRider() then
+        if e_util:IsValid(atk_target) then
             if atk_target:HasOneOfTags({"butterfly", "stalkerminion"}) or atk_target.prefab == "shadowchanneler" then
                 return
             end
             local equip = GetEquip(save_data.item_attack)
             if equip then
+                if p_util:IsRider() then
+                    
+                    local range_weapon = p_util:GetWeaponRange(equip.prefab)
+                    
+                    if range_weapon and range_weapon <= 6 then
+                        return
+                    end
+                end
                 p_util:Equip(equip)
                 if equip ~= p_util:GetEquip("hands") then
                     local pos = atk_target:GetPosition()
@@ -132,7 +136,7 @@ local function PressAttack()
     end
 end
 -- 250428 VanCa: Add some items with switch cooldown
-local not_cane_prefabs = {"thurible", "bootleg", "bugnet", "thulecitebugnet", "magicalbroom", "spear_wathgrithr_lightning", "spear_wathgrithr_lightning_charged", "wathgrithr_shield"}
+local not_cane_prefabs = {"thurible", "bootleg", "bugnet", "thulecitebugnet", "moonstorm_static_catcher", "magicalbroom", "spear_wathgrithr_lightning", "spear_wathgrithr_lightning_charged", "wathgrithr_shield", "boomerang"}
 local switch_cane_prefabs = {"voidcloth_scythe", "wortox_nabbag", "elderwand", "shadowscythe"}
 local function PressWalk()
     if not (save_data.sw=="on" and save_data.ui_walk) then return end
@@ -142,7 +146,7 @@ local function PressWalk()
         return
     end
     if hand and not table.contains(switch_cane_prefabs, hand.prefab) then
-        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod", "tool"}) 
+        if hand:HasOneOfTags({"castfrominventory", "umbrella", "_oceanfishingrod", "fishingrod", "tool", "rangedweapon"}) 
         or e_util:HasOneOfComps(hand, {"farmtiller", "wateryprotection", "terraformer", "oar"})
         or e_util:IsLightSourceEquip(hand) 
         then
@@ -156,7 +160,17 @@ local function PressWalk()
     return true
 end
 
--- This interface is provided outside
+local function ForceEquipWalk()
+    if not (save_data.sw=="on" and save_data.ui_walk) then return end
+    local hand = p_util:GetEquip("hands")
+    if hand and e_util:IsLightSourceEquip(hand) then return end
+    if p_util:IsHeavy() then return end
+    EquipIt(save_data.item_walk)
+    return true
+end
+
+
+Mod_ShroomMilk.Func.ForceEquipWalk = ForceEquipWalk
 Mod_ShroomMilk.Func.EquipWalk = PressWalk
 Mod_ShroomMilk.Func.EquipAttack = PressAttack
 
@@ -176,18 +190,9 @@ AddComponentPostInit("playercontroller", function(self, player)
     end
 end)
 
-local function InHunger(player, meta)
-    local prefab = save_data.item_eat
-    if not (save_data.ui_eat and prefab and save_data.sw=="on") then return end
-    local hunger = player.replica and player.replica.hunger and player.replica.hunger:GetCurrent() <= save_data.starve_value
-    if not hunger then return end
-    local food = p_util:GetItemFromAll(prefab, nil, func_food, "mouse")
-    if food then
-        p_util:Eat(food)
-    end
-end
+
 i_util:AddPlayerActivatedFunc(function(player, world, pusher)
-    -- Lighting binding
+    
     pusher:RegInDark(function(indark)
         if not (save_data.ui_light and save_data.sw=="on") then return end
         local prefab = save_data.item_light
@@ -205,11 +210,8 @@ i_util:AddPlayerActivatedFunc(function(player, world, pusher)
             end
         end
     end)
-    -- Food binding
-    player:ListenForEvent("hungerdelta", InHunger)
-    player:ListenForEvent("healthdelta", InHunger)
 end)
--- Right-click binding
+
 i_util:AddRightClickFunc(function(pc, player, down, act_right, ent_mouse)
     if not (down and ent_mouse and save_data.ui_right and save_data.sw=="on" and not TheInput:IsControlPressed(CONTROL_FORCE_TRADE)) then
         return
@@ -220,7 +222,7 @@ i_util:AddRightClickFunc(function(pc, player, down, act_right, ent_mouse)
         if item then
             UseEquip(item, ent_mouse)
         else
-            -- The current Right-click is useless to check
+            
             if not act_right or t_util:IGetElement(act_codes, function(str)
                 return ACTIONS[str] == act_right.action
             end) then
@@ -229,7 +231,7 @@ i_util:AddRightClickFunc(function(pc, player, down, act_right, ent_mouse)
         end
     end
 end)
--- Synchronous ui skin in the gear
+
 i_util:AddPlayerActivatedFunc(function(player)
     local ectrl = h_util:GetECtrl()
     if ectrl then
@@ -266,12 +268,8 @@ local data_slots = {
         label = "[right-click] slot",
         filter = func_hand,
     },
-    eat = {
-        hover = "Auto eat this when hungry",
-        label = "[food] slot",
-        filter = func_food,
-    }
 }
+
 
 -- Add UI
 local funcs_ui = {
@@ -344,7 +342,7 @@ end)
 table.insert(screen_data, {
     id = "light_unequip",
     label = "Unequip [lighting]",
-    hover = "Remove the lighting equipment when it is daylight or when there is light [Only on the surface]",
+    hover = "Remove the lighting equipment when it is daylight or when there is light\n[Only on the surface]",
     default = fn_get,
     fn = fn_save("light_unequip"),
 })
@@ -355,20 +353,26 @@ table.insert(screen_data, {
     default = fn_get,
     fn = fn_save("right_hold"),
 })
-table.insert(screen_data, {
-    id = "starve_value",
-    label = "Hunger value:",
-    hover = "Auto eat the food in the [food] slot when Hunger below this value",
-    default = fn_get,
-    fn = fn_save("starve_value"),
-    type = "radio",
-    data = t_util:IPairToIPair({0, 5, 10, 15, 25, 50, 100, 125, 150, 175, 200, 225, 250, 275, 300, 400, 500, 600, 700, 800, 900, 1000}, function(value)
-        return {data = value, description = value}
-    end)
-})
+
 local fn_right = m_util:AddBindShowScreen({
     title = string_cane,
     id = "hx_" .. save_id,
-    data = screen_data
+    data = screen_data,
+                icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Auto eating",
+        fn = function()
+            h_util:CreatePopupWithClose("Auto Eating Notice", "This feature is now available separately on the panel, so the old [food bar] has been removed.")
+        end,
+    },{
+        id = "bilibili",
+        prefab = "bilibili",
+        hover = "Tutorial demo",
+        fn = function()
+            VisitURL("https://www.bilibili.com/video/BV1aKCXB3EAJ", true)
+        end,
+    }},
 })
 m_util:AddBindConf(save_id, fn, nil, {string_cane, "cane_candycane", STRINGS.LMB .. "On/Off " .. STRINGS.RMB .. "Advanced settings", true, fn, fn_right, 7992})

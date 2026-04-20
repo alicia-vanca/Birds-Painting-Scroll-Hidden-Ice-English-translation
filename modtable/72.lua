@@ -43,9 +43,7 @@ i_util:AddRightClickFunc(function(pc, player, down, act, ent_mouse)
                 flush_action_str()
             end)
         end
-        if count_tele > 0 then
-            return true
-        end
+        return count_tele > 0
     end
 end)
 

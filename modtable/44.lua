@@ -48,6 +48,16 @@ local function GetScreenData()
     local screen_data = {
         title = string_timer,
         id = save_id,
+        
+        icon = 
+    {{
+        id = "add",
+        prefab = "mods",
+        hover = "Custom",
+        fn = function()
+            h_util:CreatePopupWithClose(nil, "No one has yet customized these features:\nCustom boss respawn countdown,\nShowMe, Insight integration...")
+        end,
+    }},
         data = {
             {
                 id = "reset_pos",
@@ -114,7 +124,7 @@ local function GetScreenData()
                 id = "font_posy",
                 label = "Font offset:",
                 fn = fn_set("font_posy"),
-                hover = "Show the offset distance of the font",
+                hover = "The offset distance of the font",
                 default = fn_get,
                 type = "radio",
                 data = t_util:BuildNumInsert(-50, 50, 1, function(i)
