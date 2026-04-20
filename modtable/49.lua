@@ -69,9 +69,7 @@ AddClassPostConstruct("widgets/invslot", function(self)
         return _DropItem(self, single)
     end
 
-    local _TradeItem = self.TradeItem
-    if not _TradeItem then return end
-    self.TradeItem = function(self, half, ...)
+    local function TradeItem(half)
         local now = GetTime()
         local item = self.tile and self.tile.item
         local prefab = item and item.prefab
@@ -151,8 +149,29 @@ AddClassPostConstruct("widgets/invslot", function(self)
             end
         end
         last_time = now
-        return _TradeItem(self, half, ...)
     end
+
+
+    local _OnControl = self.OnControl
+    if not self.OnControl then return end
+    self.OnControl = function(self, ctrl, down, ...)
+        if down then
+            local onlyread = self.container.IsReadOnlyContainer and self.container:IsReadOnlyContainer()
+            if not onlyread then
+                if ctrl == CONTROL_ACCEPT and not TheInput:IsControlPressed(CONTROL_FORCE_INSPECT) and TheInput:IsControlPressed(CONTROL_FORCE_TRADE) then
+                    TradeItem(TheInput:IsControlPressed(CONTROL_FORCE_STACK))
+                elseif ctrl == CONTROL_SECONDARY then
+                elseif ctrl == CONTROL_SPLITSTACK then
+                elseif ctrl == CONTROL_TRADEITEM then
+                    TradeItem(false)
+                elseif ctrl == CONTROL_TRADESTACK then
+                    TradeItem(true)
+                end
+            end
+        end
+        return _OnControl(self, ctrl, down, ...)
+    end
+
 end)
 
 local screen_data = {{

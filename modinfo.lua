@@ -1,6 +1,6 @@
 -- Bird without feet, spread your wings and fly high!
 name = "Birds Painting Scroll · Spring 󰀜"
-version = "9.1_02"
+version = "9.24_01"
 
 
 description =
@@ -18,6 +18,7 @@ description =
 	󰀬: If you encounter problems, please attach the log and add QQ group 2155066095.
 																					󰀍
 ]]
+
 author = "呼吸 | Translated by VanCa"
 forumthread = ""
 api_version = 10
@@ -171,7 +172,7 @@ configuration_options =
 	addTitle("Function panel"),
 	{
 		name = "sw_mainboard",
-		label = "Panel binding",
+		label = "Main Panel",
 		hover = "You can open this panel by clicking on this key or clicking the lower right icon at the bottom right of the screen",
 		options = theKeys,
 		default = 283,
@@ -221,7 +222,7 @@ configuration_options =
 	-- Vanca: Preserve the [Night vision] function
 	{
 		name = "sw_nightsight",
-		label = "Smart night vision",
+		label = "Night vision",
 		hover = "Charlie still attack you if you have no other light source",
 		options = theBoardKeys,
 		default = "biubiu",

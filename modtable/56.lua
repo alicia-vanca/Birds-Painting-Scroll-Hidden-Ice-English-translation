@@ -252,15 +252,20 @@ local function AutoSort(player, pc)
             end
             local container = e_util:GetContainer(cont)
             if container then
-                while not container:IsOpenedBy(player) do
+                -- 260420 VanCa: Fix for bad connection clients that player repeatively open/close the container
+                repeat
                     local act, right = p_util:GetMouseActionSoft({"RUMMAGE"}, cont)
                     if not act then
                         break
                     end
                     p_util:DoMouseAction(act, right)
-                    -- local dist = e_util:GetDist(cont) or 
-                    d_util:Wait(0.5)
-                end
+                    local count = 0
+                    repeat
+                        d_util:Wait(0.5)
+                        count = count + 1
+                    until count%5 == 0 or container:IsOpenedBy(player)
+                until container:IsOpenedBy(player)
+
                 if container:IsOpenedBy(player) then
                     -- Can the actual survey be put?
                     local num = container:GetNumSlots()

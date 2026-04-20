@@ -1,3 +1,6 @@
+-- 260412 VanCa: Edit font size, allow unravel without disabling other mods.
+-- 260412 VanCa: Allow unravel tradable duplicate skins
+
 local Screen = require "widgets/screen"
 local Widget = require "widgets/widget"
 local ImageButton = require "widgets/imagebutton"
@@ -24,28 +27,27 @@ local btn_y = -300
 local DATA = {
     {
         id = "dupes",
-        chs = "Duplicate Skin Info",
+        chs = "Duplicate Skins",
         x = -390,
         fn = function(self, info)
             self:BuildAmount()
             self.btn_queue:Enable()
-            self.btn_queue:SetHoverText("Click an item on the left\nto remove it from the auto-disassemble list!", {font_size = 30, offset_y = 150})
-            self.btn_queue:SetText("Disassemble Duplicate Skins")
+            self.btn_queue:SetHoverText("Unravel duplicate skins.\nClick an item on the left\nto remove it from the Unravel list!", {font_size = 25, offset_y = 150})
+            self.btn_queue:SetText("Unravel")
         end,
         click = function(self, line, prefab)
             t_util:Add(self.prefabs_dupe, prefab)
             self:BuildAmount()
-            self.scroll_list:SetItemsData(t_util:IPairFilter(self.dupes, function(line)
-                return not table.contains(self.prefabs_dupe, line.prefab) and line
-            end))
+            self.scroll_list:SetItemsData(self:GetDupesItemsData())
         end
     },{
+
         id = "shops",
-        chs = "Market-Tradable Skins",
+        chs = "Tradable Skins",
         x = -150,
         fn = function(self, info)
             self.content:SetString("Can be sold on the Steam Market,\nor in the trade shop bundle,\nso they will not be auto-disassembled.")
-            self.btn_queue:SetHoverText("Please switch to [Duplicate Skin Info] first", {font_size = 30, offset_y = 150})
+            self.btn_queue:SetHoverText("Please switch to [Duplicate Skins] first", {font_size = 25, offset_y = 150})
             self.btn_queue:SetText("Unavailable")
             self.btn_queue:Disable()
         end
@@ -56,7 +58,7 @@ local DATA = {
         fn = function(self, info)
             self.content:SetString("Skins from events or free giveaways,\ndisassembling them does not yield spools,\nso they will not be auto-disassembled.")
             self.btn_queue:SetText("Unavailable")
-            self.btn_queue:SetHoverText("Please switch to [Duplicate Skin Info] first", {font_size = 30, offset_y = 150})
+            self.btn_queue:SetHoverText("Please switch to [Duplicate Skins] first", {font_size = 25, offset_y = 150})
             self.btn_queue:Disable()
         end
     }
@@ -76,9 +78,12 @@ local SQ = Class(Screen, function(self)
     self.dialog.top:Hide()
     self.dialog:SetPosition(-170, 30)
     
-    self.title = self.dialog:AddChild(Text(HEADERFONT, 30, "Duplicate Skin Info", UICOLOURS.GOLD_SELECTED))
+    self.title = self.dialog:AddChild(Text(HEADERFONT, 30, "Duplicate Skins", UICOLOURS.GOLD_SELECTED))
     self.title:SetPosition(0, 300)
     
+    self.prefabs_dupe = {}
+    self.prefabs_shop = {}
+    self.active_tab = "dupes"
     
     self:LoadData()
     
@@ -119,6 +124,18 @@ local function HGift(prefab)
     return w
 end
 
+function SQ:GetDupesItemsData()
+    local data = t_util:IPairFilter(self.dupes, function(line)
+        return not table.contains(self.prefabs_dupe, line.prefab) and line
+    end)
+    t_util:IPairs(self.shops, function(line)
+        if line.count > 1 and line.spool > 0 and table.contains(self.prefabs_shop, line.prefab) then
+            t_util:Add(data, line)
+        end
+    end)
+    return data
+end
+
 function SQ:BuildQueueBtn()
     local btn = self.root:AddChild(TEMPLATES.StandardButton(function()
         
@@ -126,19 +143,21 @@ function SQ:BuildQueueBtn()
         local function cb()
             local ui = require "widgets/huxi/hx_skinqueue"
             if ui then
-                ui(self.prefabs_dupe)
+                ui(self.prefabs_dupe, self.prefabs_shop)
             end
         end
         
         local mods = i_util:GetModsCS()
-        if not t_util:IGetElement(mods, function(mod)
+
+        -- 230412 VanCa: Won't force users to disable other mods, just show a warning, use at their own risk.
+        if true or not t_util:IGetElement(mods, function(mod)
             return not (mod.name:find("群鸟绘卷") or mod.author:find("呼吸"))
         end) or Mod_ShroomMilk.Setting.SkipQueueCheck or m_util:IsMilker() then
-            h_util:CreatePopupWithClose("Disclaimer", "This feature has not been extensively tested; use at your own risk!\nAlso, to avoid disassembly failures, it is best to disable other mods before use.", {
+            h_util:CreatePopupWithClose("Disclaimer", "It has not been extensively tested; use at your own risk!\nTo avoid failures, it is best to disable other mods before use.", {
                 {
                     text = h_util.no,
                 },{
-                    text = "I acknowledge the risk and confirm execution",
+                    text = "Confirm & Unravel",
                     cb = cb,
                     dontpop = true,
                 }
@@ -146,7 +165,7 @@ function SQ:BuildQueueBtn()
         else
             h_util:CreatePopupWithClose(nil, "Please disable other mods before using this feature")
         end
-    end, "Disassemble Duplicate Skins", {300, 100}))
+    end, "Unravel Duplicate Skins", {300, 100}))
     self.btn_queue = btn
     btn.image:SetTint(.4, 1, .4, 1)
     btn:SetPosition(450, -200)
@@ -157,11 +176,21 @@ end
 function SQ:BuildBtns()
     t_util:IPairs(DATA, function(info)
         local btn = self.root:AddChild(TEMPLATES.StandardButton(function()
+            self.active_tab = info.id
             self.title:SetString(info.chs)
             self:LoadData()
             local data = self[info.id]
-            self.scroll_list:SetItemsData(data)
+            if info.id == "dupes" then
+                self.scroll_list:SetItemsData(self:GetDupesItemsData())
+            else
+                self.scroll_list:SetItemsData(data)
+            end
             self:Preview(data[1] and data[1].prefab)
+            if info.id == "dupes" then
+                self.btn_add_all_shops:Show()
+            else
+                self.btn_add_all_shops:Hide()
+            end
             if info.fn then
                 info.fn(self, info)
             end
@@ -170,7 +199,23 @@ function SQ:BuildBtns()
         self["btn_"..info.id] = btn
         btn:SetPosition(info.x or 0, info.y or btn_y)
     end)
-    self.btn_dupes:SetHoverText("Click an item above\nto remove it from the auto-disassemble list!", {font_size = 30, offset_y = 150})
+    self.btn_dupes:SetHoverText("Click an item above\nto remove it from the Unravel list!", {font_size = 30, offset_y = 150})
+    
+    local btn_add_all_shops = self.root:AddChild(TEMPLATES.StandardButton(function()
+        t_util:IPairs(self.shops, function(line)
+            if line.count > 1 and line.spool > 0 then
+                t_util:Add(self.prefabs_shop, line.prefab)
+            end
+        end)
+        self:BuildAmount()
+        if self.active_tab == "dupes" then
+            self.scroll_list:SetItemsData(self:GetDupesItemsData())
+        end
+        h_util:CreatePopupWithClose(nil, "Added all tradeable duplicates to the unravel queue.")
+    end, "Include tradeable skins", {240, 50}))
+    btn_add_all_shops:SetPosition(450, -135)
+    self.btn_add_all_shops = btn_add_all_shops
+    self.btn_add_all_shops:Hide()
 end
  
 
@@ -183,12 +228,20 @@ function SQ:BuildAmount()
             count = (line.count-1)*line.spool + count
         end
     end)
-    content = content.. "Pending disassembly: "..count.. " spools,\n"
-    content = content.. "Total: "..(count+now).." spools."
+    local shop_count = 0
+    t_util:IPairs(self.shops, function(line)
+        if self.prefabs_shop and table.contains(self.prefabs_shop, line.prefab) then
+            shop_count = shop_count + (line.count-1)*line.spool
+        end
+    end)
+    content = content.. "Unravel list: "..(count + shop_count).. " spools,\n"
+    content = content.. "After unravel: "..(count + shop_count + now).." spools."
+    
+    content = content.. "\nClick the button below to include\nall tradable skins in the list."
     if self.content then
         self.content:Kill()
     end
-    self.content = self.root:AddChild(Text(DIALOGFONT, 40, content, RGB(222, 222, 99)))
+    self.content = self.root:AddChild(Text(DIALOGFONT, 25, content, RGB(222, 222, 99)))
     self.content:SetPosition(460, -50)
 end
 
@@ -211,18 +264,18 @@ local function widget_constructor(context, i)
     w.widgets.skin:SetPosition(x, 0)
     x = x + row_height / 2 + spacing
     
-    w.widgets.skinname = w.widgets:AddChild(Text(HEADERFONT, 30))
+    w.widgets.skinname = w.widgets:AddChild(Text(HEADERFONT, 25))
     w.widgets.skinname._position = {x = x, y = 10, w = 400 }
-    w.widgets.count = w.widgets:AddChild(Text(CHATFONT, 22))
+    w.widgets.count = w.widgets:AddChild(Text(CHATFONT, 20))
     w.widgets.count:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
     w.widgets.count._position = {x = x, y = -13, w = 570 }
     local button_x = row_width - spacing - 20
     
-    w.widgets.spool = w.widgets:AddChild(Text(CHATFONT, 40))
+    w.widgets.spool = w.widgets:AddChild(Text(CHATFONT, 30))
     w.widgets.spool:SetColour(UICOLOURS.HIGHLIGHT_GOLD)
     w.widgets.spool._position = {x = button_x, y = 0, w = 400 }
     
-    w.widgets.rarity = w.widgets:AddChild(Text(HEADERFONT, 40))
+    w.widgets.rarity = w.widgets:AddChild(Text(HEADERFONT, 20))
     w.widgets.rarity._position = { x = button_x - 2.5 * row_height, y = 0, w = 400 }
     return w
 end
@@ -262,12 +315,23 @@ function SQ:BuildGrid()
         local rarity_cn, name, rgb = GetModifiedRarityStringForItem(prefab), GetSkinName(prefab), GetColorForItem(prefab)
         w.widgets.skinname:SetColour(rgb)
         SetTruncatedLeftJustifiedString(w.widgets.skinname, name)
-        SetTruncatedLeftJustifiedString(w.widgets.count, "Qty: " .. data.count)
-        SetTruncatedRightJustifiedString(w.widgets.spool, data.spool * data.count .. " spools")
-        SetTruncatedRightJustifiedString(w.widgets.rarity, rarity_cn .. " rarity")
+        if data.cate == "dupes" or (self.active_tab == "dupes" and data.cate == "shops") then
+            SetTruncatedLeftJustifiedString(w.widgets.count, "Duplicate(s): " .. math.max(0, data.count - 1))
+            SetTruncatedRightJustifiedString(w.widgets.spool, data.spool * math.max(0, data.count - 1) .. " spools")
+        else
+            SetTruncatedLeftJustifiedString(w.widgets.count, "Quantity: " .. data.count)
+            SetTruncatedRightJustifiedString(w.widgets.spool, data.spool * data.count .. " spools")
+        end
+        SetTruncatedRightJustifiedString(w.widgets.rarity, "Rarity: " .. rarity_cn)
         w.widgets.rarity:SetColour(rgb)
         w.bg:SetOnClick(function()
             self:Preview(prefab)
+            if self.active_tab == "dupes" and data.cate == "shops" and table.contains(self.prefabs_shop, prefab) then
+                t_util:Sub(self.prefabs_shop, prefab)
+                self:BuildAmount()
+                self.scroll_list:SetItemsData(self:GetDupesItemsData())
+                return
+            end
             local fn = t_util:IGetElement(DATA, function(info)
                 return info.id == data.cate and info.click
             end)
@@ -294,7 +358,6 @@ end
 
 
 function SQ:LoadData()
-    self.prefabs_dupe = {}
     local skins = u_util:GetSkinsData()
     t_util:IPairs(DATA, function(info)
         self[info.id] = skins[info.id]

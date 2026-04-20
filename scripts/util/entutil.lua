@@ -158,9 +158,11 @@ function EntUtil:GetTags(ent, isclone)
 end
 
 
-
+local PrefabsBug = {
+   wx78_backupbody = true, 
+}
 function EntUtil:ClonePrefab(prefab)
-    if type(prefab) ~= "string" or not TheWorld or not Prefabs[prefab] then
+    if type(prefab) ~= "string" or not TheWorld or not Prefabs[prefab] or PrefabsBug[prefab] then
         return {
             components = {},
             prefab = prefab,

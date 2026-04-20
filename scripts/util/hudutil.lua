@@ -803,7 +803,6 @@ end
 
 function h_util.SetColor(UI, color)
     color = h_util:GetWRGB(color)
-    color = color or h_util:GetWRGB(nil)
     UI.AnimState:SetMultColour(unpack(color))
     UI.AnimState:SetAddColour(unpack(color))
     return UI
