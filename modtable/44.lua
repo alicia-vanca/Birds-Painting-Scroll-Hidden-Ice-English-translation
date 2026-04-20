@@ -68,14 +68,14 @@ local function GetScreenData()
                         timer:SetUIPos(true)
                     end
                 end,
-                hover = "If your ui is not controlled, click this button to reset the ui position",
+                hover = "If your UI is messed up, click this button to reset its position",
                 default = true,
             },
             {
                 id = "penetrate",
-                label = "Ui penetration",
+                label = "UI penetration",
                 fn = fn_set("penetrate"),
-                hover = "After opening this option, click the info tray to penetrate '\n and lose ui drag and drag and click announcement at the same time",
+                hover = "After enabling this option, clicking the info tray is disabled'\nTherefore, UI drag and click-to-announce will stop working",
                 default = fn_get,
             },
             {

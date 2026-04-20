@@ -9,6 +9,7 @@ local default_data = {
     color_item = "Green",
     color_full = "Purple",
     force_memory = false,
+    nightlight = true,
 }
 local save_data, fn_get, fn_save = s_mana:InitLoad(save_id, default_data)
 local m_data = {
@@ -122,7 +123,7 @@ end
 -- Highlight
 local function AddHighlight(ent, color)
     h_util.SetAddColor(ent, color)
-    e_util:SetHighlight(ent, true)
+    e_util:SetHighlight(ent, save_data.nightlight)
     if ent then
         table.insert(items_highlight, ent)
     end
@@ -575,6 +576,12 @@ local screen_data = {{
     type = "radio",
     data = VData.RGB_datatable,
 },{
+    id = "nightlight",
+    label = "Nightlight Display",
+    hover = "Highlight items even while in the dark",
+    fn = fn_save("nightlight"),
+    default = fn_get,
+}, {
     id = "force_memory",
     label = "Force local memory",
     hover = "Enable with caution, you will no longer communicate with showme or insight after enabling!\nHighlight and other functions will be completely controlled locally!",

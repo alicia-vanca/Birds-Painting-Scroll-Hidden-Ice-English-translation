@@ -23,7 +23,7 @@ function c_util:GetAngle(source, target)
     return math.deg(self:GetRadian(source, target))
 end
 
--- Angle modulo
+-- Angle取模
 function c_util:GetAbsAngle(angle)
     return math.ceil(angle)%360         -- Accuracy problem, ceil cannot be changed
 end
@@ -56,8 +56,8 @@ function c_util:GetScaleValue(scale, scale_min, scale_max, num_min, num_max)
     end
 end
 
--- Get the intersection of the line between the circle center and an external point with the circle
--- center is the circle center, radius is the radius, pot is a point outside the circle
+-- Get the intersection point between the circle and the line connecting the center of the circle to a point outside the circle
+-- center圆心, radius半径, pot圆外一点
 function c_util:GetIntersectPotRadiusPot(center, radius, pot)
     local dx,dz = pot.x - center.x, pot.z - center.z
     local d = math.sqrt(dx * dx + dz * dz)
@@ -65,7 +65,7 @@ function c_util:GetIntersectPotRadiusPot(center, radius, pot)
     return d == 0 and center or Vector3(center.x + radius * dx / d, 0, center.z + radius * dz / d)
 end
 -- Get the intersection point of a line through the circle center with the circle
--- center is the circle center, radius is the radius, angle is the line angle
+-- center圆心, radius半径, angle直线角度
 function c_util:GetIntersectPotAnglePot(center, radius, angle)
     local rad = math.rad(angle)
     local dx, dz = math.cos(rad), math.sin(rad)

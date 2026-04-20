@@ -25,6 +25,12 @@ local data_act = {
         chs = "Pick",
         hover = "Pick berries from saplings",
         type = "scene",
+        check = function(target)
+            if "rock_avocado_bush"== target.prefab then
+                return e_util:IsAnim("idle3", target)
+            end
+            return true
+        end
     },
     PICKUP = {
         chs = "Pickup",

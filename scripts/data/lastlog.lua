@@ -1,6 +1,34 @@
 return 
 [=[
---------------------------Start writing log here----------------------------
+--------------------------Start writing the log here----------------------------
+2026.4.18 9.24
+[Memory] Added modifications for nightlight mode
+[Scroll · Fenghua] Fixed crash when retrieving backup robot information
+
+
+2026.4.17 9.23
+[Queue double-click] Fixed failure issue
+[Season Clock] Fixed WX-78 health value position offset issue
+[Queue Theory Enhancement] Fixed issue where equipping an umbrella could still switch to a staff in some scenes
+
+
+2026.4.16 9.2
+Thanks to sponsor Shishi for custom work!
+[Beefalo Assist] Added optional Feed Beefalo / Dismount and walk / Close
+[Rain Forecast] Fixed crash caused by failing to read season (maybe fixed, untested)
+
+
+2026.4.13 9.12
+[Auto Work] Fixed issue collecting overripe rock avocado fruits
+
+
+2026.4.12 9.11
+[Function Panel] Adapted to some custom fonts
+[Festival Easter Egg] Fixed wasteful performance issue where it still loaded on non-festivals
+[Crafting Bar] Fixed issue where some mods caused crafting bar icon misalignment
+
+
+
 2026.4.10 9.1
 Thanks to sponsor Mimi for custom work!
 [Auto Work] Some automation actions can now be triggered by hotkeys

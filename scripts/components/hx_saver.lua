@@ -219,13 +219,17 @@ function Saver:GetRainStart()
             return 50
         else
             local p = 1 - math.sin(PI * progress)
-            return MOISTURE_RATES.MIN[season] + p * (MOISTURE_RATES.MAX[season] - MOISTURE_RATES.MIN[season])
+            local rain_min, rain_max = MOISTURE_RATES.MIN[season], MOISTURE_RATES.MAX[season]
+            if rain_min and rain_max then
+                return rain_min + p * (rain_max - rain_min)
+            end
         end
     end
 
 
     local time_cost = (1-todaypct) * total_day_time
     local mois_rate = GetMoisRate()
+    if not mois_rate then return end
     moisture = moisture + mois_rate*time_cost
 
     while elapseddaysinseason < seasonlength do

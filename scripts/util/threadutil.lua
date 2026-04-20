@@ -1,8 +1,8 @@
 -- Thread tool
--- Breath: this interface is still failing, and data_act plus other logic do not return successfully.
+-- 呼吸: this interface is still failing, and data_act plus other logic do not return successfully.
 -- It can be improved in the future.
 
--- Breath until September 2024: this is actually not a bad interface; at least it can "guarantee" a certain operation
+-- 呼吸: until September 2024: this is actually not a bad interface; at least it can "guarantee" a certain operation
 local p_util = require "util/playerutil"
 local e_util = require "util/entutil"
 local m_util = require "util/modutil"

@@ -30,6 +30,13 @@ local function fn_to_mount()
         end
     end)
 end
+local function fn_to_unmount()
+    local act, right = p_util:GetMouseActionSoft({"DISMOUNT"}, ThePlayer)
+    if act then
+        p_util:DoMouseAction(act, right)
+        Say("Dismounted and walking", "󰀁")
+    end
+end
 
 local function fn_to_bell()
     local bell = p_util:GetItemFromAll(nil, {"beefalo_targeter", "bell", "inlimbo"}, function(item)
@@ -87,8 +94,14 @@ local function fn_press()
         return
     end
     
-    if save_data.jh_feed and fn_to_feed() then
-        return
+    if save_data.jh_feed then
+        if save_data.jh_feed == "close" then
+            return Say(str_show, "Completed")
+        elseif save_data.jh_feed == "unmount" then
+            return fn_to_unmount()
+        elseif fn_to_feed() then
+            return
+        end
     end
     Say(str_show, "Completed")
 end
@@ -178,16 +191,22 @@ local screen_data = {
         fn = fn_save("jh_bell"),
     },{
         id = "jh_feed",
-        label = "Toggle: Feed beefalo",
-        hover = "Toggle for feeding the beefalo",
+        label = "Ride action:",
+        hover = "Action performed when riding a beefalo",
         default = fn_get,
+        type = "radio",
         fn = fn_save("jh_feed"),
+        data = {
+            {data = "feed", description = "Feed"},
+            {data = "unmount", description = "Dismount"},
+            {data = "close", description = "Close"},
+        }
     },{
         id = "list_feed",
         type = "imgstr",
         prefab = "beefalotreat",
-        hover = STRINGS.LMB .. "View beefalo feed list",
-        label = "Settings: Feed beefalo",
+        hover = "Requires Ride action to be set to Feed to take effect",
+        label = "Settings: Feed Beefalo",
         fn = fn_set_feed,
     },
 }
